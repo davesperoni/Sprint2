@@ -49,9 +49,9 @@ if (isset($_POST['SubmitPersonProfileForm'])) {
     $EmergencyLastUpdatedBy =$newEmergencyContact->getEmergencyLastUpdatedBy();
     $EmergencyLastUpdated =$newEmergencyContact->getEmergencyLastUpdated();
 
-    $sqlEmergencyContact = "INSERT INTO EmergencyContact (FirstName, MiddleInitial, LastName, PhoneNumber, Relationship,LastUpdatedBy, LastUpdated) VALUES ('$EmergencyFirstName', '$EmergencyMiddleInitial', '$EmergencyLastName', '$EmergencyPhoneNumber','$EmergencyRelationship','$EmergencyLastUpdatedBy',$EmergencyLastUpdated)";
-
+    $sqlEmergencyContact = "INSERT INTO EmergencyContact (FirstName, MiddleInitial, LastName, PhoneNumber, Relationship, LastUpdatedBy, LastUpdated) VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)";
     $stmt = mysqli_prepare($conn, $sqlEmergencyContact);
+    $stmt->bind_param("ssssss", $EmergencyFirstName, $EmergencyMiddleInitial, $EmergencyLastName, $EmergencyPhoneNumber, $EmergencyRelationship, $EmergencyLastUpdatedBy);
 
     if($stmt) {
 
@@ -111,9 +111,12 @@ if (isset($_POST['SubmitPersonProfileForm'])) {
     $PersonLastUpdated = $newPerson->getPersonLastUpdated();
 
 
-    $sqlPerson = "INSERT INTO Person (EmergencyContactID, AccountID, FirstName, MiddleInitial, LastName, StreetAddress, City, State, Country, ZipCode, PhoneNumber, DateOfBirth, Allergy, PhysicalLimitation, HavePermit, PermitType, RabiesVaccine, LastUpdatedBy, LastUpdated) VALUES ('$EmergencyContactID', $PersonAccountID,'$PersonFirstName', '$PersonMiddleInitial', '$PersonLastName', '$PersonStreetAddress', '$PersonCity', '$PersonStateAbb', '$PersonCountryAbb', '$PersonZipCode', '$PersonPhoneNumber', '$PersonDateOfBirth', '$PersonAllergy', '$PersonPhysicalLimitation', '$PersonHavePermit', '$PersonPermitType', '$PersonRabies', '$PersonLastUpdatedBy',$PersonLastUpdated)";
-
+    $sqlPerson = "INSERT INTO Person (EmergencyContactID, AccountID, FirstName, MiddleInitial, LastName, StreetAddress, City, State, Country, ZipCode, PhoneNumber, DateOfBirth, Allergy, PhysicalLimitation, HavePermit, PermitType, RabiesVaccine, LastUpdatedBy, LastUpdated) VALUES (?, ?, ?, ? , ?, ?, ? , ? , ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)";
     $stmt = mysqli_prepare($conn, $sqlPerson);
+    $stmt->bind_param("iisssssssissssssss", $EmergencyContactID, $PersonAccountID, $PersonFirstName, $PersonMiddleInitial, $PersonLastName,
+        $PersonStreetAddress, $PersonCity, $PersonStateAbb, $PersonCountryAbb, $PersonZipCode, $PersonPhoneNumber,
+        $PersonDateOfBirth, $PersonAllergy, $PersonPhysicalLimitation, $PersonHavePermit, $PersonPermitType, $PersonRabies,
+        $PersonLastUpdatedBy);
 
     if($stmt) {
 
@@ -128,7 +131,6 @@ if (isset($_POST['SubmitPersonProfileForm'])) {
     if(!empty($_POST['monday']))
     {
         foreach($_POST['monday'] as $monday) {
-
             if ($monday === "morning")
             {
                 $AvailabilityShiftID = 1;
@@ -137,36 +139,28 @@ if (isset($_POST['SubmitPersonProfileForm'])) {
             {
                 $AvailabilityShiftID = 2;
             }
-            else if ($monday === "night")
+            else if ($monday === "evening")
             {
                 $AvailabilityShiftID = 3;
             }
-
             $newShift = new Availability(2, $PersonID, $AvailabilityShiftID, $monday);
-
-
             $AvailabilityDayID = $newShift->getAvailabilityDayID();
             $AvailabilityPersonID = $newShift->getAvailabilityPersonID();
             $AvailabilityShiftID = $newShift->getAvailabilityShiftID();
             $AvailabilityShift = $newShift->getAvailabilityShift();
             $AvailabilityLastUpdatedBy = $newShift->getAvailabilityLastUpdatedBy();
             $AvailabilityLastUpdated = $newShift->getAvailabilityLastUpdated();
-
-            $sqlInsertShift = "INSERT INTO Availability (DayID, PersonID, AvailabilityShiftID, AvailableShift, LastUpdatedBy, LastUpdated) VALUES($AvailabilityDayID, $AvailabilityPersonID, $AvailabilityShiftID, '$AvailabilityShift', '$AvailabilityLastUpdatedBy', $AvailabilityLastUpdated)";
-
+            $sqlInsertShift = "INSERT INTO Availability (DayID, PersonID, AvailabilityShiftID, AvailableShift, LastUpdatedBy, LastUpdated) VALUES(?, ?, ?, ?, ?, CURRENT_TIMESTAMP)";
             $stmt = mysqli_prepare($conn, $sqlInsertShift);
-
+            $stmt->bind_param("iiiss", $AvailabilityDayID, $AvailabilityPersonID, $AvailabilityShiftID, $AvailabilityShift, $AvailabilityLastUpdatedBy);
             if ($stmt) {
-
                 $stmt->execute();
             }
         }
-
     }
     if(!empty($_POST['tuesday']))
     {
         foreach($_POST['tuesday'] as $tuesday) {
-
             if ($tuesday === "morning")
             {
                 $AvailabilityShiftID = 1;
@@ -175,38 +169,28 @@ if (isset($_POST['SubmitPersonProfileForm'])) {
             {
                 $AvailabilityShiftID = 2;
             }
-            else if ($tuesday === "night")
+            else if ($tuesday === "evening")
             {
                 $AvailabilityShiftID = 3;
             }
-
             $newShift = new Availability(3, $PersonID, $AvailabilityShiftID, $tuesday);
-
-
             $AvailabilityDayID = $newShift->getAvailabilityDayID();
             $AvailabilityPersonID = $newShift->getAvailabilityPersonID();
             $AvailabilityShiftID = $newShift->getAvailabilityShiftID();
             $AvailabilityShift = $newShift->getAvailabilityShift();
             $AvailabilityLastUpdatedBy = $newShift->getAvailabilityLastUpdatedBy();
             $AvailabilityLastUpdated = $newShift->getAvailabilityLastUpdated();
-
-            $sqlInsertShift = "INSERT INTO Availability (DayID, PersonID, AvailabilityShiftID, AvailableShift, LastUpdatedBy, LastUpdated) VALUES($AvailabilityDayID, $AvailabilityPersonID, $AvailabilityShiftID, '$AvailabilityShift', '$AvailabilityLastUpdatedBy', $AvailabilityLastUpdated)";
-
-
+            $sqlInsertShift = "INSERT INTO Availability (DayID, PersonID, AvailabilityShiftID, AvailableShift, LastUpdatedBy, LastUpdated) VALUES(?, ?, ?, ?, ?, CURRENT_TIMESTAMP)";
             $stmt = mysqli_prepare($conn, $sqlInsertShift);
-
+            $stmt->bind_param("iiiss", $AvailabilityDayID, $AvailabilityPersonID, $AvailabilityShiftID, $AvailabilityShift, $AvailabilityLastUpdatedBy);
             if ($stmt) {
-
                 $stmt->execute();
             }
         }
-
     }
-
     if(!empty($_POST['wednesday']))
     {
         foreach($_POST['wednesday'] as $wednesday) {
-
             if ($wednesday === "morning")
             {
                 $AvailabilityShiftID = 1;
@@ -215,36 +199,28 @@ if (isset($_POST['SubmitPersonProfileForm'])) {
             {
                 $AvailabilityShiftID = 2;
             }
-            else if ($wednesday === "night")
+            else if ($wednesday === "evening")
             {
                 $AvailabilityShiftID = 3;
             }
-
             $newShift = new Availability(4, $PersonID, $AvailabilityShiftID, $wednesday);
-
-
             $AvailabilityDayID = $newShift->getAvailabilityDayID();
             $AvailabilityPersonID = $newShift->getAvailabilityPersonID();
             $AvailabilityShiftID = $newShift->getAvailabilityShiftID();
             $AvailabilityShift = $newShift->getAvailabilityShift();
             $AvailabilityLastUpdatedBy = $newShift->getAvailabilityLastUpdatedBy();
             $AvailabilityLastUpdated = $newShift->getAvailabilityLastUpdated();
-
-            $sqlInsertShift = "INSERT INTO Availability (DayID, PersonID, AvailabilityShiftID, AvailableShift, LastUpdatedBy, LastUpdated) VALUES($AvailabilityDayID, $AvailabilityPersonID, $AvailabilityShiftID, '$AvailabilityShift', '$AvailabilityLastUpdatedBy', $AvailabilityLastUpdated)";
-
+            $sqlInsertShift = "INSERT INTO Availability (DayID, PersonID, AvailabilityShiftID, AvailableShift, LastUpdatedBy, LastUpdated) VALUES(?, ?, ?, ?, ?, CURRENT_TIMESTAMP)";
             $stmt = mysqli_prepare($conn, $sqlInsertShift);
-
+            $stmt->bind_param("iiiss", $AvailabilityDayID, $AvailabilityPersonID, $AvailabilityShiftID, $AvailabilityShift, $AvailabilityLastUpdatedBy);
             if ($stmt) {
-
                 $stmt->execute();
             }
         }
-
     }
     if(!empty($_POST['thursday']))
     {
         foreach($_POST['thursday'] as $thursday) {
-
             if ($thursday === "morning")
             {
                 $AvailabilityShiftID = 1;
@@ -253,36 +229,28 @@ if (isset($_POST['SubmitPersonProfileForm'])) {
             {
                 $AvailabilityShiftID = 2;
             }
-            else if ($thursday === "night")
+            else if ($thursday === "evening")
             {
                 $AvailabilityShiftID = 3;
             }
-
             $newShift = new Availability(5, $PersonID, $AvailabilityShiftID, $thursday);
-
-
             $AvailabilityDayID = $newShift->getAvailabilityDayID();
             $AvailabilityPersonID = $newShift->getAvailabilityPersonID();
             $AvailabilityShiftID = $newShift->getAvailabilityShiftID();
             $AvailabilityShift = $newShift->getAvailabilityShift();
             $AvailabilityLastUpdatedBy = $newShift->getAvailabilityLastUpdatedBy();
             $AvailabilityLastUpdated = $newShift->getAvailabilityLastUpdated();
-
-            $sqlInsertShift = "INSERT INTO Availability (DayID, PersonID, AvailabilityShiftID, AvailableShift, LastUpdatedBy, LastUpdated) VALUES($AvailabilityDayID, $AvailabilityPersonID, $AvailabilityShiftID, '$AvailabilityShift', '$AvailabilityLastUpdatedBy', $AvailabilityLastUpdated)";
-
+            $sqlInsertShift = "INSERT INTO Availability (DayID, PersonID, AvailabilityShiftID, AvailableShift, LastUpdatedBy, LastUpdated) VALUES(?, ?, ?, ?, ?, CURRENT_TIMESTAMP)";
             $stmt = mysqli_prepare($conn, $sqlInsertShift);
-
+            $stmt->bind_param("iiiss", $AvailabilityDayID, $AvailabilityPersonID, $AvailabilityShiftID, $AvailabilityShift, $AvailabilityLastUpdatedBy);
             if ($stmt) {
-
                 $stmt->execute();
             }
         }
-
     }
     if(!empty($_POST['friday']))
     {
         foreach($_POST['friday'] as $friday) {
-
             if ($friday === "morning")
             {
                 $AvailabilityShiftID = 1;
@@ -291,37 +259,28 @@ if (isset($_POST['SubmitPersonProfileForm'])) {
             {
                 $AvailabilityShiftID = 2;
             }
-            else if ($friday === "night")
+            else if ($friday === "evening")
             {
                 $AvailabilityShiftID = 3;
             }
-
             $newShift = new Availability(6, $PersonID, $AvailabilityShiftID, $friday);
-
-
             $AvailabilityDayID = $newShift->getAvailabilityDayID();
             $AvailabilityPersonID = $newShift->getAvailabilityPersonID();
             $AvailabilityShiftID = $newShift->getAvailabilityShiftID();
             $AvailabilityShift = $newShift->getAvailabilityShift();
             $AvailabilityLastUpdatedBy = $newShift->getAvailabilityLastUpdatedBy();
             $AvailabilityLastUpdated = $newShift->getAvailabilityLastUpdated();
-
-            $sqlInsertShift = "INSERT INTO Availability (DayID, PersonID, AvailabilityShiftID, AvailableShift, LastUpdatedBy, LastUpdated) VALUES($AvailabilityDayID, $AvailabilityPersonID, $AvailabilityShiftID, '$AvailabilityShift', '$AvailabilityLastUpdatedBy', $AvailabilityLastUpdated)";
-
-
+            $sqlInsertShift = "INSERT INTO Availability (DayID, PersonID, AvailabilityShiftID, AvailableShift, LastUpdatedBy, LastUpdated) VALUES(?, ?, ?, ?, ?, CURRENT_TIMESTAMP)";
             $stmt = mysqli_prepare($conn, $sqlInsertShift);
-
+            $stmt->bind_param("iiiss", $AvailabilityDayID, $AvailabilityPersonID, $AvailabilityShiftID, $AvailabilityShift, $AvailabilityLastUpdatedBy);
             if ($stmt) {
-
                 $stmt->execute();
             }
         }
-
     }
     if(!empty($_POST['saturday']))
     {
         foreach($_POST['saturday'] as $saturday) {
-
             if ($saturday === "morning")
             {
                 $AvailabilityShiftID = 1;
@@ -330,38 +289,28 @@ if (isset($_POST['SubmitPersonProfileForm'])) {
             {
                 $AvailabilityShiftID = 2;
             }
-            else if ($saturday === "night")
+            else if ($saturday === "evening")
             {
                 $AvailabilityShiftID = 3;
             }
-
             $newShift = new Availability(7, $PersonID, $AvailabilityShiftID, $saturday);
-
-
             $AvailabilityDayID = $newShift->getAvailabilityDayID();
             $AvailabilityPersonID = $newShift->getAvailabilityPersonID();
             $AvailabilityShiftID = $newShift->getAvailabilityShiftID();
             $AvailabilityShift = $newShift->getAvailabilityShift();
             $AvailabilityLastUpdatedBy = $newShift->getAvailabilityLastUpdatedBy();
             $AvailabilityLastUpdated = $newShift->getAvailabilityLastUpdated();
-
-            $sqlInsertShift = "INSERT INTO Availability (DayID, PersonID, AvailabilityShiftID, AvailableShift, LastUpdatedBy, LastUpdated) VALUES($AvailabilityDayID, $AvailabilityPersonID, $AvailabilityShiftID, '$AvailabilityShift', '$AvailabilityLastUpdatedBy', $AvailabilityLastUpdated)";
-
-
+            $sqlInsertShift = "INSERT INTO Availability (DayID, PersonID, AvailabilityShiftID, AvailableShift, LastUpdatedBy, LastUpdated) VALUES(?, ?, ?, ?, ?, CURRENT_TIMESTAMP)";
             $stmt = mysqli_prepare($conn, $sqlInsertShift);
-
+            $stmt->bind_param("iiiss", $AvailabilityDayID, $AvailabilityPersonID, $AvailabilityShiftID, $AvailabilityShift, $AvailabilityLastUpdatedBy);
             if ($stmt) {
-
                 $stmt->execute();
             }
         }
-
     }
-
     if(!empty($_POST['sunday']))
     {
         foreach($_POST['sunday'] as $sunday) {
-
             if ($sunday === "morning")
             {
                 $AvailabilityShiftID = 1;
@@ -370,32 +319,24 @@ if (isset($_POST['SubmitPersonProfileForm'])) {
             {
                 $AvailabilityShiftID = 2;
             }
-            else if ($sunday === "night")
+            else if ($sunday === "evening")
             {
                 $AvailabilityShiftID = 3;
             }
-
             $newShift = new Availability(1, $PersonID, $AvailabilityShiftID, $sunday);
-
-
             $AvailabilityDayID = $newShift->getAvailabilityDayID();
             $AvailabilityPersonID = $newShift->getAvailabilityPersonID();
             $AvailabilityShiftID = $newShift->getAvailabilityShiftID();
             $AvailabilityShift = $newShift->getAvailabilityShift();
             $AvailabilityLastUpdatedBy = $newShift->getAvailabilityLastUpdatedBy();
             $AvailabilityLastUpdated = $newShift->getAvailabilityLastUpdated();
-
-            $sqlInsertShift = "INSERT INTO Availability (DayID, PersonID, AvailabilityShiftID, AvailableShift, LastUpdatedBy, LastUpdated) VALUES($AvailabilityDayID, $AvailabilityPersonID, $AvailabilityShiftID, '$AvailabilityShift', '$AvailabilityLastUpdatedBy', $AvailabilityLastUpdated)";
-
-
+            $sqlInsertShift = "INSERT INTO Availability (DayID, PersonID, AvailabilityShiftID, AvailableShift, LastUpdatedBy, LastUpdated) VALUES(?, ?, ?, ?, ?, CURRENT_TIMESTAMP)";
             $stmt = mysqli_prepare($conn, $sqlInsertShift);
-
+            $stmt->bind_param("iiiss", $AvailabilityDayID, $AvailabilityPersonID, $AvailabilityShiftID, $AvailabilityShift, $AvailabilityLastUpdatedBy);
             if ($stmt) {
-
                 $stmt->execute();
             }
         }
-
     }
 }
 

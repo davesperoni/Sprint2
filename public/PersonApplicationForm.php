@@ -119,19 +119,16 @@ $ApplicationAdminAssistant = $newApplication->getApplicationAdminAssistant();
 $ApplicationLastUpdatedBy = $newApplication->getApplicationLastUpdatedBy();
 $ApplicationLastUpdated = $newApplication->getApplicationLastUpdated();
 
-$sqlApplication = "INSERT INTO Application (PersonID, DepartmentID, ApplicationStatus, CarpentrySkills, FrontDeskTrained, AdminAssistant, LastUpdatedBy, LastUpdated) VALUES ('$ApplicationPersonID', '$ApplicationDepartmentID', '$ApplicationStatus', '$ApplicationCarpentrySkills', '$ApplicationFrontDeskTrained','$ApplicationAdminAssistant', '$ApplicationLastUpdatedBy', $ApplicationLastUpdated)";
-
+    $sqlApplication = "INSERT INTO Application (PersonID, DepartmentID, ApplicationStatus, CarpentrySkills, FrontDeskTrained, AdminAssistant, LastUpdatedBy, LastUpdated) VALUES (?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)";
     $stmt = mysqli_prepare($conn, $sqlApplication);
-
+    $stmt->bind_param("iisssss", $ApplicationPersonID, $ApplicationDepartmentID, $ApplicationStatus, $ApplicationCarpentrySkills,
+        $ApplicationFrontDeskTrained, $ApplicationAdminAssistant, $ApplicationLastUpdatedBy);
     if($stmt) {
         $stmt->execute();
     }
     echo "Application added to database!";
-
     $ApplicationID = $conn->insert_id;
-
     echo "New record created successfully. Last inserted ID is: " . $ApplicationID;
-
     if ($ApplicationDepartmentID === 1)
     {
         $ApplicationExplainInterest = $_POST['ExplainInterest'];
@@ -150,9 +147,12 @@ $sqlApplication = "INSERT INTO Application (PersonID, DepartmentID, ApplicationS
         $ApplicationOutreachLastUpdatedBy = $newOutreachApplication->getApplicantLastUpdatedBy();
         $ApplicationOutreachLastUpdated = $newOutreachApplication->getApplicantLastUpdated();
 
-        $sqlOutreachApplication = "INSERT INTO ApplicationOutreach (ApplicationID, ExplainInterest, PassionateIssue, PublicSpeakingExperience, AnimalRightsGroups, YourContribution, LastUpdatedBy, LastUpdated) VALUES ('$ApplicationID', '$ApplicationExplainInterest', '$ApplicationPassionateIssue','$ApplicationPublicSpeakingExperience', '$ApplicationAnimalRightsGroups', '$ApplicationYourContribution', '$ApplicationOutreachLastUpdatedBy', $ApplicationOutreachLastUpdated)";
+
+        $sqlOutreachApplication = "INSERT INTO ApplicationOutreach (ApplicationID, ExplainInterest, PassionateIssue, PublicSpeakingExperience, AnimalRightsGroups, YourContribution, LastUpdatedBy, LastUpdated) VALUES (?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)";
 
         $stmt = mysqli_prepare($conn, $sqlOutreachApplication);
+        $stmt->bind_param("issssss", $ApplicationID, $ApplicationExplainInterest, $ApplicationPassionateIssue, $ApplicationPublicSpeakingExperience, $ApplicationAnimalRightsGroups, $ApplicationYourContribution, $ApplicationLastUpdatedBy);
+
 
         if($stmt) {
             $stmt->execute();
