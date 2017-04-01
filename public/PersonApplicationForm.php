@@ -18,7 +18,7 @@ require 'functions.php';
 if (isset($_POST['SubmitPersonApplicationForm'])) {
 
     //maybe replace this with code that points to a completly different page where it shows app pending
-     header("Location: /applicant_dashboard.php");
+     //header("Location: /applicant_dashboard.php");
 
     //Changes current account to 'applied' so that it can show 'application pending' rather than 'apply'
     $currentUser = $_SESSION['AccountID'];
@@ -107,6 +107,8 @@ $ApplicationFrontDeskTrained = "no";
         }
     }
 
+
+    $conn = new mysqli($server, $username, $password, $database);
 
 $newApplication = new Application($ApplicationPersonID, $ApplicationStatus, $ApplicationDepartmentID, $ApplicationCarpentrySkills, $ApplicationFrontDeskTrained, $ApplicationAdminAssistant);
 

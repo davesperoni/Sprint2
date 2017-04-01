@@ -20,6 +20,7 @@ if(!empty($_POST['email']) && !empty($_POST['password'])) {
     } else {
         // Enter the new user in the database
         $sql = "INSERT INTO Account (Email, Password, LastUpdatedBy, LastUpdated) VALUES (:email, :password, :updatedBy, CURRENT_TIMESTAMP)";
+
         $stmt = $connPDO->prepare($sql);
 
         $email = $_POST['email'];

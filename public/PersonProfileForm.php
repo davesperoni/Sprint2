@@ -338,6 +338,51 @@ if (isset($_POST['SubmitPersonProfileForm'])) {
             }
         }
     }
+
+    // FOR RESUME
+    $fileName = $_FILES['resumeUpload']['name'];
+    $tmpName  = $_FILES['resumeUpload']['tmp_name'];
+    $fileSize = $_FILES['resumeUpload']['size'];
+    $fileType = $_FILES['resumeUpload']['type'];
+
+    $fp      = fopen($tmpName, 'r');
+    $content = fread($fp, filesize($tmpName));
+    $content = addslashes($content);
+    fclose($fp);
+
+    $sqlInsertResume = "INSERT INTO resumeUpload (PersonID, name, size, type, content ) ".
+        "VALUES ('$PersonID', '$fileName', '$fileSize', '$fileType', '$content')";
+
+    $stmt = mysqli_prepare($conn, $sqlInsertResume);
+
+    if ($stmt) {
+
+        $stmt->execute();
+    }
+
+
+    // FOR VACCINE
+    $fileName = $_FILES['vaccineUpload']['name'];
+    $tmpName  = $_FILES['vaccineUpload']['tmp_name'];
+    $fileSize = $_FILES['vaccineUpload']['size'];
+    $fileType = $_FILES['vaccineUpload']['type'];
+
+    $fp      = fopen($tmpName, 'r');
+    $content = fread($fp, filesize($tmpName));
+    $content = addslashes($content);
+    fclose($fp);
+
+    $sqlInsertVaccine = "INSERT INTO vaccineUpload (PersonID, name, size, type, content, LastUpdatedBy, LastUpdated) ".
+        "VALUES ('$PersonID', '$fileName', '$fileSize', '$fileType', '$content', 'system', CURRENT_TIMESTAMP)";
+
+    $stmt = mysqli_prepare($conn, $sqlInsertVaccine);
+
+    if ($stmt) {
+
+        $stmt->execute();
+    }
+
+
 }
 
 ?>
@@ -371,7 +416,7 @@ if (isset($_POST['SubmitPersonProfileForm'])) {
                 <p>Thank you for your interest in The Wildlife Center of Virginia. Please fill out the form below to create a profile.</p></div>
 
             <div class="col-sm-12">
-                <form role="form" name="PersonProfileForm" method="post" action="PersonProfileForm.php">
+                <form role="form" name="PersonProfileForm" method="post" action="PersonProfileForm.php" enctype="multipart/form-data">
                     <div class="col-md-2 col-md-offset-3"><div class="form-group"><label>First Name</label> <input type="name" name="PersonFirstName" placeholder="Enter first name" class="form-control"></div></div>
                     <div class="col-md-2"><div class="form-group"><label>Middle Initial</label> <input type="name" name="PersonMiddleInitial" placeholder="Enter middle initial" class="form-control"></div></div>
                     <div class="col-md-2"><div class="form-group"><label>Last Name</label> <input type="name" name="PersonLastName" placeholder="Enter last name" class="form-control"></div></div>
@@ -831,7 +876,8 @@ if (isset($_POST['SubmitPersonProfileForm'])) {
                             </div></div>
 
                         <div class="col-md-6 col-md-offset-3"><label>If yes, please upload a copy of your paperwork.</label></div>
-                        <div class="col-md-6 col-md-offset-3"><div class="form-group"><label class="btn btn-default btn-file"><input type="file" hidden>
+                        <input type="hidden" name="MAX_FILE_SIZE" value="2000000">
+                        <div class="col-md-6 col-md-offset-3"><div class="form-group"><label class="btn btn-default btn-file"><input name="vaccineUpload" type="file" hidden>
                                 </label></div></div>
 
                         <div class="col-md-6 col-md-offset-3"><label>Do you have a valid permit to rehabilitate wildlife in the state of Virginia?</label></div>
@@ -915,7 +961,8 @@ if (isset($_POST['SubmitPersonProfileForm'])) {
                             </div></div>
 
                         <div class="col-md-6 col-md-offset-3"><label>Please attach your resume.</label></div>
-                        <div class="col-md-6 col-md-offset-3"><label class="btn btn-default btn-file"><input type="file" hidden>
+                        <input type="hidden" name="MAX_FILE_SIZE" value="2000000">
+                        <div class="col-md-6 col-md-offset-3"><label class="btn btn-default btn-file"><input name="resumeUpload" type="file" hidden>
                             </label></div>
 
                 </form>
