@@ -143,6 +143,10 @@ if (isset($_POST['SubmitPersonProfileForm'])) {
             {
                 $AvailabilityShiftID = 3;
             }
+            else
+            {
+                $AvailabilityShiftID = null;
+            }
             $newShift = new Availability(2, $PersonID, $AvailabilityShiftID, $monday);
             $AvailabilityDayID = $newShift->getAvailabilityDayID();
             $AvailabilityPersonID = $newShift->getAvailabilityPersonID();
@@ -172,6 +176,10 @@ if (isset($_POST['SubmitPersonProfileForm'])) {
             else if ($tuesday === "evening")
             {
                 $AvailabilityShiftID = 3;
+            }
+            else
+            {
+                $AvailabilityShiftID = null;
             }
             $newShift = new Availability(3, $PersonID, $AvailabilityShiftID, $tuesday);
             $AvailabilityDayID = $newShift->getAvailabilityDayID();
@@ -203,6 +211,10 @@ if (isset($_POST['SubmitPersonProfileForm'])) {
             {
                 $AvailabilityShiftID = 3;
             }
+            else
+            {
+                $AvailabilityShiftID = null;
+            }
             $newShift = new Availability(4, $PersonID, $AvailabilityShiftID, $wednesday);
             $AvailabilityDayID = $newShift->getAvailabilityDayID();
             $AvailabilityPersonID = $newShift->getAvailabilityPersonID();
@@ -232,6 +244,10 @@ if (isset($_POST['SubmitPersonProfileForm'])) {
             else if ($thursday === "evening")
             {
                 $AvailabilityShiftID = 3;
+            }
+            else
+            {
+                $AvailabilityShiftID = null;
             }
             $newShift = new Availability(5, $PersonID, $AvailabilityShiftID, $thursday);
             $AvailabilityDayID = $newShift->getAvailabilityDayID();
@@ -263,6 +279,10 @@ if (isset($_POST['SubmitPersonProfileForm'])) {
             {
                 $AvailabilityShiftID = 3;
             }
+            else
+            {
+                $AvailabilityShiftID = null;
+            }
             $newShift = new Availability(6, $PersonID, $AvailabilityShiftID, $friday);
             $AvailabilityDayID = $newShift->getAvailabilityDayID();
             $AvailabilityPersonID = $newShift->getAvailabilityPersonID();
@@ -293,6 +313,10 @@ if (isset($_POST['SubmitPersonProfileForm'])) {
             {
                 $AvailabilityShiftID = 3;
             }
+            else
+            {
+                $AvailabilityShiftID = null;
+            }
             $newShift = new Availability(7, $PersonID, $AvailabilityShiftID, $saturday);
             $AvailabilityDayID = $newShift->getAvailabilityDayID();
             $AvailabilityPersonID = $newShift->getAvailabilityPersonID();
@@ -322,6 +346,10 @@ if (isset($_POST['SubmitPersonProfileForm'])) {
             else if ($sunday === "evening")
             {
                 $AvailabilityShiftID = 3;
+            }
+            else
+            {
+                $AvailabilityShiftID = null;
             }
             $newShift = new Availability(1, $PersonID, $AvailabilityShiftID, $sunday);
             $AvailabilityDayID = $newShift->getAvailabilityDayID();
