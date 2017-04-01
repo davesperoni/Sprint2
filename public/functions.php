@@ -31,7 +31,7 @@ function isAdmin($currentAccountID)
                 return false;
             }
         }
-    mysqli_close();
+    mysqli_close($conn);
 
 }
 
@@ -60,7 +60,7 @@ function isVolunteer($currentAccountID)
             return false;
         }
     }
-    mysqli_close();
+    mysqli_close($conn);
 
 }
 
@@ -89,7 +89,7 @@ function isApplicant($currentAccountID)
             return false;
         }
     }
-    mysqli_close();
+    mysqli_close($conn);
 
 }
 
@@ -106,7 +106,7 @@ function applicantNowPending($currentAccountID)
 
     echo 'Person is now an applicant.';
 
-    mysqli_close();
+    mysqli_close($conn);
 
 }
 
