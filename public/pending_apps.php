@@ -7,7 +7,7 @@ $username = "homestead";
 $password = "secret";
 $database = "wildlifeDB";
 
-$_SESSION['btnViewApp'] = 0;
+
 
     $conn = new mysqli($server, $username, $password, $database);
 
@@ -27,13 +27,7 @@ $_SESSION['btnViewApp'] = 0;
 
     $result = mysqli_query($conn, $sqlShowApps) or die("Error " . mysqli_error($conn));
     ?>
-<?php
 
-
-
-
-
-?>
 
 
 <!DOCTYPE html>
@@ -191,27 +185,40 @@ $_SESSION['btnViewApp'] = 0;
                         </tr>
                         </thead>
             <?php
-            $applicationCounter = 0;
+
+
+
                  while($row = mysqli_fetch_array($result)) { ?>
                         <br />
                      <tbody>
                      <tr>
                 <?php
+
+
+                    // Create a new array.
+                    $array = array();
+
+
                     $FirstName = $row['FN'];
                     $MiddleInitial = $row['MI'];
                     $LastName = $row['LN'];
 
                     $PersonID = $row['PersonID'];
-               
 
 
-                $ApplicantFullName = $FirstName . " " . $MiddleInitial . " " . $LastName;
+                    $ApplicantFullName = $FirstName . " " . $MiddleInitial . " " . $LastName;
                     $DepartmentName = $row['Dept'];
                     $AppLastUpdated = $row['AppLastUpdated'];
 
                     $phpdate = strtotime( $AppLastUpdated );
-                    $AppLastUpdated = date( 'm-d-Y', $phpdate );
-                    ?>
+                    $AppLastUpdated = date( 'm-d-Y', $phpdate);
+
+                    //create an object representing a of your person info here
+                    //Pass that object into the array
+
+                    array_push($array, $yourNewPersonObject);
+
+                ?>
 
                     <td><?php echo $ApplicantFullName ?></td>
                     <td><?php echo $DepartmentName ?></td>
