@@ -16,7 +16,7 @@ date_default_timezone_set("America/New_York");
 $Date = date('Y/m/d');
 $currentTime = date("h:i:sa");
 
-if (isset($_POST['CheckIn'])) {
+if ($_POST['CheckIn']) {
 
     header("Location: /volunteer_dashboard.php");
     $volunteerID= 1;
