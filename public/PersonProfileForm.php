@@ -131,32 +131,16 @@ if (isset($_POST['SubmitPersonProfileForm'])) {
     if(!empty($_POST['monday']))
     {
         foreach($_POST['monday'] as $monday) {
-            if ($monday === "morning")
-            {
-                $AvailabilityShiftID = 1;
-            }
-            else if ($monday === "afternoon")
-            {
-                $AvailabilityShiftID = 2;
-            }
-            else if ($monday === "evening")
-            {
-                $AvailabilityShiftID = 3;
-            }
-            else
-            {
-                $AvailabilityShiftID = null;
-            }
-            $newShift = new Availability(2, $PersonID, $AvailabilityShiftID, $monday);
+
+            $newShift = new Availability(2, $PersonID, $monday);
             $AvailabilityDayID = $newShift->getAvailabilityDayID();
             $AvailabilityPersonID = $newShift->getAvailabilityPersonID();
-            $AvailabilityShiftID = $newShift->getAvailabilityShiftID();
             $AvailabilityShift = $newShift->getAvailabilityShift();
             $AvailabilityLastUpdatedBy = $newShift->getAvailabilityLastUpdatedBy();
             $AvailabilityLastUpdated = $newShift->getAvailabilityLastUpdated();
-            $sqlInsertShift = "INSERT INTO Availability (DayID, PersonID, AvailabilityShiftID, AvailableShift, LastUpdatedBy, LastUpdated) VALUES(?, ?, ?, ?, ?, CURRENT_TIMESTAMP)";
+            $sqlInsertShift = "INSERT INTO Availability (DayID, PersonID, AvailableShift, LastUpdatedBy, LastUpdated) VALUES(?, ?, ?, ?, CURRENT_TIMESTAMP)";
             $stmt = mysqli_prepare($conn, $sqlInsertShift);
-            $stmt->bind_param("iiiss", $AvailabilityDayID, $AvailabilityPersonID, $AvailabilityShiftID, $AvailabilityShift, $AvailabilityLastUpdatedBy);
+            $stmt->bind_param("iiss", $AvailabilityDayID, $AvailabilityPersonID, $AvailabilityShift, $AvailabilityLastUpdatedBy);
             if ($stmt) {
                 $stmt->execute();
             }
@@ -165,32 +149,16 @@ if (isset($_POST['SubmitPersonProfileForm'])) {
     if(!empty($_POST['tuesday']))
     {
         foreach($_POST['tuesday'] as $tuesday) {
-            if ($tuesday === "morning")
-            {
-                $AvailabilityShiftID = 1;
-            }
-            else if ($tuesday === "afternoon")
-            {
-                $AvailabilityShiftID = 2;
-            }
-            else if ($tuesday === "evening")
-            {
-                $AvailabilityShiftID = 3;
-            }
-            else
-            {
-                $AvailabilityShiftID = null;
-            }
-            $newShift = new Availability(3, $PersonID, $AvailabilityShiftID, $tuesday);
+
+            $newShift = new Availability(3, $PersonID, $tuesday);
             $AvailabilityDayID = $newShift->getAvailabilityDayID();
             $AvailabilityPersonID = $newShift->getAvailabilityPersonID();
-            $AvailabilityShiftID = $newShift->getAvailabilityShiftID();
             $AvailabilityShift = $newShift->getAvailabilityShift();
             $AvailabilityLastUpdatedBy = $newShift->getAvailabilityLastUpdatedBy();
             $AvailabilityLastUpdated = $newShift->getAvailabilityLastUpdated();
-            $sqlInsertShift = "INSERT INTO Availability (DayID, PersonID, AvailabilityShiftID, AvailableShift, LastUpdatedBy, LastUpdated) VALUES(?, ?, ?, ?, ?, CURRENT_TIMESTAMP)";
+            $sqlInsertShift = "INSERT INTO Availability (DayID, PersonID, AvailableShift, LastUpdatedBy, LastUpdated) VALUES(?, ?, ?, ?, CURRENT_TIMESTAMP)";
             $stmt = mysqli_prepare($conn, $sqlInsertShift);
-            $stmt->bind_param("iiiss", $AvailabilityDayID, $AvailabilityPersonID, $AvailabilityShiftID, $AvailabilityShift, $AvailabilityLastUpdatedBy);
+            $stmt->bind_param("iiss", $AvailabilityDayID, $AvailabilityPersonID, $AvailabilityShift, $AvailabilityLastUpdatedBy);
             if ($stmt) {
                 $stmt->execute();
             }
@@ -199,32 +167,16 @@ if (isset($_POST['SubmitPersonProfileForm'])) {
     if(!empty($_POST['wednesday']))
     {
         foreach($_POST['wednesday'] as $wednesday) {
-            if ($wednesday === "morning")
-            {
-                $AvailabilityShiftID = 1;
-            }
-            else if ($wednesday === "afternoon")
-            {
-                $AvailabilityShiftID = 2;
-            }
-            else if ($wednesday === "evening")
-            {
-                $AvailabilityShiftID = 3;
-            }
-            else
-            {
-                $AvailabilityShiftID = null;
-            }
-            $newShift = new Availability(4, $PersonID, $AvailabilityShiftID, $wednesday);
+
+            $newShift = new Availability(4, $PersonID, $wednesday);
             $AvailabilityDayID = $newShift->getAvailabilityDayID();
             $AvailabilityPersonID = $newShift->getAvailabilityPersonID();
-            $AvailabilityShiftID = $newShift->getAvailabilityShiftID();
             $AvailabilityShift = $newShift->getAvailabilityShift();
             $AvailabilityLastUpdatedBy = $newShift->getAvailabilityLastUpdatedBy();
             $AvailabilityLastUpdated = $newShift->getAvailabilityLastUpdated();
-            $sqlInsertShift = "INSERT INTO Availability (DayID, PersonID, AvailabilityShiftID, AvailableShift, LastUpdatedBy, LastUpdated) VALUES(?, ?, ?, ?, ?, CURRENT_TIMESTAMP)";
+            $sqlInsertShift = "INSERT INTO Availability (DayID, PersonID, AvailableShift, LastUpdatedBy, LastUpdated) VALUES(?, ?, ?, ?, CURRENT_TIMESTAMP)";
             $stmt = mysqli_prepare($conn, $sqlInsertShift);
-            $stmt->bind_param("iiiss", $AvailabilityDayID, $AvailabilityPersonID, $AvailabilityShiftID, $AvailabilityShift, $AvailabilityLastUpdatedBy);
+            $stmt->bind_param("iiss", $AvailabilityDayID, $AvailabilityPersonID, $AvailabilityShift, $AvailabilityLastUpdatedBy);
             if ($stmt) {
                 $stmt->execute();
             }
@@ -233,32 +185,16 @@ if (isset($_POST['SubmitPersonProfileForm'])) {
     if(!empty($_POST['thursday']))
     {
         foreach($_POST['thursday'] as $thursday) {
-            if ($thursday === "morning")
-            {
-                $AvailabilityShiftID = 1;
-            }
-            else if ($thursday === "afternoon")
-            {
-                $AvailabilityShiftID = 2;
-            }
-            else if ($thursday === "evening")
-            {
-                $AvailabilityShiftID = 3;
-            }
-            else
-            {
-                $AvailabilityShiftID = null;
-            }
-            $newShift = new Availability(5, $PersonID, $AvailabilityShiftID, $thursday);
+
+            $newShift = new Availability(5, $PersonID, $thursday);
             $AvailabilityDayID = $newShift->getAvailabilityDayID();
             $AvailabilityPersonID = $newShift->getAvailabilityPersonID();
-            $AvailabilityShiftID = $newShift->getAvailabilityShiftID();
             $AvailabilityShift = $newShift->getAvailabilityShift();
             $AvailabilityLastUpdatedBy = $newShift->getAvailabilityLastUpdatedBy();
             $AvailabilityLastUpdated = $newShift->getAvailabilityLastUpdated();
-            $sqlInsertShift = "INSERT INTO Availability (DayID, PersonID, AvailabilityShiftID, AvailableShift, LastUpdatedBy, LastUpdated) VALUES(?, ?, ?, ?, ?, CURRENT_TIMESTAMP)";
+            $sqlInsertShift = "INSERT INTO Availability (DayID, PersonID, AvailableShift, LastUpdatedBy, LastUpdated) VALUES(?, ?, ?, ?, CURRENT_TIMESTAMP)";
             $stmt = mysqli_prepare($conn, $sqlInsertShift);
-            $stmt->bind_param("iiiss", $AvailabilityDayID, $AvailabilityPersonID, $AvailabilityShiftID, $AvailabilityShift, $AvailabilityLastUpdatedBy);
+            $stmt->bind_param("iiss", $AvailabilityDayID, $AvailabilityPersonID, $AvailabilityShift, $AvailabilityLastUpdatedBy);
             if ($stmt) {
                 $stmt->execute();
             }
@@ -267,32 +203,17 @@ if (isset($_POST['SubmitPersonProfileForm'])) {
     if(!empty($_POST['friday']))
     {
         foreach($_POST['friday'] as $friday) {
-            if ($friday === "morning")
-            {
-                $AvailabilityShiftID = 1;
-            }
-            else if ($friday === "afternoon")
-            {
-                $AvailabilityShiftID = 2;
-            }
-            else if ($friday === "evening")
-            {
-                $AvailabilityShiftID = 3;
-            }
-            else
-            {
-                $AvailabilityShiftID = null;
-            }
-            $newShift = new Availability(6, $PersonID, $AvailabilityShiftID, $friday);
+            $DayID = 6;
+
+            $newShift = new Availability(6, $PersonID, $friday);
             $AvailabilityDayID = $newShift->getAvailabilityDayID();
             $AvailabilityPersonID = $newShift->getAvailabilityPersonID();
-            $AvailabilityShiftID = $newShift->getAvailabilityShiftID();
             $AvailabilityShift = $newShift->getAvailabilityShift();
             $AvailabilityLastUpdatedBy = $newShift->getAvailabilityLastUpdatedBy();
             $AvailabilityLastUpdated = $newShift->getAvailabilityLastUpdated();
-            $sqlInsertShift = "INSERT INTO Availability (DayID, PersonID, AvailabilityShiftID, AvailableShift, LastUpdatedBy, LastUpdated) VALUES(?, ?, ?, ?, ?, CURRENT_TIMESTAMP)";
+            $sqlInsertShift = "INSERT INTO Availability (DayID, PersonID, AvailableShift, LastUpdatedBy, LastUpdated) VALUES(?, ?, ?, ?, CURRENT_TIMESTAMP)";
             $stmt = mysqli_prepare($conn, $sqlInsertShift);
-            $stmt->bind_param("iiiss", $AvailabilityDayID, $AvailabilityPersonID, $AvailabilityShiftID, $AvailabilityShift, $AvailabilityLastUpdatedBy);
+            $stmt->bind_param("iiss", $AvailabilityDayID, $AvailabilityPersonID, $AvailabilityShift, $AvailabilityLastUpdatedBy);
             if ($stmt) {
                 $stmt->execute();
             }
@@ -301,34 +222,17 @@ if (isset($_POST['SubmitPersonProfileForm'])) {
     if(!empty($_POST['saturday']))
     {
         foreach($_POST['saturday'] as $saturday) {
-            if ($saturday === "morning")
-            {
-                $AvailabilityShiftID = 1;
-            }
-            else if ($saturday === "afternoon")
-            {
-                $AvailabilityShiftID = 2;
-            }
-            else if ($saturday === "evening")
-            {
-                $AvailabilityShiftID = 3;
-            }
-            else
-            {
-                $AvailabilityShiftID = null;
-            }
 
-            $newShift = new Availability(7, $PersonID, $AvailabilityShiftID, $saturday);
+            $newShift = new Availability(7, $PersonID, $saturday);
 
             $AvailabilityDayID = $newShift->getAvailabilityDayID();
             $AvailabilityPersonID = $newShift->getAvailabilityPersonID();
-            $AvailabilityShiftID = $newShift->getAvailabilityShiftID();
             $AvailabilityShift = $newShift->getAvailabilityShift();
             $AvailabilityLastUpdatedBy = $newShift->getAvailabilityLastUpdatedBy();
             $AvailabilityLastUpdated = $newShift->getAvailabilityLastUpdated();
-            $sqlInsertShift = "INSERT INTO Availability (DayID, PersonID, AvailabilityShiftID, AvailableShift, LastUpdatedBy, LastUpdated) VALUES(?, ?, ?, ?, ?, CURRENT_TIMESTAMP)";
+            $sqlInsertShift = "INSERT INTO Availability (DayID, PersonID, AvailableShift, LastUpdatedBy, LastUpdated) VALUES(?, ?, ?, ?, CURRENT_TIMESTAMP)";
             $stmt = mysqli_prepare($conn, $sqlInsertShift);
-            $stmt->bind_param("iiiss", $AvailabilityDayID, $AvailabilityPersonID, $AvailabilityShiftID, $AvailabilityShift, $AvailabilityLastUpdatedBy);
+            $stmt->bind_param("iiss", $AvailabilityDayID, $AvailabilityPersonID, $AvailabilityShift, $AvailabilityLastUpdatedBy);
             if ($stmt) {
                 $stmt->execute();
             }
@@ -337,32 +241,16 @@ if (isset($_POST['SubmitPersonProfileForm'])) {
     if(!empty($_POST['sunday']))
     {
         foreach($_POST['sunday'] as $sunday) {
-            if ($sunday === "morning")
-            {
-                $AvailabilityShiftID = 1;
-            }
-            else if ($sunday === "afternoon")
-            {
-                $AvailabilityShiftID = 2;
-            }
-            else if ($sunday === "evening")
-            {
-                $AvailabilityShiftID = 3;
-            }
-            else
-            {
-                $AvailabilityShiftID = null;
-            }
-            $newShift = new Availability(1, $PersonID, $AvailabilityShiftID, $sunday);
+
+            $newShift = new Availability(1, $PersonID, $sunday);
             $AvailabilityDayID = $newShift->getAvailabilityDayID();
             $AvailabilityPersonID = $newShift->getAvailabilityPersonID();
-            $AvailabilityShiftID = $newShift->getAvailabilityShiftID();
             $AvailabilityShift = $newShift->getAvailabilityShift();
             $AvailabilityLastUpdatedBy = $newShift->getAvailabilityLastUpdatedBy();
             $AvailabilityLastUpdated = $newShift->getAvailabilityLastUpdated();
-            $sqlInsertShift = "INSERT INTO Availability (DayID, PersonID, AvailabilityShiftID, AvailableShift, LastUpdatedBy, LastUpdated) VALUES(?, ?, ?, ?, ?, CURRENT_TIMESTAMP)";
+            $sqlInsertShift = "INSERT INTO Availability (DayID, PersonID, AvailableShift, LastUpdatedBy, LastUpdated) VALUES(?, ?, ?, ?, CURRENT_TIMESTAMP)";
             $stmt = mysqli_prepare($conn, $sqlInsertShift);
-            $stmt->bind_param("iiiss", $AvailabilityDayID, $AvailabilityPersonID, $AvailabilityShiftID, $AvailabilityShift, $AvailabilityLastUpdatedBy);
+            $stmt->bind_param("iiss", $AvailabilityDayID, $AvailabilityPersonID, $AvailabilityShift, $AvailabilityLastUpdatedBy);
             if ($stmt) {
                 $stmt->execute();
             }
@@ -463,16 +351,14 @@ if (isset($_POST['SubmitPersonProfileForm'])) {
 <div class="ibox-content-form">
     <div class="formpadding">
         <div class="row">
-            <div class="smallerheader"><h1>Create a Profile</h1>
-                <p>Thank you for your interest in The Wildlife Center of Virginia. Please fill out the form below to create a profile.</p></div>
+            <div class="smallerheader"><h1>Create A Profile</h1>
+                <p>Thank you for your interest in The Wildlife Center of Virginia. Please fill out the form below to create an account.</p></div>
 
             <div class="col-sm-12">
-                <form role="form" name="PersonProfileForm" method="post" action="PersonProfileForm.php" enctype="multipart/form-data">
+                <form role="form" name="PersonProfileForm" method="post" action="PersonProfileForm.php">
                     <div class="col-md-2 col-md-offset-3"><div class="form-group"><label>First Name</label> <input type="name" name="PersonFirstName" placeholder="Enter first name" class="form-control"></div></div>
                     <div class="col-md-2"><div class="form-group"><label>Middle Initial</label> <input type="name" name="PersonMiddleInitial" placeholder="Enter middle initial" class="form-control"></div></div>
                     <div class="col-md-2"><div class="form-group"><label>Last Name</label> <input type="name" name="PersonLastName" placeholder="Enter last name" class="form-control"></div></div>
-
-                    <div class="col-md-6 col-md-offset-3"><div class="form-group"><label>Email</label> <input type="email" name="PersonEmail" placeholder="Enter email" class="form-control"></div></div>
 
                     <div class="col-md-6 col-md-offset-3"><div class="form-group">
                             <label>Birthday</label>
@@ -529,6 +415,30 @@ if (isset($_POST['SubmitPersonProfileForm'])) {
 
                             <select name="PersonDOBYear">
                                 <option> - Year - </option>
+                                <option value="2017">2017</option>
+                                <option value="2016">2016</option>
+                                <option value="2015">2015</option>
+                                <option value="2014">2014</option>
+                                <option value="2013">2013</option>
+                                <option value="2012">2012</option>
+                                <option value="2011">2011</option>
+                                <option value="2010">2010</option>
+                                <option value="2009">2009</option>
+                                <option value="2008">2008</option>
+                                <option value="2007">2007</option>
+                                <option value="2006">2006</option>
+                                <option value="2005">2005</option>
+                                <option value="2004">2004</option>
+                                <option value="2003">2003</option>
+                                <option value="2002">2002</option>
+                                <option value="2001">2001</option>
+                                <option value="2000">2000</option>
+                                <option value="1999">1999</option>
+                                <option value="1998">1998</option>
+                                <option value="1997">1997</option>
+                                <option value="1996">1996</option>
+                                <option value="1995">1995</option>
+                                <option value="1994">1994</option>
                                 <option value="1993">1993</option>
                                 <option value="1992">1992</option>
                                 <option value="1991">1991</option>
@@ -587,9 +497,12 @@ if (isset($_POST['SubmitPersonProfileForm'])) {
 
                     <div class="col-md-6 col-md-offset-3"><div class="form-group"><label>Street Address</label> <input type="address" name="PersonStreetAddress" placeholder="Enter street address" class="form-control"></div></div>
 
-                    <div class="col-md-6 col-md-offset-3"><div class="form-group"><label>City</label> <input type="city" placeholder="Enter city" name="PersonCity" class="form-control"></div></div>
+                    <div class="col-md-3 col-md-offset-3"><div class="form-group"><label>City</label> <input type="city" placeholder="Enter city" name="PersonCity" class="form-control"></div></div>
 
-                    <div class="col-md-6 col-md-offset-3"><div class="form-group">
+                    <div class="col-md-3"><div class="form-group"><label>Zip Code</label> <input type="zip" name="PersonZipCode" placeholder="Enter zip code" class="form-control"></div></div>
+
+
+                    <div class="col-md-3 col-md-offset-3"><div class="form-group">
                             <label>State</label><br/>
                             <select name="PersonState">
                                 <option value = "VA">Virginia</option>
@@ -646,6 +559,108 @@ if (isset($_POST['SubmitPersonProfileForm'])) {
                                 <option value="WY">Wyoming</option>
                             </select>
                         </div></div>
+
+                    <div class="col-md-3"><div class="form-group">
+                            <label>County (if Virginia)</label><br/>
+                            <select name"PersonCounty">
+                            <option value="Accomack">Accomack</option>
+                            <option value="Albemarle">Albemarle</option>
+                            <option value="Alleghany">Alleghany</option>
+                            <option value="Amelia">Amelia</option>
+                            <option value="Amherst">Amherst</option>
+                            <option value="Appomattox">Appomattox</option>
+                            <option value="Arlington">Arlington</option>
+                            <option value="Augusta">Augusta</option>
+                            <option value="Bath">Bath</option>
+                            <option value="Bedford">Bedford</option>
+                            <option value="Bland">Bland</option>
+                            <option value="Botetourt">Botetourt</option>
+                            <option value="Brunswick">Brunswick</option>
+                            <option value="Buchanan">Buchanan</option>
+                            <option value="Buckingham">Buckingham</option>
+                            <option value="Campbell">Campbell</option>
+                            <option value="Caroline">Caroline</option>
+                            <option value="Carroll">Carroll</option>
+                            <option value="Charles City">Charles City</option>
+                            <option value="Charlotte">Charlotte</option>
+                            <option value="Chesterfield">Chesterfield</option>
+                            <option value="Clarke">Clarke</option>
+                            <option value="Craig">Craig</option>
+                            <option value="Culpeper">Culpeper</option>
+                            <option value="Cumberland">Cumberland</option>
+                            <option value="Dickenson">Dickenson</option>
+                            <option value="Dinwiddie">Dinwiddie</option>
+                            <option value="Essex">Essex</option>
+                            <option value="Fairfax">Fairfax</option>
+                            <option value="Fauquier">Fauquier</option>
+                            <option value="Floyd">Floyd</option>
+                            <option value="Fluvanna">Fluvanna</option>
+                            <option value="Franklin">Franklin</option>
+                            <option value="Frederick">Frederick</option>
+                            <option value="Giles">Giles</option>
+                            <option value="Gloucester">Gloucester</option>
+                            <option value="Goochland">Goochland</option>
+                            <option value="Grayson">Grayson</option>
+                            <option value="Greene">Greene</option>
+                            <option value="Greensville">Greensville</option>
+                            <option value="Halifax">Halifax</option>
+                            <option value="Hanover">Hanover</option>
+                            <option value="Henrico">Henrico</option>
+                            <option value="Henry">Henry</option>
+                            <option value="Highland">Highland</option>
+                            <option value="Isle of Wight">Isle of Wight</option>
+                            <option value="James City">James City</option>
+                            <option value="King and Queen">King and Queen</option>
+                            <option value="King George">King George</option>
+                            <option value="King William">King William</option>
+                            <option value="Lancaster">Lancaster</option>
+                            <option value="Lee">Lee</option>
+                            <option value="Loudoun">Loudoun</option>
+                            <option value="Louisa">Louisa</option>
+                            <option value="Lunenburg">Lunenburg</option>
+                            <option value="Madison">Madison</option>
+                            <option value="Mathews">Mathews</option>
+                            <option value="Mecklenburg">Mecklenburg</option>
+                            <option value="Middlesex">Middlesex</option>
+                            <option value="Montgomery">Montgomery</option>
+                            <option value="Nelson">Nelson</option>
+                            <option value="New Kent">New Kent</option>
+                            <option value="Northampton">Northampton</option>
+                            <option value="Northumberland">Northumberland</option>
+                            <option value="Nottoway">Nottoway</option>
+                            <option value="Orange">Orange</option>
+                            <option value="Page">Page</option>
+                            <option value="Patrick">Patrick</option>
+                            <option value="Pittsylvania">Pittsylvania</option>
+                            <option value="Powhatan">Powhatan</option>
+                            <option value="Prince Edward">Prince Edward</option>
+                            <option value="Prince George">Prince George</option>
+                            <option value="Prince William">Prince William</option>
+                            <option value="Pulaski">Pulaski</option>
+                            <option value="Rappahannock">Rappahannock</option>
+                            <option value="Richmond">Richmond</option>
+                            <option value="Roanoke">Roanoke</option>
+                            <option value="Rockbridge">Rockbridge</option>
+                            <option value="Rockingham">Rockingham</option>
+                            <option value="Russell">Russell</option>
+                            <option value="Scott">Scott</option>
+                            <option value="Shenandoah">Shenandoah</option>
+                            <option value="Smyth">Smyth</option>
+                            <option value="Southampton">Southampton</option>
+                            <option value="Spotsylvania">Spotsylvania</option>
+                            <option value="Stafford">Stafford</option>
+                            <option value="Surry">Surry</option>
+                            <option value="Sussex">Sussex</option>
+                            <option value="Tazewell">Tazewell</option>
+                            <option value="Warren">Warren</option>
+                            <option value="Washington">Washington</option>
+                            <option value="Westmoreland">Westmoreland</option>
+                            <option value="Wise">Wise</option>
+                            <option value="Wythe">Wythe</option>
+                            <option value="York">York</option>
+                            </select>
+                        </div></div>
+
 
                     <div class="col-md-6 col-md-offset-3"><div class="form-group">
                             <label>Country</label><br/>
@@ -903,9 +918,6 @@ if (isset($_POST['SubmitPersonProfileForm'])) {
                             </select>
                         </div></div>
 
-
-                    <div class="col-md-6 col-md-offset-3"><div class="form-group"><label>Zip Code</label> <input type="zip" name="PersonZipCode" placeholder="Enter zip code" class="form-control"></div></div>
-
                     <div class="col-md-6 col-md-offset-3"><div class="form-group"><h4>Emergency Contact Information</h4></div></div>
 
                     <div class="col-md-2 col-md-offset-3"><div class="form-group"><label>First Name</label> <input type="name" name="EmergencyFirstName" placeholder="Enter first name" class="form-control"></div></div>
@@ -927,8 +939,7 @@ if (isset($_POST['SubmitPersonProfileForm'])) {
                             </div></div>
 
                         <div class="col-md-6 col-md-offset-3"><label>If yes, please upload a copy of your paperwork.</label></div>
-                        <input type="hidden" name="MAX_FILE_SIZE" value="2000000">
-                        <div class="col-md-6 col-md-offset-3"><div class="form-group"><label class="btn btn-default btn-file"><input name="vaccineUpload" type="file" hidden>
+                        <div class="col-md-6 col-md-offset-3"><div class="form-group"><label class="btn btn-default btn-file"><input type="file" hidden>
                                 </label></div></div>
 
                         <div class="col-md-6 col-md-offset-3"><label>Do you have a valid permit to rehabilitate wildlife in the state of Virginia?</label></div>
@@ -946,70 +957,65 @@ if (isset($_POST['SubmitPersonProfileForm'])) {
                                     <option value="cat4">Cat 4</option>
                                 </select>
                             </div></div>
+                        <div class="col-md-6 col-md-offset-3"><label>If yes, please upload a copy of your paperwork.</label></div>
+                        <div class="col-md-6 col-md-offset-3"><div class="form-group"><label class="btn btn-default btn-file"><input type="file" hidden>
+                                </label></div></div>
 
-                        <div class="col-md-6 col-md-offset-3"><label>Please attach your permit.</label></div>
-                        <input type="hidden" name="MAX_FILE_SIZE" value="2000000">
-                        <div class="col-md-6 col-md-offset-3"><label class="btn btn-default btn-file"><input name="permitUpload" type="file" hidden>
-                            </label></div>
 
                         <div class="col-md-6 col-md-offset-3"><label>I'm available:</label></div>
+
                         <div class="col-md-6 col-md-offset-3" name="PersonAvailability">
-
-                            <fieldset>
-                                <label id = "monday">MONDAY</label>
-                                <label><input type = "checkbox" name = "monday[]" value = "morning">Morning</label>
-                                <label><input type = "checkbox" name = "monday[]" value = "afternoon">Afternoon</label>
-                                <label><input type = "checkbox" name = "monday[]" value = "night">Night</label>
-                            </fieldset>
-
-                            <fieldset>
-                                <label id = "tuesday">TUESDAY</label>
-                                <label><input type = "checkbox" name = "tuesday[]" value = "morning">Morning</label>
-                                <label><input type = "checkbox" name = "tuesday[]" value = "afternoon">Afternoon</label>
-                                <label><input type = "checkbox" name = "tuesday[]" value = "night">Night</label>
-                            </fieldset>
-
-                            <fieldset>
-                                <label id = "wednesday">WEDNESDAY</label>
-                                <label><input type = "checkbox" name = "wednesday[]" value = "morning">Morning</label>
-                                <label><input type = "checkbox" name = "wednesday[]" value = "afternoon">Afternoon</label>
-                                <label><input type = "checkbox" name = "wednesday[]" value = "night">Night</label>
-                            </fieldset>
-
-                            <fieldset>
-                                <label id = "thursday">THURSDAY</label>
-                                <label><input type = "checkbox" name = "thursday[]" value = "morning">Morning</label>
-                                <label><input type = "checkbox" name = "thursday[]" value = "afternoon">Afternoon</label>
-                                <label><input type = "checkbox" name = "thursday[]" value = "night">Night</label>
-                            </fieldset>
-
-                            <fieldset>
-                                <label id = "friday">FRIDAY</label>
-                                <label><input type = "checkbox" name = "friday[]" value = "morning">Morning</label>
-                                <label><input type = "checkbox" name = "friday[]" value = "afternoon">Afternoon</label>
-                                <label><input type = "checkbox" name = "friday[]" value = "night">Night</label>
-                            </fieldset>
-
-                            <fieldset>
-                                <label id = "saturday">SATURDAY</label>
-                                <label><input type = "checkbox" name = "saturday[]" value = "morning">Morning</label>
-                                <label><input type = "checkbox" name = "saturday[]" value = "afternoon">Afternoon</label>
-                                <label><input type = "checkbox" name = "saturday[]" value = "night">Night</label>
-                            </fieldset>
-
-                            <fieldset>
-                                <label id = "sunday">SUNDAY</label>
-                                <label><input type = "checkbox" name = "sunday[]" value = "morning">Morning</label>
-                                <label><input type = "checkbox" name = "sunday[]" value = "afternoon">Afternoon</label>
-                                <label><input type = "checkbox" name = "sunday[]" value = "night">Night</label>
-                            </fieldset>
-
-
-                        </div><!-- end of col -->
+                            <table>
+                                <tbody>
+                                <tr>
+                                    <td class="form_table" id = "sunday">SUNDAY</td>
+                                    <td class="form_table" class="avail_space"><input type="checkbox" name="sunday[]" value="morning"> Morning</td>
+                                    <td class="form_table" class="avail_space"><input type="checkbox" name="sunday[]" value="afternoon"> Afternoon</td>
+                                    <td class="form_table" class="avail_space"><input type="checkbox" name="sunday[]" value="night"> Night</td>
+                                </tr>
+                                <tr>
+                                    <td class="form_table" id = "monday">MONDAY</td>
+                                    <td class="form_table" class="avail_space"><input type="checkbox" name="monday[]" value="morning"> Morning</td>
+                                    <td  class="form_table"class="avail_space"><input type="checkbox" name="monday[]" value="afternoon"> Afternoon</td>
+                                    <td  class="form_table" class="avail_space"><input type="checkbox" name="monday[]" value="night" > Night</td>
+                                </tr>
+                                <tr>
+                                    <td class="form_table" id = "tuesday">TUESDAY</td>
+                                    <td class="form_table" class="avail_space"><input type="checkbox" name="tuesday[]" value="morning"> Morning</td>
+                                    <td class="form_table" class="avail_space"><input type="checkbox" name="tuesday[]" value="afternoon"> Afternoon</td>
+                                    <td class="form_table" class="avail_space"><input type="checkbox" name="tuesday[]" value="night"> Night</td>
+                                </tr>
+                                <tr>
+                                    <td class="form_table" id="wednesday" >WEDNESDAY</td>
+                                    <td class="form_table" class="avail_space"><input type="checkbox" name="wednesday[]" value="morning"> Morning</td>
+                                    <td class="form_table" class="avail_space"><input type="checkbox" name="wednesday[]" value="afternoon"> Afternoon</td>
+                                    <td class="form_table" class="avail_space"><input type="checkbox" name="wednesday[]" value="night"> Night</td>
+                                </tr>
+                                <tr>
+                                    <td class="form_table" id="thursday">THURSDAY</td>
+                                    <td class="form_table" class="avail_space"><input type="checkbox" name="thursday[]" value="morning"> Morning</td>
+                                    <td class="form_table" class="avail_space"><input type="checkbox" name="thursday[]" value="afternoon"> Afternoon</td>
+                                    <td class="form_table" class="avail_space"><input type="checkbox" name="thursday[]" value="night"> Night</td>
+                                </tr>
+                                <tr>
+                                    <td class="form_table" id="friday">FRIDAY</td>
+                                    <td class="form_table" class="avail_space"><input type="checkbox" name="friday[]" value="morning"> Morning</td>
+                                    <td class="form_table" class="avail_space"><input type="checkbox" name="friday[]" value="afternoon"> Afternoon</td>
+                                    <td class="form_table" class="avail_space"><input type="checkbox" name="friday[]" value="night"> Night</td>
+                                </tr>
+                                <tr>
+                                    <td class="form_table" id="saturday" >SATURDAY</td>
+                                    <td class="form_table" class="avail_space"><input type="checkbox" name="saturday[]" value="morning" > Morning</td>
+                                    <td class="form_table" class="avail_space"><input type="checkbox" name="saturday[]" value="afternoon"> Afternoon</td>
+                                    <td class="form_table" class="avail_space"><input type="checkbox" name="saturday[]" value="night"> Night</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
 
                         <div class="col-md-6 col-md-offset-3"><div class="form-group">
                                 <br>
-                                <label>I'd like to work volunteer:</label><br>
+                                <label>I'd like to volunteer:</label><br>
                                 <select name="season">
                                     <option value="seasonal">Seasonal</option>
                                     <option value="year">Year-Round</option>
@@ -1017,8 +1023,7 @@ if (isset($_POST['SubmitPersonProfileForm'])) {
                             </div></div>
 
                         <div class="col-md-6 col-md-offset-3"><label>Please attach your resume.</label></div>
-                        <input type="hidden" name="MAX_FILE_SIZE" value="2000000">
-                        <div class="col-md-6 col-md-offset-3"><label class="btn btn-default btn-file"><input name="resumeUpload" type="file" hidden>
+                        <div class="col-md-6 col-md-offset-3"><label class="btn btn-default btn-file" name ="resumeUpload" ><input type="file" hidden>
                             </label></div>
 
                 </form>
