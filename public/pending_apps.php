@@ -7,6 +7,8 @@ $username = "homestead";
 $password = "secret";
 $database = "wildlifeDB";
 
+
+
     $conn = new mysqli($server, $username, $password, $database);
 
     if ($conn->connect_error) {
@@ -16,7 +18,7 @@ $database = "wildlifeDB";
 
     mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
-    $sqlShowApps= "SELECT Person.FirstName AS 'FN', Person.MiddleInitial AS 'MI',
+    $sqlShowApps= "SELECT Person.PersonID AS 'PersonID', Person.FirstName AS 'FN', Person.MiddleInitial AS 'MI',
                                 Person.LastName AS 'LN', Department.DepartmentName AS 'Dept', Application.LastUpdated AS 'AppLastUpdated'
                                 FROM Person
                                 JOIN Application ON Person.PersonID = Application.PersonID
@@ -25,6 +27,8 @@ $database = "wildlifeDB";
 
     $result = mysqli_query($conn, $sqlShowApps) or die("Error " . mysqli_error($conn));
     ?>
+
+
 
 <!DOCTYPE html>
 <html>
@@ -68,7 +72,7 @@ $database = "wildlifeDB";
                 </li>
 
                 <li>
-                    <a href="#"><i class="fa fa-home"></i> <span class="nav-label">Home</span></a>
+                    <a href="admin_dashboard.php"><i class="fa fa-home"></i> <span class="nav-label">Home</span></a>
                 </li>
                 <li>
                     <a href="#"><i class="fa fa-users"></i> <span class="nav-label">Who's Here</span></a>
@@ -83,7 +87,7 @@ $database = "wildlifeDB";
                     <a href="#"><i class="fa fa-clipboard"></i> <span class="nav-label">Applications</span>  </a>
                 </li>
                 <li>
-                    <a href="#"><i class="fa fa-user"></i> <span class="nav-label">My Profile</span>  </a>
+                    <a href="profile.php"><i class="fa fa-user"></i> <span class="nav-label">My Profile</span>  </a>
                 </li>
             </ul>
         </div>
@@ -181,32 +185,51 @@ $database = "wildlifeDB";
                         </tr>
                         </thead>
             <?php
+
+
+
                  while($row = mysqli_fetch_array($result)) { ?>
                         <br />
                      <tbody>
                      <tr>
                 <?php
+
+
+                    // Create a new array.
+                    $array = array();
+
+
                     $FirstName = $row['FN'];
                     $MiddleInitial = $row['MI'];
                     $LastName = $row['LN'];
+
+                    $PersonID = $row['PersonID'];
+
 
                     $ApplicantFullName = $FirstName . " " . $MiddleInitial . " " . $LastName;
                     $DepartmentName = $row['Dept'];
                     $AppLastUpdated = $row['AppLastUpdated'];
 
                     $phpdate = strtotime( $AppLastUpdated );
-                    $AppLastUpdated = date( 'm-d-Y', $phpdate );
-                    ?>
+                    $AppLastUpdated = date( 'm-d-Y', $phpdate);
+
+                    //create an object representing a of your person info here
+                    //Pass that object into the array
+
+                    array_push($array, $yourNewPersonObject);
+
+                ?>
 
                     <td><?php echo $ApplicantFullName ?></td>
                     <td><?php echo $DepartmentName ?></td>
                     <td><?php echo $AppLastUpdated ?></td>
 
-                    <td class="viewapp">View</td>
 
-                <?php } ?>
+                         <td><button onclick = "location.href='/pendingapp_profile.php'" class="btn btn-sm btn-primary pull-right" name="ViewPersonApplication" type="submit" class="viewapp">View </button></td>
+
 
                         </tr>
+                     <?php } ?>
 
                         </tbody>
 

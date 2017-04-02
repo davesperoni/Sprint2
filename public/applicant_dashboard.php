@@ -19,6 +19,19 @@ $currentUser = $_SESSION['AccountID'];
  * Date: 3/30/2017
  * Time: 3:30 PM
  */
+$Date = date("F j, Y");
+
+$records = $connPDO->prepare('select PersonID, FirstName, MiddleInitial, LastName FROM Person where AccountID = :AccountID');
+$records->bindParam(':AccountID', $_SESSION['AccountID']);
+$records->execute();
+$results = $records->fetch(PDO::FETCH_ASSOC);
+
+if(count($results) > 0){
+    $personInformation = $results;
+}
+
+$VolunteerName = $personInformation['FirstName'] . " " . $personInformation['MiddleInitial'] . " " . $personInformation['LastName'];
+$PersonID = $personInformation['PersonID'];
 
 ?>
 
@@ -53,10 +66,9 @@ $currentUser = $_SESSION['AccountID'];
             <ul class="nav metismenu" id="side-menu">
                 <li class="nav-header">
                     <div class="dropdown profile-element"> <span>
-                            <img alt="image" class="img-circle" src="img/profile_pic.jpg" />
                              </span>
                         <a data-toggle="dropdown" class="dropdown-toggle" href="#">
-                            <span class="clear"> <span class="block m-t-xs"> <strong class="font-bold">Jane Doe</strong>
+                            <span class="clear"> <span class="block m-t-xs"> <strong class="font-bold"><?php echo $VolunteerName ?></strong>
                              </span> <span class="text-muted text-xs block">Applicant<b class="caret"></b></span> </span> </a>
                         <ul class="dropdown-menu animated fadeInRight m-t-xs">
                             <li class="divider"></li>
@@ -69,10 +81,10 @@ $currentUser = $_SESSION['AccountID'];
                 </li>
 
                 <li class = "active">
-                    <a href="#"><i class="fa fa-home"></i> <span class="nav-label">Home</span></a>
+                    <a href="applicant_dashboard.php"><i class="fa fa-home"></i> <span class="nav-label">Home</span></a>
                 </li>
                 <li>
-                    <a href="#"><i class="fa fa-clipboard"></i> <span class="nav-label">Application</span></a>
+                    <a href="PersonApplicationForm.php"><i class="fa fa-clipboard"></i> <span class="nav-label">Application</span></a>
                 </li>
             </ul>
         </div>
@@ -104,7 +116,7 @@ $currentUser = $_SESSION['AccountID'];
                     <div class = "text-overlay">
 
 
-                        <h3 class = "date">March 23, 2017</h3>
+                        <h3 class = "date"><?php echo $Date ?></h3>
                         <h1 class = "welcome-user"> HELLO APPLICANT </h1>
 
 

@@ -1,6 +1,7 @@
 <?php
 session_start();
 
+include("Classes/Shift.php");
 require 'databasePDO.php';
 require 'database.php';
 
@@ -15,11 +16,37 @@ date_default_timezone_set("America/New_York");
 $Date = date('Y/m/d');
 $currentTime = date("h:i:sa");
 
-if(isset($_POST['CheckIn'])) {
+if (isset($_POST['CheckIn'])) {
 
+    header("Location: /volunteer_dashboard.php");
+    $volunteerID= 1;
     $startTime = $currentTime;
     $shiftType = $_POST['Department'];
     $shiftDate = $Date;
+    $endTime = null;
+    $shiftHours = null;
+
+    $newShift = new Shift($volunteerID, $shiftDate, $startTime, $endTime, $shiftHours);
+
+    $volunteerID = $newShift->getShiftVolunteerID();
+    $shiftDate = $newShift->getShiftDate();
+    $startTime = $newShift->getShiftStartTime();
+    $endTime = $newShift->getShiftEndTime();
+    $shiftHours = $newShift->getShiftHours();
+    $shiftLastUpdatedBy = $newShift->getShiftLastUpdatedBy();
+    $shiftLastUpdated = $newShift->getShiftLastUpdated();
+
+
+    $sqlInsertShift = "INSERT INTO Shift (VolunteerID, ShiftDate, StartTime, EndTime, ShiftHours, LastUpdatedBy, LastUpdated) VALUES(?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)";
+    $stmt = mysqli_prepare($conn, $sqlInsertShift);
+    $stmt->bind_param("iiiiss", $volunteerID, $shiftDate, $startTime, $endTime, $shiftHours, $shiftLastUpdatedBy);
+
+
+    if ($stmt) {
+        $stmt->execute();
+    }
+
+
 
 }
 
@@ -67,12 +94,12 @@ if(isset($_POST['CheckIn'])) {
                 </li>
                
                 <li class = "active">
-                    <a href="#"><i class="fa fa-home"></i> <span class="nav-label">Home</span></a>
+                    <a href="volunteer_dashboard.php"><i class="fa fa-home"></i> <span class="nav-label">Home</span></a>
                 </li>
                 <li>
-                    <a href="#"><i class="fa fa-user"></i> <span class="nav-label">Profile</span></a></li>
+                    <a href="profile.php"><i class="fa fa-user"></i> <span class="nav-label">Profile</span></a></li>
                 <li>
-                    <a href="#"><i class="fa fa-clock-o"></i> <span class="nav-label">Update</span></a>
+                    <a href="loghoursandmiles.php"><i class="fa fa-clock-o"></i> <span class="nav-label">Update</span></a>
                 </li>
                 <li>
                     <a href="#"><i class="fa fa-cogs"></i> <span class="nav-label">Training</span>  </a>
@@ -127,7 +154,7 @@ if(isset($_POST['CheckIn'])) {
                         <div class="ibox float-e-margins">
 
                         <!-- BEGINNING OF TOP LINKS --> 
-                        <a href = "#">
+                        <a href = "profile.php">
                             <div class="ibox-title">
                              <!-- top green bar decoration --> 
                             </div>
@@ -163,7 +190,7 @@ if(isset($_POST['CheckIn'])) {
                         <div class="ibox float-e-margins">
 
                         <!-- BEGINNING OF TOP LINKS --> 
-                        <a href = "#">
+                        <a href = "loghoursandmiles.php">
                             <div class="ibox-title">
                              <!-- top green bar decoration --> 
                             </div>
@@ -195,20 +222,6 @@ if(isset($_POST['CheckIn'])) {
                         </div>
                     </div>
         </div><!-- END OF ROW 1 ICONS -->
-
-
-      <!-- <div class="row">
-       <div class = "col-sm-12">
-  <ul class="nav nav-justified">
-  	<li><a class="text-center" href="#"><i class="fa fa-tag fa-5x"></i> <br>Tags</a></li>
-    <li><a class="text-center" href="#"><i class="fa fa-bookmark fa-5x"></i> <br>Tasks</a></li>
-    <li><a class="text-center" href="#"><i class="fa fa-camera fa-5x"></i> <br>Photos</a></li>
-    <li><a class="text-center" href="#"><i class="fa fa-map-marker fa-5x"></i> <br>Tour</a></li>
-    <li><a class="text-center" href="#"><i class="fa fa-music fa-5x"></i> <br>Tunes</a></li>
-    <li><a class="text-center" href="#"><i class="fa fa-book fa-5x"></i> <br>Books</a></li>
-    <li><a class="text-center" href="#"><i class="fa fa-film fa-5x"></i> <br>Videos</a></li>
-  </ul>
-</div> --> 
 
 
 <div class="col-sm-12">
@@ -275,17 +288,17 @@ if(isset($_POST['CheckIn'])) {
                     <div class="modal-body centered">
                       <h1> <?php echo $currentTime ?> </h1>
                       <h4> SELECT VOLUNTEER TYPE </h4>
-                      <select class = "selection-box">
-                          <option value="volvo">Animal Care</option>
-                          <option value="saab">Outreach</option>
-                          <option value="mercedes">Transport</option>
-                          <option value="audi">Vet Team</option>
-                          <option value="audi">Other</option>
+                      <select name = "Department">
+                          <option value="AnimalCare">Animal Care</option>
+                          <option value="Outreach">Outreach</option>
+                          <option value="Transport">Transport</option>
+                          <option value="VetTeam">Vet Team</option>
+                          <option value="Other">Other</option>
                     </select>
                     </div>
                     <div class="modal-footer">
                              <button type="button" class="btn btn-default" data-dismiss="modal">CANCEL</button>
-                        <button type="button" class="btn-edit-form">CHECK IN</button>
+                             <button name = "CheckIn" type="submit" class="btn-edit-form">CHECK IN</button>
                     </div>
                 </div>
             </div>

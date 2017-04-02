@@ -143,6 +143,10 @@ if (isset($_POST['SubmitPersonProfileForm'])) {
             {
                 $AvailabilityShiftID = 3;
             }
+            else
+            {
+                $AvailabilityShiftID = null;
+            }
             $newShift = new Availability(2, $PersonID, $AvailabilityShiftID, $monday);
             $AvailabilityDayID = $newShift->getAvailabilityDayID();
             $AvailabilityPersonID = $newShift->getAvailabilityPersonID();
@@ -172,6 +176,10 @@ if (isset($_POST['SubmitPersonProfileForm'])) {
             else if ($tuesday === "evening")
             {
                 $AvailabilityShiftID = 3;
+            }
+            else
+            {
+                $AvailabilityShiftID = null;
             }
             $newShift = new Availability(3, $PersonID, $AvailabilityShiftID, $tuesday);
             $AvailabilityDayID = $newShift->getAvailabilityDayID();
@@ -203,6 +211,10 @@ if (isset($_POST['SubmitPersonProfileForm'])) {
             {
                 $AvailabilityShiftID = 3;
             }
+            else
+            {
+                $AvailabilityShiftID = null;
+            }
             $newShift = new Availability(4, $PersonID, $AvailabilityShiftID, $wednesday);
             $AvailabilityDayID = $newShift->getAvailabilityDayID();
             $AvailabilityPersonID = $newShift->getAvailabilityPersonID();
@@ -232,6 +244,10 @@ if (isset($_POST['SubmitPersonProfileForm'])) {
             else if ($thursday === "evening")
             {
                 $AvailabilityShiftID = 3;
+            }
+            else
+            {
+                $AvailabilityShiftID = null;
             }
             $newShift = new Availability(5, $PersonID, $AvailabilityShiftID, $thursday);
             $AvailabilityDayID = $newShift->getAvailabilityDayID();
@@ -263,6 +279,10 @@ if (isset($_POST['SubmitPersonProfileForm'])) {
             {
                 $AvailabilityShiftID = 3;
             }
+            else
+            {
+                $AvailabilityShiftID = null;
+            }
             $newShift = new Availability(6, $PersonID, $AvailabilityShiftID, $friday);
             $AvailabilityDayID = $newShift->getAvailabilityDayID();
             $AvailabilityPersonID = $newShift->getAvailabilityPersonID();
@@ -293,7 +313,13 @@ if (isset($_POST['SubmitPersonProfileForm'])) {
             {
                 $AvailabilityShiftID = 3;
             }
+            else
+            {
+                $AvailabilityShiftID = null;
+            }
+
             $newShift = new Availability(7, $PersonID, $AvailabilityShiftID, $saturday);
+
             $AvailabilityDayID = $newShift->getAvailabilityDayID();
             $AvailabilityPersonID = $newShift->getAvailabilityPersonID();
             $AvailabilityShiftID = $newShift->getAvailabilityShiftID();
@@ -322,6 +348,10 @@ if (isset($_POST['SubmitPersonProfileForm'])) {
             else if ($sunday === "evening")
             {
                 $AvailabilityShiftID = 3;
+            }
+            else
+            {
+                $AvailabilityShiftID = null;
             }
             $newShift = new Availability(1, $PersonID, $AvailabilityShiftID, $sunday);
             $AvailabilityDayID = $newShift->getAvailabilityDayID();
@@ -376,6 +406,27 @@ if (isset($_POST['SubmitPersonProfileForm'])) {
         "VALUES ('$PersonID', '$fileName', '$fileSize', '$fileType', '$content', 'system', CURRENT_TIMESTAMP)";
 
     $stmt = mysqli_prepare($conn, $sqlInsertVaccine);
+
+    if ($stmt) {
+
+        $stmt->execute();
+    }
+
+    // FOR PERMIT
+    $fileName = $_FILES['vaccineUpload']['name'];
+    $tmpName  = $_FILES['vaccineUpload']['tmp_name'];
+    $fileSize = $_FILES['vaccineUpload']['size'];
+    $fileType = $_FILES['vaccineUpload']['type'];
+
+    $fp      = fopen($tmpName, 'r');
+    $content = fread($fp, filesize($tmpName));
+    $content = addslashes($content);
+    fclose($fp);
+
+    $sqlInsertPermit = "INSERT INTO permitUpload (PersonID, name, size, type, content, LastUpdatedBy, LastUpdated) ".
+        "VALUES ('$PersonID', '$fileName', '$fileSize', '$fileType', '$content', 'system', CURRENT_TIMESTAMP)";
+
+    $stmt = mysqli_prepare($conn, $sqlInsertPermit);
 
     if ($stmt) {
 
@@ -895,6 +946,11 @@ if (isset($_POST['SubmitPersonProfileForm'])) {
                                     <option value="cat4">Cat 4</option>
                                 </select>
                             </div></div>
+
+                        <div class="col-md-6 col-md-offset-3"><label>Please attach your permit.</label></div>
+                        <input type="hidden" name="MAX_FILE_SIZE" value="2000000">
+                        <div class="col-md-6 col-md-offset-3"><label class="btn btn-default btn-file"><input name="permitUpload" type="file" hidden>
+                            </label></div>
 
                         <div class="col-md-6 col-md-offset-3"><label>I'm available:</label></div>
                         <div class="col-md-6 col-md-offset-3" name="PersonAvailability">
