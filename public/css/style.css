@@ -9457,4 +9457,10 @@ padding-right: 30px;
     display:inline-block;
     width:90px;
 }
+
+.meetadmin {
+  padding-left: 20px;
+  padding-right: 20px;
+  padding-top: 20px;
+}
 /* end of form changes on profile */
