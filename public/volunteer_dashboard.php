@@ -20,7 +20,13 @@ $currentTime = date("h:i:s", strtotime($currentTime));
 
 if (isset($_POST['CheckIn'])) {
 
-    $volunteerID= 1;
+    $sql = $connPDO->prepare('Select Volunteer.VolunteerID from Volunteer JOIN Person ON Person.PersonID = Volunteer.PersonID JOIN Account ON Person.AccountID = Account.AccountID where Account.AccountID = :AccountID');
+    $sql->bindParam(':AccountID', $_SESSION['AccountID']);
+    $sql->execute();
+
+    $result = $sql->fetch(PDO::FETCH_ASSOC);
+
+    $volunteerID= $result['VolunteerID'];
     $startTime = $currentTime;
     $shiftDate = "CURRENT_TIMESTAMP";
     $endTime = "0";
