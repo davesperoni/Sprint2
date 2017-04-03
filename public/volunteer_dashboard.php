@@ -7,24 +7,27 @@ require 'database.php';
 
 /**
  * Created by PhpStorm.
- * User: David Speroni
- * Date: 3/30/2017
+ * User: Shanika Wije
+ * Date: 4/02/2017
  * Time: 3:30 PM
  */
 
 date_default_timezone_set("America/New_York");
 $Date = date('Y/m/d');
-$currentTime = date("h:i:sa");
+$currentTime = date('h:i:s');
+$currentTime = date("h:i:s", strtotime($currentTime));
 
-if ($_POST['CheckIn']) {
 
-    header("Location: /volunteer_dashboard.php");
+if (isset($_POST['CheckIn'])) {
+
     $volunteerID= 1;
     $startTime = $currentTime;
-    $shiftType = $_POST['Department'];
-    $shiftDate = $Date;
-    $endTime = null;
-    $shiftHours = null;
+    $shiftDate = "CURRENT_TIMESTAMP";
+    $endTime = "0";
+    $shiftHours = 0;
+    $shiftDepartment = $_POST['Department'];
+
+    var_dump($shiftDepartment);
 
     $newShift = new Shift($volunteerID, $shiftDate, $startTime, $endTime, $shiftHours);
 
@@ -37,16 +40,30 @@ if ($_POST['CheckIn']) {
     $shiftLastUpdated = $newShift->getShiftLastUpdated();
 
 
-    $sqlInsertShift = "INSERT INTO Shift (VolunteerID, ShiftDate, StartTime, EndTime, ShiftHours, LastUpdatedBy, LastUpdated) VALUES(?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)";
-    $stmt = mysqli_prepare($conn, $sqlInsertShift);
-    $stmt->bind_param("iiiiss", $volunteerID, $shiftDate, $startTime, $endTime, $shiftHours, $shiftLastUpdatedBy);
+    $sqlInsertShift = "INSERT INTO Shift (VolunteerID, ShiftDate, StartTime, EndTime, ShiftHours, LastUpdatedBy, LastUpdated)
+    VALUES($volunteerID, $shiftDate, '$startTime', $endTime, $shiftHours, '$shiftLastUpdatedBy', $shiftLastUpdated)";
+    $stmt = mysqli_query($conn, $sqlInsertShift);
 
+//    $stmt->bindParam(':volunteerID', $volunteerID);
+//    $stmt->bindParam(':shiftDate', $shiftDate);
+//    $stmt->bindParam(':startTime', $startTime);
+//    $stmt->bindParam(':endTime', $endTime);
+//    $stmt->bindParam(':shiftHours', $shiftHours);
+//    $stmt->bindParam(':lastUpdatedBy', $shiftLastUpdatedBy);
+//    $stmt->bindParam(':lastUpdated', $shiftLastUpdated);
+//
+//
+//    if ($stmt)
+//    {
+//        $stmt->execute();
+//        var_dump($stmt);
+//        $message = 'Successfully checked in';
 
-    if ($stmt) {
-        $stmt->execute();
-    }
-
-
+//        //header("Location: /volunteer_dashboard.php");
+//    }
+//    else {
+//        $message = 'Issue checking in';
+//    }
 
 }
 
@@ -276,8 +293,11 @@ if ($_POST['CheckIn']) {
 
   
     <!-- Modal -->
+
         <div class="modal fade" id="checkInUser" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <form id="checkIn" method="post">
             <div class="modal-dialog" role="document">
+
                 <div class="modal-content">
                     <div class="modal-header">
                         <h3 class="modal-title" id="checkInTitle">CHECK IN TO VOLUNTEER</h3>
@@ -286,9 +306,10 @@ if ($_POST['CheckIn']) {
                         </button>
                     </div>
                     <div class="modal-body centered">
+
                       <h1> <?php echo $currentTime ?> </h1>
                       <h4> SELECT VOLUNTEER TYPE </h4>
-                      <select name = "Department">
+                      <select name="Department">
                           <option value="AnimalCare">Animal Care</option>
                           <option value="Outreach">Outreach</option>
                           <option value="Transport">Transport</option>
@@ -298,10 +319,12 @@ if ($_POST['CheckIn']) {
                     </div>
                     <div class="modal-footer">
                              <button type="button" class="btn btn-default" data-dismiss="modal">CANCEL</button>
-                             <button name = "CheckIn" type="submit" class="btn-edit-form">CHECK IN</button>
+                             <button name="CheckIn" type="submit" class="btn-edit-form">CHECK IN</button>
                     </div>
+                    </form>
                 </div>
             </div>
+
         </div>
 </body>
 </html>
