@@ -135,7 +135,7 @@ if (isset($_POST['CheckIn'])) {
 
 		        	
 					<h3 class = "date">March 23, 2017</h3>
-					<h1 class = "welcome-user"> HELLO USER </h1>
+					<h1 class = "welcome-user"> WELCOME</h1>
 
                     <!-- Button trigger modal -->
 					<a href="#" id = "checkIn" data-toggle = "modal" data-target = "#checkInUser"> CHECK IN <i class="fa fa-check-square-o"></i></a>

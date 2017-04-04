@@ -129,7 +129,7 @@ endif;
             <a class = "form-links moveDown" id = "forgot"> Forgot Your Password? </a><span>|</span><a href="createaccount.php" class = "form-links moveDown"> Become a Volunteer</a>
             </form>
 
-          <p>v3.1</p>
+          <p>v3.3 Sprint 2</p>
             </div>
         </div><!-- end of first group-->
         </div><!-- end of row--> 
