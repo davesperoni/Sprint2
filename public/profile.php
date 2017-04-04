@@ -1,3 +1,4 @@
+<?php include("Classes/Availability.php"); ?>
 <?php
 
 session_start();
@@ -25,7 +26,7 @@ if(isset($_SESSION['AccountID'])){
 
 
 <?php
-$records = $connPDO->prepare('select PersonID, FirstName, MiddleInitial, LastName, PhoneNumber FROM Person where AccountID = :AccountID');
+$records = $connPDO->prepare('select PersonID, FirstName, MiddleInitial, LastName, PhoneNumber, Allergy, PhysicalLimitation FROM Person where AccountID = :AccountID');
 $records->bindParam(':AccountID', $_SESSION['AccountID']);
 $records->execute();
 $results = $records->fetch(PDO::FETCH_ASSOC);
@@ -38,7 +39,8 @@ $VolunteerName = $personInformation['FirstName'] . " " . $personInformation['Mid
 $VolunteerPhoneNumber = $personInformation['PhoneNumber'];
 $VolunteerEmail = $user['email'];
 $PersonID = $personInformation['PersonID'];
-
+$VolunteerAllergy = $personInformation['Allergy'];
+$VolunteerPhysicalLimitation = $personInformation['PhysicalLimitation'];
 
 $records = $connPDO->prepare('select EmergencyContact.FirstName, EmergencyContact.MiddleInitial, EmergencyContact.LastName, EmergencyContact.PhoneNumber, EmergencyContact.Relationship from EmergencyContact join Person on EmergencyContact.EmergencyContactID = Person.EmergencyContactID where PersonID = :PersonID');
 $records->bindParam(':PersonID', $PersonID);
@@ -71,46 +73,234 @@ $volunteerYTDMiles = $volunteerInformation['YTDMiles'];
 $volunteerNotes = $volunteerInformation['Notes'];
 
 
+// SUNDAY
 
 $sqlSunday = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
 JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =1;";
 $resultsSunday = mysqli_query($conn, $sqlSunday);
 
+/*$sqlUpdateSunday = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
+JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =1;";
+$resultsUpdateSunday = mysqli_query($conn, $sqlUpdateSunday);*/
+
+$sqlSundayMorning = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
+JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =1 AND Availability.AvailableShift = 'morning';";
+$resultsSundayMorning = mysqli_query($conn, $sqlSundayMorning);
+
+$sqlSundayAfternoon = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
+JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =1 AND Availability.AvailableShift = 'afternoon';";
+$resultsSundayAfternoon = mysqli_query($conn, $sqlSundayAfternoon);
+
+$sqlSundayNight = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
+JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =1 AND Availability.AvailableShift = 'night';";
+$resultsSundayNight = mysqli_query($conn, $sqlSundayNight);
+
+$resultSunMorn = mysqli_fetch_row($resultsSundayMorning);
+$resultSunAfternoon = mysqli_fetch_row($resultsSundayAfternoon);
+$resultSunNight = mysqli_fetch_row($resultsSundayNight);
+
+
+// MONDAY
+
 $sqlMonday = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
 JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =2;";
 $resultsMonday = mysqli_query($conn, $sqlMonday);
 
+/*$sqlUpdateMonday = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
+JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =2;";
+$resultsUpdateMonday = mysqli_query($conn, $sqlUpdateMonday);*/
+
+$sqlMondayMorning = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
+JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =2 AND Availability.AvailableShift = 'morning';";
+$resultsMondayMorning = mysqli_query($conn, $sqlMondayMorning);
+
+$sqlMondayAfternoon = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
+JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =2 AND Availability.AvailableShift = 'afternoon';";
+$resultsMondayAfternoon = mysqli_query($conn, $sqlMondayAfternoon);
+
+$sqlMondayNight = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
+JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =2 AND Availability.AvailableShift = 'night';";
+$resultsMondayNight = mysqli_query($conn, $sqlMondayNight);
+
+$resultMonMorn = mysqli_fetch_row($resultsMondayMorning);
+$resultMonAfternoon = mysqli_fetch_row($resultsMondayAfternoon);
+$resultMonNight = mysqli_fetch_row($resultsMondayNight);
+
+// TUESDAY
 
 $sqlTuesday = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
 JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =3;";
 $resultsTuesday = mysqli_query($conn, $sqlTuesday);
 
+/*$sqlUpdateTuesday = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
+JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =3;";
+$resultsUpdateTuesday = mysqli_query($conn, $sqlUpdateTuesday);*/
+
+$sqlTuesdayMorning = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
+JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =3 AND Availability.AvailableShift = 'morning';";
+$resultsTuesdayMorning = mysqli_query($conn, $sqlTuesdayMorning);
+
+$sqlTuesdayAfternoon = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
+JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =3 AND Availability.AvailableShift = 'afternoon';";
+$resultsTuesdayAfternoon = mysqli_query($conn, $sqlTuesdayAfternoon);
+
+$sqlTuesdayNight = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
+JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =3 AND Availability.AvailableShift = 'night';";
+$resultsTuesdayNight = mysqli_query($conn, $sqlTuesdayNight);
+
+$resultTueMorn = mysqli_fetch_row($resultsTuesdayMorning);
+$resultTueAfternoon = mysqli_fetch_row($resultsTuesdayAfternoon);
+$resultTueNight = mysqli_fetch_row($resultsTuesdayNight);
+
+
+// WEDNESDAY
+
 $sqlWednesday = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
 JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =4;";
 $resultsWednesday = mysqli_query($conn, $sqlWednesday);
+
+/*$sqlUpdateWednesday = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
+JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =4;";
+$resultsUpdateWednesday = mysqli_query($conn, $sqlUpdateWednesday);*/
+
+$sqlWednesdayMorning = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
+JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =4 AND Availability.AvailableShift = 'morning';";
+$resultsWednesdayMorning = mysqli_query($conn, $sqlWednesdayMorning);
+
+$sqlWednesdayAfternoon = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
+JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =4 AND Availability.AvailableShift = 'afternoon';";
+$resultsWednesdayAfternoon = mysqli_query($conn, $sqlWednesdayAfternoon);
+
+$sqlWednesdayNight = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
+JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =4 AND Availability.AvailableShift = 'night';";
+$resultsWednesdayNight = mysqli_query($conn, $sqlWednesdayNight);
+
+$resultWedMorn = mysqli_fetch_row($resultsWednesdayMorning);
+$resultWedAfternoon = mysqli_fetch_row($resultsWednesdayAfternoon);
+$resultWedNight = mysqli_fetch_row($resultsWednesdayNight);
+
+// THURSDAY
 
 $sqlThursday = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
 JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =5;";
 $resultsThursday = mysqli_query($conn, $sqlThursday);
 
+/*$sqlUpdateThursday = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
+JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =5;";
+$resultsUpdateThursday = mysqli_query($conn, $sqlUpdateThursday);*/
+
+$sqlThursdayMorning = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
+JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =5 AND Availability.AvailableShift = 'morning';";
+$resultsThursdayMorning = mysqli_query($conn, $sqlThursdayMorning);
+
+$sqlThursdayAfternoon = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
+JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =5 AND Availability.AvailableShift = 'afternoon';";
+$resultsThursdayAfternoon = mysqli_query($conn, $sqlThursdayAfternoon);
+
+$sqlThursdayNight = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
+JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =5 AND Availability.AvailableShift = 'night';";
+$resultsThursdayNight = mysqli_query($conn, $sqlThursdayNight);
+
+$resultThurMorn = mysqli_fetch_row($resultsThursdayMorning);
+$resultThurAfternoon = mysqli_fetch_row($resultsThursdayAfternoon);
+$resultThurNight = mysqli_fetch_row($resultsThursdayNight);
+
+// FRIDAY
+
 $sqlFriday = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
 JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =6;";
 $resultsFriday = mysqli_query($conn, $sqlFriday);
+
+/*$sqlUpdateFriday = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
+JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =6;";
+$resultsUpdateFriday = mysqli_query($conn, $sqlUpdateFriday);*/
+
+$sqlFridayMorning = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
+JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =6 AND Availability.AvailableShift = 'morning';";
+$resultsFridayMorning = mysqli_query($conn, $sqlFridayMorning);
+
+$sqlFridayAfternoon = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
+JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =6 AND Availability.AvailableShift = 'afternoon';";
+$resultsFridayAfternoon = mysqli_query($conn, $sqlFridayAfternoon);
+
+$sqlFridayNight = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
+JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =6 AND Availability.AvailableShift = 'night';";
+$resultsFridayNight = mysqli_query($conn, $sqlFridayNight);
+
+$resultFriMorn = mysqli_fetch_row($resultsFridayMorning);
+$resultFriAfternoon = mysqli_fetch_row($resultsFridayAfternoon);
+$resultFriNight = mysqli_fetch_row($resultsFridayNight);
+
+// SATURDAY
 
 $sqlSaturday = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
 JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =7;";
 $resultsSaturday = mysqli_query($conn, $sqlSaturday);
 
+/*$sqlUpdateSaturday = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
+JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =7;";
+$resultsUpdateSaturday = mysqli_query($conn, $sqlUpdateSaturday);*/
+
+$sqlSaturdayMorning = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
+JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =7 AND Availability.AvailableShift = 'morning';";
+$resultsSaturdayMorning = mysqli_query($conn, $sqlSaturdayMorning);
+
+$sqlSaturdayAfternoon = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
+JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =7 AND Availability.AvailableShift = 'afternoon';";
+$resultsSaturdayAfternoon = mysqli_query($conn, $sqlSaturdayAfternoon);
+
+$sqlSaturdayNight = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
+JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =7 AND Availability.AvailableShift = 'night';";
+$resultsSaturdayNight = mysqli_query($conn, $sqlSaturdayNight);
+
+$resultSatMorn = mysqli_fetch_row($resultsSaturdayMorning);
+$resultSatAfternoon = mysqli_fetch_row($resultsSaturdayAfternoon);
+$resultSatNight = mysqli_fetch_row($resultsSaturdayNight);
+
+//if (isset($_POST['uploadProfilePicture'])) {
+//
+//
+//// FOR PERMIT
+//    $fileName = $_FILES['pictureUpload']['name'];
+//    $tmpName = $_FILES['pictureUpload']['tmp_name'];
+//    $fileSize = $_FILES['pictureUpload']['size'];
+//    $fileType = $_FILES['pictureUpload']['type'];
+//
+//    $fp = fopen($tmpName, 'r');
+//    $content = fread($fp, filesize($tmpName));
+//    $content = addslashes($content);
+//    fclose($fp);
+//
+//    $sqlInsertPicture = "INSERT INTO profilePicUpload (PersonID, name, size, type, content, LastUpdatedBy, LastUpdated) " .
+//        "VALUES ('$PersonID', '$fileName', '$fileSize', '$fileType', '$content', 'System', CURRENT_TIMESTAMP)";
+//
+//    $stmt = mysqli_prepare($conn, $sqlInsertPicture);
+//
+//    if ($stmt) {
+//
+//        $stmt->execute();
+//    }
+//
+//
+//}
+
+
+
  if (isset($_POST['UpdateProfile'])) {
+
 
      $updateVolunteerPhoneNumber = $_POST['updateVolunteerPhoneNumber'];
      $updateVolunteerEmail = $_POST['updateVolunteerEmail'];
-     $updateVolunteerNotes = $_POST['updateVolunteerNotes'];
+     $updateVolunteerAllergy = $_POST['updateVolunteerAllergies'];
+     $updateVolunteerPhysicalLimitation = $_POST['updateVolunteerPhysicalLimitations'];
 
-     $sqlPersonInformation = "UPDATE Person p SET p.PhoneNumber = :phoneNumber where p.PersonID = :PersonID";
+
+     $sqlPersonInformation = "UPDATE Person p SET p.PhoneNumber = :phoneNumber, p.Allergy = :allergy, p.PhysicalLimitation = :physicalLimitation where p.PersonID = :PersonID";
      $stmt = $connPDO->prepare($sqlPersonInformation);
 
      $stmt->bindParam(':phoneNumber', $updateVolunteerPhoneNumber);
+     $stmt->bindParam(':allergy', $updateVolunteerAllergy);
+     $stmt->bindParam(':physicalLimitation', $updateVolunteerPhysicalLimitation);
      $stmt->bindParam(':PersonID', $PersonID);
 
 
@@ -130,18 +320,6 @@ $resultsSaturday = mysqli_query($conn, $sqlSaturday);
      } else {
      }
 
-     $sqlVolunteerInformation = "UPDATE Volunteer v join Person p on v.PersonID = p.PersonID SET v.Notes = :notes where p.PersonID = :PersonID";
-     $stmt = $connPDO->prepare($sqlVolunteerInformation);
-
-     $stmt->bindParam(':notes', $updateVolunteerNotes);
-     $stmt->bindParam(':PersonID', $PersonID);
-
-     if ($stmt->execute()) {
-
-     } else {
-     }
-
-
      $updateEmergencyFirstName = $_POST['updateEmergencyFirstName'];
      $updateEmergencyMiddleInitial = $_POST['updateEmergencyMiddleInitial'];
      $updateEmergencyLastName = $_POST['updateEmergencyLastName'];
@@ -156,7 +334,7 @@ $resultsSaturday = mysqli_query($conn, $sqlSaturday);
 
      $stmt->bindParam(':firstName', $updateEmergencyFirstName);
      $stmt->bindParam(':middleInitial', $updateEmergencyMiddleInitial);
-     $stmt->bindParam(':lastName', $updateEmergencyFirstName);
+     $stmt->bindParam(':lastName', $updateEmergencyLastName);
      $stmt->bindParam(':phoneNumber', $updateEmergencyPhoneNumber);
      $stmt->bindParam(':relationship', $updateEmergencyRelationship);
      $stmt->bindParam(':PersonID', $PersonID);
@@ -169,8 +347,149 @@ $resultsSaturday = mysqli_query($conn, $sqlSaturday);
      }
 
 
+    $sqlDeleteAvailability = "delete from Availability where PersonID = :PersonID";
 
- }
+     $stmt = $connPDO->prepare($sqlDeleteAvailability);
+     $stmt->bindParam(':PersonID', $PersonID);
+
+     if ($stmt->execute()) {
+
+     } else {
+     }
+
+
+     if(!empty($_POST['updateMonday']))
+     {
+         foreach($_POST['updateMonday'] as $updateMonday) {
+
+             $newShift = new Availability(2, $PersonID, $updateMonday);
+             $AvailabilityDayID = $newShift->getAvailabilityDayID();
+             $AvailabilityPersonID = $newShift->getAvailabilityPersonID();
+             $AvailabilityShift = $newShift->getAvailabilityShift();
+             $AvailabilityLastUpdatedBy = $newShift->getAvailabilityLastUpdatedBy();
+             $AvailabilityLastUpdated = $newShift->getAvailabilityLastUpdated();
+             $sqlInsertShift = "INSERT INTO Availability (DayID, PersonID, AvailableShift, LastUpdatedBy, LastUpdated) VALUES(?, ?, ?, ?, CURRENT_TIMESTAMP)";
+             $stmt = mysqli_prepare($conn, $sqlInsertShift);
+             $stmt->bind_param("iiss", $AvailabilityDayID, $AvailabilityPersonID, $AvailabilityShift, $AvailabilityLastUpdatedBy);
+             if ($stmt) {
+                 $stmt->execute();
+             }
+         }
+     }
+     if(!empty($_POST['updateTuesday']))
+     {
+         foreach($_POST['updateTuesday'] as $updateTuesday) {
+
+             $newShift = new Availability(3, $PersonID, $updateTuesday);
+             $AvailabilityDayID = $newShift->getAvailabilityDayID();
+             $AvailabilityPersonID = $newShift->getAvailabilityPersonID();
+             $AvailabilityShift = $newShift->getAvailabilityShift();
+             $AvailabilityLastUpdatedBy = $newShift->getAvailabilityLastUpdatedBy();
+             $AvailabilityLastUpdated = $newShift->getAvailabilityLastUpdated();
+             $sqlInsertShift = "INSERT INTO Availability (DayID, PersonID, AvailableShift, LastUpdatedBy, LastUpdated) VALUES(?, ?, ?, ?, CURRENT_TIMESTAMP)";
+             $stmt = mysqli_prepare($conn, $sqlInsertShift);
+             $stmt->bind_param("iiss", $AvailabilityDayID, $AvailabilityPersonID, $AvailabilityShift, $AvailabilityLastUpdatedBy);
+             if ($stmt) {
+                 $stmt->execute();
+             }
+         }
+     }
+     if(!empty($_POST['updateWednesday']))
+     {
+         foreach($_POST['updateWednesday'] as $updateWednesday) {
+
+             $newShift = new Availability(4, $PersonID, $updateWednesday);
+             $AvailabilityDayID = $newShift->getAvailabilityDayID();
+             $AvailabilityPersonID = $newShift->getAvailabilityPersonID();
+             $AvailabilityShift = $newShift->getAvailabilityShift();
+             $AvailabilityLastUpdatedBy = $newShift->getAvailabilityLastUpdatedBy();
+             $AvailabilityLastUpdated = $newShift->getAvailabilityLastUpdated();
+             $sqlInsertShift = "INSERT INTO Availability (DayID, PersonID, AvailableShift, LastUpdatedBy, LastUpdated) VALUES(?, ?, ?, ?, CURRENT_TIMESTAMP)";
+             $stmt = mysqli_prepare($conn, $sqlInsertShift);
+             $stmt->bind_param("iiss", $AvailabilityDayID, $AvailabilityPersonID, $AvailabilityShift, $AvailabilityLastUpdatedBy);
+             if ($stmt) {
+                 $stmt->execute();
+             }
+         }
+     }
+     if(!empty($_POST['updateThursday']))
+     {
+         foreach($_POST['updateThursday'] as $updateThursday) {
+
+             $newShift = new Availability(5, $PersonID, $updateThursday);
+             $AvailabilityDayID = $newShift->getAvailabilityDayID();
+             $AvailabilityPersonID = $newShift->getAvailabilityPersonID();
+             $AvailabilityShift = $newShift->getAvailabilityShift();
+             $AvailabilityLastUpdatedBy = $newShift->getAvailabilityLastUpdatedBy();
+             $AvailabilityLastUpdated = $newShift->getAvailabilityLastUpdated();
+             $sqlInsertShift = "INSERT INTO Availability (DayID, PersonID, AvailableShift, LastUpdatedBy, LastUpdated) VALUES(?, ?, ?, ?, CURRENT_TIMESTAMP)";
+             $stmt = mysqli_prepare($conn, $sqlInsertShift);
+             $stmt->bind_param("iiss", $AvailabilityDayID, $AvailabilityPersonID, $AvailabilityShift, $AvailabilityLastUpdatedBy);
+             if ($stmt) {
+                 $stmt->execute();
+             }
+         }
+     }
+     if(!empty($_POST['updateFriday']))
+     {
+         foreach($_POST['updateFriday'] as $updateFriday) {
+             $DayID = 6;
+
+             $newShift = new Availability(6, $PersonID, $updateFriday);
+             $AvailabilityDayID = $newShift->getAvailabilityDayID();
+             $AvailabilityPersonID = $newShift->getAvailabilityPersonID();
+             $AvailabilityShift = $newShift->getAvailabilityShift();
+             $AvailabilityLastUpdatedBy = $newShift->getAvailabilityLastUpdatedBy();
+             $AvailabilityLastUpdated = $newShift->getAvailabilityLastUpdated();
+             $sqlInsertShift = "INSERT INTO Availability (DayID, PersonID, AvailableShift, LastUpdatedBy, LastUpdated) VALUES(?, ?, ?, ?, CURRENT_TIMESTAMP)";
+             $stmt = mysqli_prepare($conn, $sqlInsertShift);
+             $stmt->bind_param("iiss", $AvailabilityDayID, $AvailabilityPersonID, $AvailabilityShift, $AvailabilityLastUpdatedBy);
+             if ($stmt) {
+                 $stmt->execute();
+             }
+         }
+     }
+     if(!empty($_POST['updateSaturday']))
+     {
+         foreach($_POST['updateSaturday'] as $updateSaturday) {
+
+             $newShift = new Availability(7, $PersonID, $updateSaturday);
+
+             $AvailabilityDayID = $newShift->getAvailabilityDayID();
+             $AvailabilityPersonID = $newShift->getAvailabilityPersonID();
+             $AvailabilityShift = $newShift->getAvailabilityShift();
+             $AvailabilityLastUpdatedBy = $newShift->getAvailabilityLastUpdatedBy();
+             $AvailabilityLastUpdated = $newShift->getAvailabilityLastUpdated();
+             $sqlInsertShift = "INSERT INTO Availability (DayID, PersonID, AvailableShift, LastUpdatedBy, LastUpdated) VALUES(?, ?, ?, ?, CURRENT_TIMESTAMP)";
+             $stmt = mysqli_prepare($conn, $sqlInsertShift);
+             $stmt->bind_param("iiss", $AvailabilityDayID, $AvailabilityPersonID, $AvailabilityShift, $AvailabilityLastUpdatedBy);
+             if ($stmt) {
+                 $stmt->execute();
+             }
+         }
+     }
+     if(!empty($_POST['updateSunday']))
+     {
+         foreach($_POST['updateSunday'] as $updateSunday) {
+
+             $newShift = new Availability(1, $PersonID, $updateSunday);
+             $AvailabilityDayID = $newShift->getAvailabilityDayID();
+             $AvailabilityPersonID = $newShift->getAvailabilityPersonID();
+             $AvailabilityShift = $newShift->getAvailabilityShift();
+             $AvailabilityLastUpdatedBy = $newShift->getAvailabilityLastUpdatedBy();
+             $AvailabilityLastUpdated = $newShift->getAvailabilityLastUpdated();
+             $sqlInsertShift = "INSERT INTO Availability (DayID, PersonID, AvailableShift, LastUpdatedBy, LastUpdated) VALUES(?, ?, ?, ?, CURRENT_TIMESTAMP)";
+             $stmt = mysqli_prepare($conn, $sqlInsertShift);
+             $stmt->bind_param("iiss", $AvailabilityDayID, $AvailabilityPersonID, $AvailabilityShift, $AvailabilityLastUpdatedBy);
+             if ($stmt) {
+                 $stmt->execute();
+             }
+         }
+     }
+
+
+
+     }
 
 
 
@@ -282,6 +601,7 @@ $resultsSaturday = mysqli_query($conn, $sqlSaturday);
 
                                         <!-- Modal -->
                                         <div class="modal fade" id="profilePicture" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                            <form id ="changeProfilePictureForm" method = "post">
                                             <div class="modal-dialog" role="document">
                                                 <div class="modal-content">
                                                     <div class="modal-header">
@@ -290,10 +610,11 @@ $resultsSaturday = mysqli_query($conn, $sqlSaturday);
                                                             <span aria-hidden="true">&times;</span>
                                                         </button>
                                                     </div>
+
                                                     <div class="modal-body btmSpace">
 
                                                         <div class="fileinput fileinput-new pull-left moveDown" data-provides="fileinput">
-                                                            <span class="btn btn-default btn-file"><input type="file"></span>
+                                                            <span class="btn btn-default btn-file" name ="pictureUpload"><input type="file"></span>
                                                             <span class="fileinput-filename"></span>
                                                         </div>
 
@@ -301,12 +622,15 @@ $resultsSaturday = mysqli_query($conn, $sqlSaturday);
                                                     </div>
                                                     <div class="modal-footer">
                                                         <button type="button" class="btn btn-default" data-dismiss="modal">CANCEL</button>
-                                                        <button type="button" class="btn-edit-form">UPLOAD</button>
+                                                        <button type="submit" name ="uploadProfilePicture" class="btn-edit-form">UPLOAD</button>
                                                     </div>
+                                            </form>
 
-                                                </div>
+
+                                        </div>
                                             </div>
                                         </div>
+
 
                                     </div>
                                 </div>
@@ -331,7 +655,6 @@ $resultsSaturday = mysqli_query($conn, $sqlSaturday);
                                                     <h2 class = "form-title"> PERSONAL INFORMATION </h2>
                                                     <label>Phone:</label> <input type = "text" name = "updateVolunteerPhoneNumber" size = "12" value = <?php echo $VolunteerPhoneNumber ?>><br>
                                                     <label>Email:</label> <input type = "email" name ="updateVolunteerEmail" value = <?php echo $VolunteerEmail ?>><br>
-                                                    Personal Notes:<br><textarea rows="4" cols="50" name = "updateVolunteerNotes" value = <?php echo $volunteerNotes ?>> </textarea>
                                                     <hr class = "pop-up-form">
                                                     <h2 class = "form-title">EMERGENCY CONTACT INFO
                                                     </h2>
@@ -355,6 +678,13 @@ $resultsSaturday = mysqli_query($conn, $sqlSaturday);
                                                         <label class = "modal-label">Relationship:</label> <input type = "text" name = "updateEmergencyRelationship" value = <?php echo $EmergencyContactRelationship ?>><br>
                                                     </div>
                                                     <div>
+                                                        <div>
+                                                        Allergies:<br><textarea rows="4" cols="70" name = "updateVolunteerAllergies"> <?php echo $VolunteerAllergy ?></textarea>
+                                                        </div>
+
+                                                        <div>
+                                                        Physical Limitation:<br><textarea rows="4" cols="70" name = "updateVolunteerPhysicalLimitations" ><?php echo $VolunteerPhysicalLimitation ?></textarea>
+                                                        </div>
                                                         <hr class = "pop-up-form">
                                                     </div>
 
@@ -366,59 +696,120 @@ $resultsSaturday = mysqli_query($conn, $sqlSaturday);
                                                             <td class = "avail_space" >
 
 
-                                                                <input type="checkbox" name="sunday[]" value="morning"> Morning</td>
+                                                                <?php echo '<input type="checkbox" name="updateSunday[]" value="morning"'; ?>
+                                                                <?php if($resultSunMorn != null) { echo 'checked="checked"'; } else {echo ' ';} ?><?php echo '>Morning</td>' ?>
 
                                                             <td class = "avail_space">
-                                                                <input type="checkbox" name="sunday[]" value="afternoon"> Afternoon  </td>
+                                                                <?php echo '<input type="checkbox" name="updateSunday[]" value="afternoon"'; ?>
+                                                                <?php  if($resultSunAfternoon != null) { echo 'checked="checked"'; } else { echo ' ';}?> <?php echo '>Afternoon</td>' ?>
 
                                                             <td class = "avail_space">
-                                                                <input type="checkbox" name="sunday[]" value="night"> Night </td>
-
+                                                                <?php  echo '<input type="checkbox" name="updateMonday[]" value="night"'; ?>
+                                                                <?php if($resultSunNight != null) { echo 'checked="checked"'; } else { echo ' ';} ?><?php echo '>Night</td>' ?>
                                                         </tr>
 
                                                         <tr>
                                                             <td class = "avail_space table-date-title"> MONDAY </td>
-                                                            <td class = "avail_space">  <input type="checkbox" name="monday[]" value="morning"> Morning</td> </td>
-                                                            <td class = "avail_space"> <input type="checkbox" name="monday[]" value="afternoon"> Afternoon</td> </td>
-                                                            <td class = "avail_space"><input type="checkbox" name="monday[]" value="night"> Night</td> </td>
+                                                            <td class = "avail_space" >
+
+
+                                                                <?php echo '<input type="checkbox" name="updateMonday[]" value="morning"'; ?>
+                                                                <?php if($resultMonMorn != null) { echo 'checked="checked"'; } else {echo ' ';} ?><?php echo '>Morning</td>' ?>
+
+                                                            <td class = "avail_space">
+                                                                <?php echo '<input type="checkbox" name="updateMonday[]" value="afternoon"'; ?>
+                                                                <?php  if($resultMonAfternoon != null) { echo 'checked="checked"'; } else { echo ' ';}?> <?php echo '>Afternoon</td>' ?>
+
+                                                            <td class = "avail_space">
+                                                                <?php  echo '<input type="checkbox" name="updateMonday[]" value="night"'; ?>
+                                                                <?php if($resultMonNight != null) { echo 'checked="checked"'; } else { echo ' ';} ?><?php echo '>Night</td>' ?>
                                                         </tr>
 
                                                         <tr>
                                                             <td class = "avail_space table-date-title"> TUESDAY </td>
-                                                            <td class = "avail_space">  <input type="checkbox" name="tuesday[]" value="morning"> Morning</td> </td>
-                                                            <td class = "avail_space"> <input type="checkbox" name="tuesday[]" value="afternoon"> Afternoon</td> </td>
-                                                            <td class = "avail_space"><input type="checkbox" name="tuesday[]" value="night"> Night</td> </td>
+                                                            <td class = "avail_space" >
+
+
+                                                                <?php echo '<input type="checkbox" name="updateTuesday[]" value="morning"'; ?>
+                                                                <?php if($resultTueMorn != null) { echo 'checked="checked"'; } else {echo ' ';} ?><?php echo '>Morning</td>' ?>
+
+                                                            <td class = "avail_space">
+                                                                <?php echo '<input type="checkbox" name="updateTuesday[]" value="afternoon"'; ?>
+                                                                <?php  if($resultTueAfternoon != null) { echo 'checked="checked"'; } else { echo ' ';}?> <?php echo '>Afternoon</td>' ?>
+
+                                                            <td class = "avail_space">
+                                                                <?php  echo '<input type="checkbox" name="updateTuesday[]" value="night"'; ?>
+                                                                <?php if($resultTueNight != null) { echo 'checked="checked"'; } else { echo ' ';} ?><?php echo '>Night</td>' ?>
                                                         </tr>
 
                                                         <tr>
                                                             <td class = "avail_space table-date-title"> WEDNESDAY </td>
-                                                            <td class = "avail_space">  <input type="checkbox" name="wednesday[]" value="morning"> Morning</td> </td>
-                                                            <td class = "avail_space"> <input type="checkbox" name="wednesday[]" value="afternoon"> Afternoon</td> </td>
-                                                            <td class = "avail_space"><input type="checkbox" name="wednesday[]" value="night"> Night</td> </td>
+                                                            <td class = "avail_space" >
+
+
+                                                                <?php echo '<input type="checkbox" name="updateWednesday[]" value="morning"'; ?>
+                                                                <?php if($resultWedMorn != null) { echo 'checked="checked"'; } else {echo ' ';} ?><?php echo '>Morning</td>' ?>
+
+                                                            <td class = "avail_space">
+                                                                <?php echo '<input type="checkbox" name="updateWednesday[]" value="afternoon"'; ?>
+                                                                <?php  if($resultWedAfternoon != null) { echo 'checked="checked"'; } else { echo ' ';}?> <?php echo '>Afternoon</td>' ?>
+
+                                                            <td class = "avail_space">
+                                                                <?php  echo '<input type="checkbox" name="updateWednesday[]" value="night"'; ?>
+                                                                <?php if($resultWedNight != null) { echo 'checked="checked"'; } else { echo ' ';} ?><?php echo '>Night</td>' ?>
                                                         </tr>
 
                                                         <tr>
                                                             <td class = "avail_space table-date-title"> THURSDAY </td>
-                                                            <td class = "avail_space">  <input type="checkbox" name="thursday[]" value="morning"> Morning</td> </td>
-                                                            <td class = "avail_space"> <input type="checkbox" name="thursday[]" value="afternoon"> Afternoon</td> </td>
-                                                            <td class = "avail_space"><input type="checkbox" name="thursday[]" value="night"> Night</td> </td>
+                                                            <td class = "avail_space" >
+
+
+                                                                <?php echo '<input type="checkbox" name="updateThursday[]" value="morning"'; ?>
+                                                                <?php if($resultThurMorn != null) { echo 'checked="checked"'; } else {echo ' ';} ?><?php echo '>Morning</td>' ?>
+
+                                                            <td class = "avail_space">
+                                                                <?php echo '<input type="checkbox" name="updateThursday[]" value="afternoon"'; ?>
+                                                                <?php  if($resultThurAfternoon != null) { echo 'checked="checked"'; } else { echo ' ';}?> <?php echo '>Afternoon</td>' ?>
+
+                                                            <td class = "avail_space">
+                                                                <?php  echo '<input type="checkbox" name="updateThursday[]" value="night"'; ?>
+                                                                <?php if($resultThurNight != null) { echo 'checked="checked"'; } else { echo ' ';} ?><?php echo '>Night</td>' ?>
                                                         </tr>
 
                                                         <tr>
                                                             <td class = "avail_space table-date-title"> FRIDAY </td>
-                                                            <td class = "avail_space">  <input type="checkbox" name="friday[]" value="morning"> Morning</td> </td>
-                                                            <td class = "avail_space"> <input type="checkbox" name="friday[]" value="afternoon"> Afternoon</td> </td>
-                                                            <td class = "avail_space"><input type="checkbox" name="friday[]" value="night"> Night</td> </td>
+                                                            <td class = "avail_space" >
+
+
+                                                                <?php echo '<input type="checkbox" name="updateFriday[]" value="morning"'; ?>
+                                                                <?php if($resultFriMorn != null) { echo 'checked="checked"'; } else {echo ' ';} ?><?php echo '>Morning</td>' ?>
+
+                                                            <td class = "avail_space">
+                                                                <?php echo '<input type="checkbox" name="updateFriday[]" value="afternoon"'; ?>
+                                                                <?php  if($resultFriAfternoon != null) { echo 'checked="checked"'; } else { echo ' ';}?> <?php echo '>Afternoon</td>' ?>
+
+                                                            <td class = "avail_space">
+                                                                <?php  echo '<input type="checkbox" name="updateFriday[]" value="night"'; ?>
+                                                                <?php if($resultFriNight != null) { echo 'checked="checked"'; } else { echo ' ';} ?><?php echo '>Night</td>' ?>
                                                         </tr>
 
 
                                                         <tr>
                                                             <td class = "avail_space table-date-title"> SATURDAY </td>
-                                                            <td class = "avail_space">  <input type="checkbox" name="saturday[]" value="morning"> Morning</td> </td>
-                                                            <td class = "avail_space"> <input type="checkbox" name="saturday[]" value="afternoon"> Afternoon</td> </td>
-                                                            <td class = "avail_space"><input type="checkbox" name="saturday[]" value="night"> Night</td> </td>
-                                                        </tr>
+                                                            <td class = "avail_space" >
 
+
+                                                                <?php echo '<input type="checkbox" name="updateSaturday[]" value="morning"'; ?>
+                                                                <?php if($resultSatMorn != null) { echo 'checked="checked"'; } else {echo ' ';} ?><?php echo '>Morning</td>' ?>
+
+                                                            <td class = "avail_space">
+                                                                <?php echo '<input type="checkbox" name="updateSaturday[]" value="afternoon"'; ?>
+                                                                <?php  if($resultSatAfternoon != null) { echo 'checked="checked"'; } else { echo ' ';}?> <?php echo '>Afternoon</td>' ?>
+
+                                                            <td class = "avail_space">
+                                                                <?php  echo '<input type="checkbox" name="updateSaturday[]" value="night"'; ?>
+                                                                <?php if($resultSatNight != null) { echo 'checked="checked"'; } else { echo ' ';} ?><?php echo '>Night</td>' ?>
+                                                        </tr>
                                                         </tbody>
                                                     </table>
                                                     <div class="modal-footer">
@@ -440,13 +831,16 @@ $resultsSaturday = mysqli_query($conn, $sqlSaturday);
                                     <em><?php echo $VolunteerEmail ?></em></p>
                                 <hr/>
 
-                                <h4>Emergency Contact</h4>
-
-                                <p class="emergency"><?php echo $EmergencyContactName ?><br/>
+                                <h4>Emergency Information</h4>
+                                <p class="emergency">Emergency Contact</p>
+                                <p><?php echo $EmergencyContactName ?><br/>
                                     <?php echo $EmergencyContactPhoneNumber ?><br/>
                                     <em><?php echo $EmergencyContactRelationship ?></em></p>
                                 <p>
-                                    <?php echo $volunteerNotes ?>
+                                <p class="emergency">Allergies: </p>
+                                <p><?php echo $VolunteerAllergy ?></p>
+                                <p class="emergency">Physical Limitations: </p>
+                                <p><?php echo $VolunteerPhysicalLimitation ?></p>
                                 <hr>
                                 <h4>Availability</h4>
                                 <div class="col-sm-4">
