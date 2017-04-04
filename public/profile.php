@@ -101,24 +101,76 @@ $sqlSaturday = "select Availability.AvailableShift from Availability Join Person
 JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =7;";
 $resultsSaturday = mysqli_query($conn, $sqlSaturday);
 
+ if (isset($_POST['UpdateProfile'])) {
 
-?>
+     $updateVolunteerPhoneNumber = $_POST['updateVolunteerPhoneNumber'];
+     $updateVolunteerEmail = $_POST['updateVolunteerEmail'];
+     $updateVolunteerNotes = $_POST['updateVolunteerNotes'];
 
-<?php
- if (isset ($_POST['UpdateProfile'])) {
+     $sqlPersonInformation = "UPDATE Person p SET p.PhoneNumber = :phoneNumber where p.PersonID = :PersonID";
+     $stmt = $connPDO->prepare($sqlPersonInformation);
 
-     //$sqlUpdateEmergencyContactInformation = "UPDATE EmergencyContact SET FirstName = @FirstName, MiddleInitial = @MiddleInitial, LastName = @LastName, PhoneNumber = @PhoneNumber, Relationship = @Relationship join Person on EmergencyContact.EmergencyContactID = Person.EmergencyContactID where PersonID = :PersonID"
+     $stmt->bindParam(':phoneNumber', $updateVolunteerPhoneNumber);
+     $stmt->bindParam(':PersonID', $PersonID);
 
 
+     if ($stmt->execute()) {
+
+     } else {
+     }
+
+     $sqlAccountInformation = "UPDATE Account a join Person p on a.AccountID = p.AccountID SET a.Email = :email where p.PersonID = :PersonID";
+     $stmt = $connPDO->prepare($sqlAccountInformation);
+
+     $stmt->bindParam(':email', $updateVolunteerEmail);
+     $stmt->bindParam(':PersonID', $PersonID);
+
+     if ($stmt->execute()) {
+
+     } else {
+     }
+
+     $sqlVolunteerInformation = "UPDATE Volunteer v join Person p on v.PersonID = p.PersonID SET v.Notes = :notes where p.PersonID = :PersonID";
+     $stmt = $connPDO->prepare($sqlVolunteerInformation);
+
+     $stmt->bindParam(':notes', $updateVolunteerNotes);
+     $stmt->bindParam(':PersonID', $PersonID);
+
+     if ($stmt->execute()) {
+
+     } else {
+     }
+
+
+     $updateEmergencyFirstName = $_POST['updateEmergencyFirstName'];
+     $updateEmergencyMiddleInitial = $_POST['updateEmergencyMiddleInitial'];
+     $updateEmergencyLastName = $_POST['updateEmergencyLastName'];
+     $updateEmergencyPhoneNumber= $_POST['updateEmergencyPhoneNumber'];
+     $updateEmergencyRelationship = $_POST['updateEmergencyRelationship'];
+     $updateEmergencyLastUpdatedBy = "System";
+
+
+     $sqlUpdateEmergencyContactInformation = "UPDATE EmergencyContact e join Person p on e.EmergencyContactID = p.EmergencyContactID SET e.FirstName = :firstName , e.MiddleInitial = :middleInitial, e.LastName = :lastName, e.PhoneNumber = :phoneNumber, e.Relationship = :relationship, e.LastUpdatedBy = :lastUpdatedBy, e.LastUpdated = CURRENT_TIMESTAMP where p.PersonID = :PersonID";
+
+     $stmt = $connPDO->prepare($sqlUpdateEmergencyContactInformation);
+
+     $stmt->bindParam(':firstName', $updateEmergencyFirstName);
+     $stmt->bindParam(':middleInitial', $updateEmergencyMiddleInitial);
+     $stmt->bindParam(':lastName', $updateEmergencyFirstName);
+     $stmt->bindParam(':phoneNumber', $updateEmergencyPhoneNumber);
+     $stmt->bindParam(':relationship', $updateEmergencyRelationship);
+     $stmt->bindParam(':PersonID', $PersonID);
+     $stmt->bindParam(':lastUpdatedBy', $updateEmergencyLastUpdatedBy);
+
+
+     if ($stmt->execute()) {
+
+     } else {
+     }
 
 
 
  }
-
-
-
-
-
 
 
 
@@ -275,7 +327,7 @@ $resultsSaturday = mysqli_query($conn, $sqlSaturday);
                                                 <h4 class="modal-title-2 no-margin" id="myModalLabel">Edit Profile Information</h4>
                                             </div>
                                             <div class="modal-body">
-                                                <form  class = "pop-up-form" action="/action_page.php">
+                                                <form  class = "pop-up-form" method="post">
                                                     <h2 class = "form-title"> PERSONAL INFORMATION </h2>
                                                     <label>Phone:</label> <input type = "text" name = "updateVolunteerPhoneNumber" size = "12" value = <?php echo $VolunteerPhoneNumber ?>><br>
                                                     <label>Email:</label> <input type = "email" name ="updateVolunteerEmail" value = <?php echo $VolunteerEmail ?>><br>
@@ -286,21 +338,21 @@ $resultsSaturday = mysqli_query($conn, $sqlSaturday);
 
                                                     <div style="float:left;margin-right:20px;">
                                                         <label class = "label-top" for="name">First Name:</label>
-                                                        <input class = "label-top" id="emergencyname" type="text" name="updateEmergencyContactFirstName" value=<?php echo $EmergencyContactFirstName ?>>
+                                                        <input class = "label-top" id="emergencyname" type="text" name="updateEmergencyFirstName" value=<?php echo $EmergencyContactFirstName ?>>
                                                     </div>
                                                     <div style="float:left;margin-right:20px;">
                                                         <label class = "label-top" for="name">Middle Initial:</label>
-                                                        <input class = "label-top" id="name" type="text" name="updateEmergencyContactMiddleInitial" size="1" maxlength="1" value=<?php echo $EmergencyContactMI ?> >
+                                                        <input class = "label-top" id="name" type="text" name="updateEmergencyMiddleInitial" size="1" maxlength="1" value=<?php echo $EmergencyContactMI ?> >
                                                     </div>
                                                     <div style="float:left;margin-right:20px;">
                                                         <label class = "label-top" for="name">Last Name:</label>
-                                                        <input class = "label-top" id="name" type="text" name="updateEmergencyContactLastName" value= <?php echo $EmergencyContactLastName ?>><br>
+                                                        <input class = "label-top" id="name" type="text" name="updateEmergencyLastName" value= <?php echo $EmergencyContactLastName ?>><br>
                                                     </div>
                                                     <div class = "label-top">
-                                                        <label class = "modal-label">Phone:</label> <input type = "text" name = "updateEmergencyContactPhoneNumber" size = "12" value = <?php echo $EmergencyContactPhoneNumber ?>><br>
+                                                        <label class = "modal-label">Phone:</label> <input type = "text" name = "updateEmergencyPhoneNumber" size = "12" value = <?php echo $EmergencyContactPhoneNumber ?>><br>
                                                     </div>
                                                     <div>
-                                                        <label class = "modal-label">Relationship:</label> <input type = "text" name = "updateEmergencyContactRelationship" value = <?php echo $EmergencyContactRelationship ?>><br>
+                                                        <label class = "modal-label">Relationship:</label> <input type = "text" name = "updateEmergencyRelationship" value = <?php echo $EmergencyContactRelationship ?>><br>
                                                     </div>
                                                     <div>
                                                         <hr class = "pop-up-form">
@@ -312,64 +364,71 @@ $resultsSaturday = mysqli_query($conn, $sqlSaturday);
                                                         <tr>
                                                             <td class = "avail_space table-date-title"> SUNDAY </td>
                                                             <td class = "avail_space" >
-                                                                <input type="checkbox" name="sun_avail_morn" value="sun_avail_morn"> Morning</td>
-                                                            <td class = "avail_space">   <input type="checkbox" name="sun_avail_aft" value="sun_avail_aft"> Afternoon  </td>
-                                                            <td class = "avail_space">  <input type="checkbox" name="sun_avail_eve" value="sun_avail_eve"> Evening  </td>
+
+
+                                                                <input type="checkbox" name="sunday[]" value="morning"> Morning</td>
+
+                                                            <td class = "avail_space">
+                                                                <input type="checkbox" name="sunday[]" value="afternoon"> Afternoon  </td>
+
+                                                            <td class = "avail_space">
+                                                                <input type="checkbox" name="sunday[]" value="night"> Night </td>
+
                                                         </tr>
 
                                                         <tr>
                                                             <td class = "avail_space table-date-title"> MONDAY </td>
-                                                            <td class = "avail_space">  <input type="checkbox" name="mon_avail_morn" value="mon_avail_morn"> Morning</td> </td>
-                                                            <td class = "avail_space"> <input type="checkbox" name="mon_avail_aft" value="mon_avail_aft"> Afternoon</td> </td>
-                                                            <td class = "avail_space"><input type="checkbox" name="mon_avail_eve" value="mon_avail_eve"> Evening</td> </td>
+                                                            <td class = "avail_space">  <input type="checkbox" name="monday[]" value="morning"> Morning</td> </td>
+                                                            <td class = "avail_space"> <input type="checkbox" name="monday[]" value="afternoon"> Afternoon</td> </td>
+                                                            <td class = "avail_space"><input type="checkbox" name="monday[]" value="night"> Night</td> </td>
                                                         </tr>
 
                                                         <tr>
                                                             <td class = "avail_space table-date-title"> TUESDAY </td>
-                                                            <td class = "avail_space">  <input type="checkbox" name="tues_avail_morn" value="tues_avail_morn"> Morning</td> </td>
-                                                            <td class = "avail_space"> <input type="checkbox" name="tues_avail_aft" value="tues_avail_aft"> Afternoon</td> </td>
-                                                            <td class = "avail_space"><input type="checkbox" name="tues_avail_eve" value="tues_avail_eve"> Evening</td> </td>
+                                                            <td class = "avail_space">  <input type="checkbox" name="tuesday[]" value="morning"> Morning</td> </td>
+                                                            <td class = "avail_space"> <input type="checkbox" name="tuesday[]" value="afternoon"> Afternoon</td> </td>
+                                                            <td class = "avail_space"><input type="checkbox" name="tuesday[]" value="night"> Night</td> </td>
                                                         </tr>
 
                                                         <tr>
                                                             <td class = "avail_space table-date-title"> WEDNESDAY </td>
-                                                            <td class = "avail_space">  <input type="checkbox" name="wed_avail_morn" value="wed_avail_morn"> Morning</td> </td>
-                                                            <td class = "avail_space"> <input type="checkbox" name="wed_avail_aft" value="wed_avail_aft"> Afternoon</td> </td>
-                                                            <td class = "avail_space"><input type="checkbox" name="wed_avail_eve" value="wed_avail_eve"> Evening</td> </td>
+                                                            <td class = "avail_space">  <input type="checkbox" name="wednesday[]" value="morning"> Morning</td> </td>
+                                                            <td class = "avail_space"> <input type="checkbox" name="wednesday[]" value="afternoon"> Afternoon</td> </td>
+                                                            <td class = "avail_space"><input type="checkbox" name="wednesday[]" value="night"> Night</td> </td>
                                                         </tr>
 
                                                         <tr>
                                                             <td class = "avail_space table-date-title"> THURSDAY </td>
-                                                            <td class = "avail_space">  <input type="checkbox" name="thurs_avail_morn" value="thurs_avail_morn"> Morning</td> </td>
-                                                            <td class = "avail_space"> <input type="checkbox" name="thurs_avail_aft" value="thurs_avail_aft"> Afternoon</td> </td>
-                                                            <td class = "avail_space"><input type="checkbox" name="thurs_avail_eve" value="thurs_avail_eve"> Evening</td> </td>
+                                                            <td class = "avail_space">  <input type="checkbox" name="thursday[]" value="morning"> Morning</td> </td>
+                                                            <td class = "avail_space"> <input type="checkbox" name="thursday[]" value="afternoon"> Afternoon</td> </td>
+                                                            <td class = "avail_space"><input type="checkbox" name="thursday[]" value="night"> Night</td> </td>
                                                         </tr>
 
                                                         <tr>
                                                             <td class = "avail_space table-date-title"> FRIDAY </td>
-                                                            <td class = "avail_space">  <input type="checkbox" name="fri_avail_morn" value="fri_avail_morn"> Morning</td> </td>
-                                                            <td class = "avail_space"> <input type="checkbox" name="fri_avail_aft" value="fri_avail_aft"> Afternoon</td> </td>
-                                                            <td class = "avail_space"><input type="checkbox" name="fri_avail_eve" value="fri_avail_eve"> Evening</td> </td>
+                                                            <td class = "avail_space">  <input type="checkbox" name="friday[]" value="morning"> Morning</td> </td>
+                                                            <td class = "avail_space"> <input type="checkbox" name="friday[]" value="afternoon"> Afternoon</td> </td>
+                                                            <td class = "avail_space"><input type="checkbox" name="friday[]" value="night"> Night</td> </td>
                                                         </tr>
 
 
                                                         <tr>
                                                             <td class = "avail_space table-date-title"> SATURDAY </td>
-                                                            <td class = "avail_space">  <input type="checkbox" name="sat_avail_morn" value="sat_avail_morn"> Morning</td> </td>
-                                                            <td class = "avail_space"> <input type="checkbox" name="sat_avail_aft" value="sat_avail_aft"> Afternoon</td> </td>
-                                                            <td class = "avail_space"><input type="checkbox" name="sat_avail_eve" value="sat_avail_eve"> Evening</td> </td>
+                                                            <td class = "avail_space">  <input type="checkbox" name="saturday[]" value="morning"> Morning</td> </td>
+                                                            <td class = "avail_space"> <input type="checkbox" name="saturday[]" value="afternoon"> Afternoon</td> </td>
+                                                            <td class = "avail_space"><input type="checkbox" name="saturday[]" value="night"> Night</td> </td>
                                                         </tr>
 
                                                         </tbody>
                                                     </table>
-
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-default" data-dismiss="modal">CANCEL</button>
+                                                        <button name = "UpdateProfile" type = "submit" class="btn-edit-form">SAVE CHANGES</button>
+                                                    </div>
 
                                                 </form>
                                             </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-default" data-dismiss="modal">CANCEL</button>
-                                                <button type="button" name = "UpdateProfile" class="btn-edit-form">SAVE CHANGES</button>
-                                            </div>
+
                                         </div>
                                     </div>
                                 </div>
@@ -397,8 +456,9 @@ $resultsSaturday = mysqli_query($conn, $sqlSaturday);
                                             <td class = "avail_space table-date-title"> SUN. </td>
                                             <?php
                                             while($row = mysqli_fetch_array($resultsSunday)) {
-                                                $sundayShift = $row['AvailableShift']; ?>
-                                            <td class = "avail_space"> <?php echo $sundayShift ?> <?php }?></td>
+                                            $sundayShift = $row['AvailableShift'];?>
+
+                                            <td class = "avail_space"> <?php echo $sundayShift ?> <?php } ?></td>
 
                                         </tr>
 
@@ -467,6 +527,8 @@ $resultsSaturday = mysqli_query($conn, $sqlSaturday);
                                     </table>
 
                                 </div>
+
+
 
 
                                 <div class="user-button">

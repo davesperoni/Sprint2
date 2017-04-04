@@ -16,10 +16,28 @@ date_default_timezone_set("America/New_York");
 $Date = date('Y/m/d');
 $currentTime = date("h:i:sa");
 
-if ($_POST['CheckIn']) {
+if (isset($_POST['CheckIn'])) {
 
     header("Location: /volunteer_dashboard.php");
-    $volunteerID= 1;
+
+    $server = "127.0.0.1";
+    $username = "homestead";
+    $password = "secret";
+    $database = "wildlifeDB";
+
+    $conn = new mysqli($server, $username, $password, $database);
+
+    if ($conn->connect_error) {
+        die("connection failed!\n" . $conn->connect_error);
+    }
+    else
+    {
+    }
+
+    mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+
+
+    $volunteerID= 2;
     $startTime = $currentTime;
     $shiftType = $_POST['Department'];
     $shiftDate = $Date;
@@ -37,9 +55,9 @@ if ($_POST['CheckIn']) {
     $shiftLastUpdated = $newShift->getShiftLastUpdated();
 
 
-    $sqlInsertShift = "INSERT INTO Shift (VolunteerID, ShiftDate, StartTime, EndTime, ShiftHours, LastUpdatedBy, LastUpdated) VALUES(?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)";
+    $sqlInsertShift = "INSERT INTO Shift (VolunteerID, ShiftDate, StartTime, EndTime, ShiftHours, LastUpdatedBy, LastUpdated) VALUES($volunteerID, $shiftDate, $startTime, $endTime, $shiftHours, '$LastUpdatedBy', CURRENT_TIMESTAMP)";
     $stmt = mysqli_prepare($conn, $sqlInsertShift);
-    $stmt->bind_param("iiiiss", $volunteerID, $shiftDate, $startTime, $endTime, $shiftHours, $shiftLastUpdatedBy);
+    //$stmt->bind_param("iss", $volunteerID, $shiftDate, $startTime, $endTime, $shiftHours, $shiftLastUpdatedBy);
 
 
     if ($stmt) {
@@ -298,7 +316,7 @@ if ($_POST['CheckIn']) {
                     </div>
                     <div class="modal-footer">
                              <button type="button" class="btn btn-default" data-dismiss="modal">CANCEL</button>
-                             <button name = "CheckIn" type="submit" class="btn-edit-form">CHECK IN</button>
+                             <button name="CheckIn" type="submit" class="btn-edit-form">CHECK IN</button>
                     </div>
                 </div>
             </div>
