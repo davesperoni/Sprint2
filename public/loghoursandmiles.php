@@ -5,6 +5,9 @@
  * Date: 4/1/17
  * Time: 12:21 AM
  */
+session_start();
+require 'databasePDO.php';
+require 'database.php';
 
 $server = "127.0.0.1";
 $username = "homestead";
@@ -28,7 +31,21 @@ $sqlShowHours= "SELECT Person.FirstName AS 'FN', Person.MiddleInitial AS 'MI', P
   JOIN Department ON VolunteerDepartment.DepartmentID = Department.DepartmentID
 JOIN Shift ON Volunteer.VolunteerID = Shift.VolunteerID;";
 
+
 $result = mysqli_query($conn, $sqlShowHours) or die("Error " . mysqli_error($conn));
+
+$sqlHoursMiles= "SELECT Volunteer.YTDHours AS 'TotalHours', Volunteer.YTDMiles AS 'TotalMiles' FROM Person JOIN Volunteer ON Person.PersonID = Volunteer.PersonID
+  JOIN VolunteerDepartment ON Volunteer.VolunteerID = VolunteerDepartment.VolunteerID
+  JOIN Department ON VolunteerDepartment.DepartmentID = Department.DepartmentID
+JOIN Shift ON Volunteer.VolunteerID = Shift.VolunteerID;";
+
+
+$sqlHoursMiles = mysqli_query($conn, $sqlHoursMiles) or die("Error " . mysqli_error($conn));
+while($row = mysqli_fetch_array($sqlHoursMiles)) {
+    $TotalHours = $row['TotalHours'];
+    $TotalMiles = $row['TotalMiles'];
+
+}
 ?>
 
 
@@ -165,28 +182,9 @@ $result = mysqli_query($conn, $sqlShowHours) or die("Error " . mysqli_error($con
 
 		         <div class = "col-sm-6">
 		         	<div class = "updateNumbers">
-<!--                        --><?php
-//                        while($row = mysqli_fetch_array($result)) {
-//
-//                        $FirstName = $row['FN'];
-//                        $MiddleInitial = $row['MI'];
-//                        $LastName = $row['LN'];
-//
-//                        $VolunteerFullName = $FirstName . " " . $MiddleInitial . " " . $LastName;
-//                        $DepartmentName = $row['Dept'];
-//                        $ShiftDate = $row['ShiftDate'];
-//                        $ShiftHours = $row['ShiftHours'];
-//                        $StartTime = $row['StartTime'];
-//                        $EndTime = $row['EndTime'];
-//
-//                        $phpdate = strtotime( $ShiftDate );
-//                        $ShiftDate = date( 'm-d-Y', $phpdate);
-//                        $TotalHours = $row['TotalHours'];
-//                        $TotalMiles = $row['TotalMiles'];
-//
-//                        ?>
 
-		         		<h1 class = "updateTitle">  </h1>
+
+		         		<h1 class = "updateTitle"> <?php echo $TotalHours?> </h1>
 		         		<h3 class = "updateSubhead">HOURS VOLUNTEERED</h3>
 		         	</div><!-- end of inner box for logging hours -->
 			         	<div class = "row">
@@ -203,7 +201,7 @@ $result = mysqli_query($conn, $sqlShowHours) or die("Error " . mysqli_error($con
 
 		         <div class = "col-sm-6">
 		         	<div class = "updateNumbers">
-		         		<h1 class = "updateTitle"> </h1>
+		         		<h1 class = "updateTitle"> <?php echo $TotalMiles ?> </h1>
 		         		<h3 class = "updateSubhead">MILES DRIVEN</h3>
 
 		         	</div><!-- end of inner box for logging miles -->
@@ -237,19 +235,36 @@ $result = mysqli_query($conn, $sqlShowHours) or die("Error " . mysqli_error($con
         <br />
         <tbody>
         <tr>
-<!---->
-<!--            <td>--><?php //echo $DepartmentName ?><!--</td>-->
-<!--            <td>--><?php //echo $ShiftDate ?><!--</td>-->
-<!--            <td>--><?php //echo $StartTime ?><!--</td>-->
-<!--            <td>--><?php //echo $EndTime ?><!--</td>-->
-<!--            <td>--><?php //echo $ShiftHours ?><!--</td>-->
+            <?php
+            while($row = mysqli_fetch_array($result)) {
+
+            $FirstName = $row['FN'];
+            $MiddleInitial = $row['MI'];
+            $LastName = $row['LN'];
+
+            $VolunteerFullName = $FirstName . " " . $MiddleInitial . " " . $LastName;
+            $DepartmentName = $row['Dept'];
+            $ShiftDate = $row['ShiftDate'];
+            $ShiftHours = $row['ShiftHours'];
+            $StartTime = $row['StartTime'];
+            $EndTime = $row['EndTime'];
+
+            $phpdate = strtotime( $ShiftDate );
+            $ShiftDate = date( 'm-d-Y', $phpdate);
+
+            ?>
+           <td><?php echo $DepartmentName ?></td>
+           <td><?php echo $ShiftDate ?></td>
+           <td><?php echo $StartTime ?></td>
+            <td><?php echo $EndTime ?></td>
+           <td><?php echo $ShiftHours ?></td>
 
         </tr>
+        <?php }?>
+        </tbody>
+    </table>
 
-<!--        --><?php //} ?>
 
-    </tbody>
-  </table>
 
   <div class = "row">
   	<div class = "col-sm-4 col-sm-offset-4">
