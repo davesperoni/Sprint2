@@ -8732,7 +8732,7 @@ hr {
 
 
 h1 {
-    font-family: BebasNeue;
+    font-family: Bebas;
     font-size: 80px;
     padding-top: 0px;
     padding-bottom: 0px;
@@ -8840,8 +8840,7 @@ body {
 .smallerheader {
   text-align: center;
   padding-top: 20px;
-  padding-right: 175px;
-    padding-left: 175px;
+
 }
 
 .smallerheader a {
@@ -8850,6 +8849,10 @@ body {
 
 .smallerheader h1 {
     font-size: 50px;
+}
+
+.smallerheader p {
+  font-weight: bold;
 }
 
 label {
@@ -9352,6 +9355,14 @@ padding-right: 30px;
 #appRow
 {
   margin-top: 75px;
+  background-color: #F0EEEC;
+  padding: 30px 30px 30px 30px;
+  margin-bottom: 30px;
+}
+
+#submittedRow
+{
+  margin-top: 10px;
   background-color: #F0EEEC;
   padding: 30px 30px 30px 30px;
   margin-bottom: 30px;
