@@ -24,7 +24,6 @@ if(isset($_SESSION['AccountID'])){
 
 ?>
 
-
 <?php
 $records = $connPDO->prepare('select PersonID, FirstName, MiddleInitial, LastName, PhoneNumber, Allergy, PhysicalLimitation FROM Person where AccountID = :AccountID');
 $records->bindParam(':AccountID', $_SESSION['AccountID']);
