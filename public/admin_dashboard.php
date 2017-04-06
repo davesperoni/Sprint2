@@ -10,6 +10,8 @@ session_start();
 
 require 'functions.php';
 
+$Date = date("F j, Y");
+
 if(isset($_SESSION['AccountID'])) {
     $currentAccountID = $_SESSION['AccountID'];
     if (!isAdmin($currentAccountID)) {
@@ -159,7 +161,7 @@ if(isset($_SESSION['AccountID'])) {
                     <div class = "text-overlay">
 
 
-                        <h3 class = "date">March 23, 2017</h3>
+                        <h3 class = "date"><?php echo $Date ?></h3>
                         <h1 class = "welcome-user"> HELLO RAINA </h1>
 
                     </div>

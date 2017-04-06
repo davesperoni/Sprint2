@@ -8,11 +8,10 @@
  */
 class Availability
 {
-    public function __construct($DayID, $PersonID, $AvailabilityShiftID, $AvailableShift)
+    public function __construct($DayID, $PersonID, $AvailableShift)
     {
         $this->dayID = $DayID;
         $this->personID = $PersonID;
-        $this->availabilityShiftID = $AvailabilityShiftID;
         $this->availableShift = $AvailableShift;
         $this->lastUpdatedBy = "System";
         $this->lastUpdated = "CURRENT_TIMESTAMP";
@@ -28,11 +27,6 @@ class Availability
     {
 
         return $this->personID;
-    }
-    public function getAvailabilityShiftID()
-    {
-
-        return $this->availabilityShiftID;
     }
 
     public function getAvailabilityShift()
