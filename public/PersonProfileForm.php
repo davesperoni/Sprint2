@@ -356,13 +356,13 @@ if (isset($_POST['SubmitPersonProfileForm'])) {
 
             <div class="col-sm-12">
                 <form role="form" name="PersonProfileForm" method="post" action="PersonProfileForm.php">
-                    <div class="col-md-2 col-md-offset-3"><div class="form-group"><label>First Name</label> <input type="name" name="PersonFirstName" placeholder="Enter first name" class="form-control"></div></div>
-                    <div class="col-md-2"><div class="form-group"><label>Middle Initial</label> <input type="name" name="PersonMiddleInitial" placeholder="Enter middle initial" class="form-control"></div></div>
-                    <div class="col-md-2"><div class="form-group"><label>Last Name</label> <input type="name" name="PersonLastName" placeholder="Enter last name" class="form-control"></div></div>
+                    <div class="col-md-2 col-md-offset-3"><div class="form-group"><label>First Name</label> <input type="name" name="PersonFirstName" placeholder="Enter first name" class="form-control" required></div></div>
+                    <div class="col-md-2"><div class="form-group"><label>Middle Initial</label> <input type="name" name="PersonMiddleInitial" placeholder="Enter middle initial" class="form-control" required></div></div>
+                    <div class="col-md-2"><div class="form-group"><label>Last Name</label> <input type="name" name="PersonLastName" placeholder="Enter last name" class="form-control" required></div></div>
 
                     <div class="col-md-6 col-md-offset-3"><div class="form-group">
                             <label>Birthday</label>
-                            <select name="PersonDOBMonth">
+                            <select name="PersonDOBMonth" required>
                                 <option> - Month - </option>
                                 <option value="01">01</option>
                                 <option value="02">02</option>
@@ -378,7 +378,7 @@ if (isset($_POST['SubmitPersonProfileForm'])) {
                                 <option value="12">12</option>
                             </select>
 
-                            <select name="PersonDOBDay">
+                            <select name="PersonDOBDay" required>
                                 <option> - Day - </option>
                                 <option value="1">1</option>
                                 <option value="2">2</option>
@@ -413,7 +413,7 @@ if (isset($_POST['SubmitPersonProfileForm'])) {
                                 <option value="31">31</option>
                             </select>
 
-                            <select name="PersonDOBYear">
+                            <select name="PersonDOBYear" required>
                                 <option> - Year - </option>
                                 <option value="2017">2017</option>
                                 <option value="2016">2016</option>
@@ -493,18 +493,18 @@ if (isset($_POST['SubmitPersonProfileForm'])) {
                         </div>
                     </div>
 
-                    <div class="col-md-6 col-md-offset-3"><div class="form-group"><label>Phone</label> <input type="phone" name="PersonPhoneNumber" placeholder="Enter phone number" class="form-control"></div></div>
+                    <div class="col-md-6 col-md-offset-3"><div class="form-group"><label>Phone</label> <input type="phone" name="PersonPhoneNumber" placeholder="Enter phone number" class="form-control" required></div></div>
 
-                    <div class="col-md-6 col-md-offset-3"><div class="form-group"><label>Street Address</label> <input type="address" name="PersonStreetAddress" placeholder="Enter street address" class="form-control"></div></div>
+                    <div class="col-md-6 col-md-offset-3"><div class="form-group"><label>Street Address</label> <input type="address" name="PersonStreetAddress" placeholder="Enter street address" class="form-control" required></div></div>
 
-                    <div class="col-md-3 col-md-offset-3"><div class="form-group"><label>City</label> <input type="city" placeholder="Enter city" name="PersonCity" class="form-control"></div></div>
+                    <div class="col-md-3 col-md-offset-3"><div class="form-group"><label>City</label> <input type="city" placeholder="Enter city" name="PersonCity" class="form-control" required></div></div>
 
-                    <div class="col-md-3"><div class="form-group"><label>Zip Code</label> <input type="zip" name="PersonZipCode" placeholder="Enter zip code" class="form-control"></div></div>
+                    <div class="col-md-3"><div class="form-group"><label>Zip Code</label> <input type="zip" name="PersonZipCode" placeholder="Enter zip code" class="form-control" required></div></div>
 
 
                     <div class="col-md-3 col-md-offset-3"><div class="form-group">
                             <label>State</label><br/>
-                            <select name="PersonState">
+                            <select name="PersonState" required>
                                 <option value = "VA">Virginia</option>
                                 <option value="AL">Alabama</option>
                                 <option value="AK">Alaska</option>
@@ -920,22 +920,22 @@ if (isset($_POST['SubmitPersonProfileForm'])) {
 
                     <div class="col-md-6 col-md-offset-3"><div class="form-group"><h4>Emergency Contact Information</h4></div></div>
 
-                    <div class="col-md-2 col-md-offset-3"><div class="form-group"><label>First Name</label> <input type="name" name="EmergencyFirstName" placeholder="Enter first name" class="form-control"></div></div>
-                    <div class="col-md-2"><div class="form-group"><label>Middle Initial</label> <input type="name" name="EmergencyMiddleInitial" placeholder="Enter middle initial" class="form-control"></div></div>
-                    <div class="col-md-2"><div class="form-group"><label>Last Name</label> <input type="name" name="EmergencyLastName" placeholder="Enter last name" class="form-control"></div></div>
-                    <div class="col-md-6 col-md-offset-3"><div class="form-group"><label>Relationship to Contact</label> <input type="relationship" name="EmergencyRelationship" placeholder="Enter relationship to contact" class="form-control"></div></div>
+                    <div class="col-md-2 col-md-offset-3"><div class="form-group"><label>First Name</label> <input type="name" name="EmergencyFirstName" placeholder="Enter first name" class="form-control" required></div></div>
+                    <div class="col-md-2"><div class="form-group"><label>Middle Initial</label> <input type="name" name="EmergencyMiddleInitial" placeholder="Enter middle initial" class="form-control" required></div></div>
+                    <div class="col-md-2"><div class="form-group"><label>Last Name</label> <input type="name" name="EmergencyLastName" placeholder="Enter last name" class="form-control" required></div></div>
+                    <div class="col-md-6 col-md-offset-3"><div class="form-group"><label>Relationship to Contact</label> <input type="relationship" name="EmergencyRelationship" placeholder="Enter relationship to contact" class="form-control" required></div></div>
 
-                    <div class="col-md-6 col-md-offset-3"><div class="form-group"><label>Emergency Contact Phone Number</label> <input type="phone" name="EmergencyPhoneNumber" placeholder="Enter contact's number" class="form-control"></div></div>
+                    <div class="col-md-6 col-md-offset-3"><div class="form-group"><label>Emergency Contact Phone Number</label> <input type="phone" name="EmergencyPhoneNumber" placeholder="Enter contact's number" class="form-control" required></div></div>
 
 
-                    <div class="col-md-6 col-md-offset-3"><div class="form-group"><label>Allergies</label> <textarea rows="4" type="allergies" name="PersonAllergy" placeholder="Enter allergies" class="form-control"></textarea></div></div>
+                    <div class="col-md-6 col-md-offset-3"><div class="form-group"><label>Allergies</label> <textarea rows="4" type="allergies" name="PersonAllergy" placeholder="Enter allergies" class="form-control" required></textarea></div></div>
 
-                    <div class="col-md-6 col-md-offset-3"><div class="form-group"><label>Physical Limitations</label> <textarea rows="4" type="limits" name="PersonPhysical" placeholder="Enter physical limitations" class="form-control"></textarea></div></div>
+                    <div class="col-md-6 col-md-offset-3"><div class="form-group"><label>Physical Limitations</label> <textarea rows="4" type="limits" name="PersonPhysical" placeholder="Enter physical limitations" class="form-control" required></textarea></div></div>
 
 
                     <div class="form-group"><div class="col-md-6 col-md-offset-3"><label>I have my rabies vaccine: </label><form action="/action_page.php" method="get"></div>
-                        <div class="col-md-6 col-md-offset-3"><div class="form-group"><input type="checkbox" name="PersonRabies" value="Yes">Yes<br/>
-                                <input type="checkbox" name="PersonRabies" value="No">No<br>
+                        <div class="col-md-6 col-md-offset-3"><div class="form-group"><input type="radio" name="PersonRabies" value="Yes">Yes<br/>
+                                <input type="radio" name="PersonRabies" value="No">No<br>
                             </div></div>
 
                         <div class="col-md-6 col-md-offset-3"><label>If yes, please upload a copy of your paperwork.</label></div>
@@ -944,13 +944,14 @@ if (isset($_POST['SubmitPersonProfileForm'])) {
 
                         <div class="col-md-6 col-md-offset-3"><label>Do you have a valid permit to rehabilitate wildlife in the state of Virginia?</label></div>
                         <div class="col-md-6 col-md-offset-3"><div class="form-group">
-                                <input type="checkbox" name="PersonHavePermit" value="Yes">Yes<br>
-                                <input type="checkbox" name="PersonHavePermit" value="No">No<br>
+                                <input type="radio" name="PersonHavePermit" value="Yes">Yes<br>
+                                <input type="radio" name="PersonHavePermit" value="No">No<br>
                             </div></div>
 
                         <div class="col-md-6 col-md-offset-3"><label>If yes, please select which kind:</label></div>
                         <div class="col-md-6 col-md-offset-3"><div class="form-group">
                                 <select name="PersonPermitType">
+                                    <option value="cat0"></option>
                                     <option value="cat1">Cat 1</option>
                                     <option value="cat2">Cat 2</option>
                                     <option value="cat3">Cat 3</option>
@@ -1023,7 +1024,7 @@ if (isset($_POST['SubmitPersonProfileForm'])) {
                             </div></div>
 
                         <div class="col-md-6 col-md-offset-3"><label>Please attach your resume.</label></div>
-                        <div class="col-md-6 col-md-offset-3"><label class="btn btn-default btn-file" name ="resumeUpload" ><input type="file" hidden>
+                        <div class="col-md-6 col-md-offset-3"><label class="btn btn-default btn-file" name ="resumeUpload" ><input type="file" hidden required>
                             </label></div>
 
                 </form>
