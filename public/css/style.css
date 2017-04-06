@@ -9563,3 +9563,26 @@ padding-right: 30px;
 }
 
 /*End CSS for Archived Apps*/
+
+/* transport modal styles */
+
+.text-left
+{
+  text-align: left;
+}
+
+.orangeBackground
+{
+  background-color: #9E371C;
+  padding: 10px 10px 15px 10px;
+}
+
+.whiteText
+{
+  color: white;
+}
+
+.space-left
+{
+  padding-left: 8px;
+}
