@@ -1,3 +1,4 @@
+
 <?php
 session_start();
 
@@ -5,20 +6,21 @@ require 'databasePDO.php';
 require 'database.php';
 require 'functions.php';
 
-$currentUser = $_SESSION['AccountID'];
-
-    if(isApplicant($currentUser)){ ?>
-    <script>
-        $('#thankApply').modal('show');
-    </script>
-    <?php }
-
 /**
  * Created by PhpStorm.
  * User: David Speroni
  * Date: 3/30/2017
  * Time: 3:30 PM
  */
+
+$currentUser = $_SESSION['AccountID'];
+
+if(isApplicant($currentUser)){ ?>
+    <script>
+        $('#thankApply').modal('show');
+    </script>
+<?php }
+
 $Date = date("F j, Y");
 
 $records = $connPDO->prepare('select PersonID, FirstName, MiddleInitial, LastName FROM Person where AccountID = :AccountID');
@@ -26,14 +28,18 @@ $records->bindParam(':AccountID', $_SESSION['AccountID']);
 $records->execute();
 $results = $records->fetch(PDO::FETCH_ASSOC);
 
-if(count($results) > 0){
+if(count($results) > 0)
+{
     $personInformation = $results;
 }
 
-$VolunteerName = $personInformation['FirstName'] . " " . $personInformation['MiddleInitial'] . " " . $personInformation['LastName'];
+$VolunteerFirstName = ucfirst($personInformation['FirstName']);
+$VolunteerName = ucfirst($personInformation['FirstName']) . " " . ucfirst($personInformation['MiddleInitial']) . ". " . ucfirst($personInformation['LastName']);
 $PersonID = $personInformation['PersonID'];
 
 ?>
+
+
 
 <!DOCTYPE html>
 <html>
@@ -115,25 +121,27 @@ $PersonID = $personInformation['PersonID'];
                 <header class="image-bg-fluid-height " >
                     <div class = "text-overlay">
 
-
                         <h3 class = "date"><?php echo $Date ?></h3>
-                        <h1 class = "welcome-user"> HELLO APPLICANT </h1>
-
-
+                        <h1 class = "welcome-user">
+                            <?php if( !empty($VolunteerFirstName) ): ?>
+                                HELLO <?= strtoupper($VolunteerFirstName); ?>
+                            <?php else: ?>
+                                HELLO APPLICANT
+                            <?php endif; ?> </h1>
 
                         <!-- Button trigger modal -->
                         <!-- checks whether or not account has applied yet -->
 
-                      <?php if(isApplicant($currentUser)){ ?>
+                        <?php if(isApplicant($currentUser)){ ?>
 
-                          <script>
-                              $('#thankApply').modal('show');
-                          </script>
+                            <script>
+                                $('#thankApply').modal('show');
+                            </script>
 
-                        <a href="#" id = "checkIn" data-toggle = "modal" data-target = "#thankApply"> APPLICATION PENDING </a>
-                       <?php }
+                            <a href="#" id = "checkIn" data-toggle = "modal" data-target = "#thankApply"> APPLY TO ANOTHER DEPARTMENT </a>
+                        <?php }
                         else{ ?>
-                      <a href="PersonProfileForm.php" id = "checkIn" data-toggle = "modal" data-target = "#checkInUser"> APPLY TO BE A VOLUNTEER </a>
+                            <a href="PersonProfileForm.php" id = "checkIn" data-toggle = "modal" data-target = "#checkInUser"> APPLY TO BE A VOLUNTEER </a>
                         <?php } ?>
 
 
@@ -141,8 +149,6 @@ $PersonID = $personInformation['PersonID'];
                 </header>
             </div>
         </div>
-
-
 
 
         <!-- ABOUT THE DIFFERENT VOLUNTEER TYPES -->
@@ -164,11 +170,108 @@ $PersonID = $personInformation['PersonID'];
                     <strong>Availability and application:</strong> The rehabilitation department currently has a limited number of open volunteer positions. Please complete the Animal Care Volunteer application for consideration.
                 </p>
 
-
-
-
             </div><!-- end of col -->
         </div> <!--END OF TEXT DESCRIPTION -->
+
+
+        <!-- DISPLAY APPLICANT'S APPLICATIONS -->
+        <div class = "row">
+            <div class = "col-md-10 col-md-offset-1 moveDown" id = "submittedRow">
+                <h1 class = "app-types">SUBMITTED APPLICATIONS</h1>
+                <!--Start Table -->
+                <div class="pendingapps_table">
+                    <table class="table table-striped">
+                        <thead class="pendingapps-header"> Thank you for applying to become a volunteer!
+                        Applications will be reviewed by a Wildlife Center admin as quickly as possible and your status will be posted here.
+                        You will also receive an email notification if there are any updates regarding your application status.
+                        If you have any questions, please contact us at (540) 942-9453 or wildlife@wildlifecenter.org.
+                        <tr>
+                            <th class="pendingapps_header_content">Name</th>
+                            <th class="pendingapps_header_content">Department</th>
+                            <th class="pendingapps_header_content">Date</th>
+                            <th class="pendingapps_header_content">Status</th>
+                            <th class="pendingapps_header_content"></th>
+                        </tr>
+                        </thead>
+                        <?php
+                        //Display records from the applications table
+                        $server = "127.0.0.1";
+                        $username = "homestead";
+                        $password = "secret";
+                        $database = "wildlifeDB";
+
+                        $conn = new mysqli($server, $username, $password, $database);
+
+                        if ($conn->connect_error)
+                        {
+                            die("Error: Connection failed!\n" . $conn->connect_error);
+                        }
+                        else
+                        {
+                        }
+                        mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+
+                        $sqlShowApps= "SELECT Person.PersonID AS 'PersonID', Person.FirstName AS 'FN', Person.MiddleInitial AS 'MI',
+                                Person.LastName AS 'LN', Department.DepartmentName AS 'Dept', 
+                                Application.LastUpdated AS 'AppLastUpdated', Application.ApplicationStatus AS 'Status'
+                                FROM Person
+                                JOIN Application ON Person.PersonID = Application.PersonID
+                                JOIN Department ON Application.DepartmentID = Department.DepartmentID
+                                WHERE Application.PersonID = $PersonID 
+                                ORDER BY Application.LastUpdated;";
+
+                        $result = mysqli_query($conn, $sqlShowApps) or die("Error " . mysqli_error($conn));
+
+                        mysqli_close($conn);
+
+                        while($row = mysqli_fetch_array($result)) {?>
+                        <br />
+                        <tbody>
+                        <tr>
+                            <?php
+
+                            // Create a new array.
+                            $array = array();
+
+                            $FirstName = $row['FN'];
+                            $MiddleInitial = $row['MI'];
+                            $LastName = $row['LN'];
+
+                            $PersonID = $row['PersonID'];
+
+                            $ApplicantFullName = $FirstName . " " . $MiddleInitial . " " . $LastName;
+                            $DepartmentName = $row['Dept'];
+                            $AppLastUpdated = $row['AppLastUpdated'];
+                            $ApplicationStatus = $row['Status'];
+
+                            $phpdate = strtotime( $AppLastUpdated );
+                            $AppLastUpdated = date( 'm-d-Y', $phpdate);
+
+                            //create an object representing a of your person info here
+                            //Pass that object into the array
+                            $yourNewPersonObject = [];
+
+                            array_push($array, $yourNewPersonObject);
+                            ?>
+
+                            <td><?php echo $ApplicantFullName ?></td>
+                            <td><?php echo $DepartmentName ?></td>
+                            <td><?php echo $AppLastUpdated ?></td>
+                            <td><?php echo $ApplicationStatus ?></td>
+
+                            <td><button onclick = "location.href='/PersonApplicationForm.php'" class="btn btn-sm btn-primary pull-right" name="ViewPersonApplication" type="submit" class="viewapp">View</button></td>
+
+                        </tr>
+                        <?php
+                        }
+                        ?>
+                        </tbody>
+                    </table>
+                </div>
+                <!--End Table -->
+
+            </div><!-- end of col -->
+        </div> <!--END OF APPLICATIONS DISPLAY-->
 
 
     </div>
@@ -235,7 +338,7 @@ $PersonID = $personInformation['PersonID'];
     </div>
 
 
-<!-- thank you for applying! -->
+    <!-- thank you for applying! -->
     <div class="modal fade" id="thankApply" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">

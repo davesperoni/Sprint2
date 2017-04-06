@@ -8,10 +8,10 @@
  */
 class Application_Transport
 {
-    public function __construct($ApplicantCaptureAndRestraint, $ApplicantDistanceWilling, $ApplicantSpeciesLimitations)
+    public function __construct($ApplicantCaptureAndRestraint, $ApplicantMilesWillingToTravel, $ApplicantSpeciesLimitations)
     {
         $this->captureAndRestraint = $ApplicantCaptureAndRestraint;
-        $this->distanceWilling = $ApplicantDistanceWilling;
+        $this->milesWillingToTravel = $ApplicantMilesWillingToTravel;
         $this->speciesLimitations = $ApplicantSpeciesLimitations;
         $this->lastUpdatedBy = "System";
         $this->lastUpdated = "CURRENT_TIMESTAMP";
@@ -22,9 +22,9 @@ class Application_Transport
         return $this->captureAndRestraint;
     }
 
-    public function getApplicantDistanceWilling()
+    public function getApplicantMilesWillingToTravel()
     {
-        return $this->distanceWilling;
+        return $this->milesWillingToTravel;
     }
 
     public function getApplicantSpeciesLimitations()
