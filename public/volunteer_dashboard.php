@@ -14,11 +14,28 @@ $Date = date('Y/m/d');
 $currentTime = date('h:i:s');
 $currentTime = date("h:i:s", strtotime($currentTime));
 
-if (isset($_POST['CheckIn'])) {
+$records = $connPDO->prepare('select FirstName, MiddleInitial, LastName FROM Person where AccountID = :AccountID');
+$records->bindParam(':AccountID', $_SESSION['AccountID']);
+$records->execute();
+$results = $records->fetch(PDO::FETCH_ASSOC);
+
+if(count($results) > 0){
+    $personName = $results;
+}
+
+$VolunteerName = $personName['FirstName'] . " " . $personName['MiddleInitial'] . " " . $personName['LastName'];
+
+
+?>
+
+<?php
+
+if (isset($_POST['submitCheckIn'])) {
     $sql = $connPDO->prepare('Select Volunteer.VolunteerID from Volunteer JOIN Person ON Person.PersonID = Volunteer.PersonID JOIN Account ON Person.AccountID = Account.AccountID where Account.AccountID = :AccountID');
     $sql->bindParam(':AccountID', $_SESSION['AccountID']);
     $sql->execute();
     $result = $sql->fetch(PDO::FETCH_ASSOC);
+
     $volunteerID= $result['VolunteerID'];
     $startTime = $currentTime;
     $shiftDate = "CURRENT_TIMESTAMP";
@@ -26,7 +43,7 @@ if (isset($_POST['CheckIn'])) {
     $shiftHours = 0;
     $shiftDepartment = $_POST['Department'];
 
-    var_dump($shiftDepartment);
+    //var_dump($shiftDepartment);
 
     $newShift = new Shift($volunteerID, $shiftDate, $startTime, $endTime, $shiftHours);
 
@@ -39,26 +56,11 @@ if (isset($_POST['CheckIn'])) {
     $shiftLastUpdated = $newShift->getShiftLastUpdated();
     $sqlInsertShift = "INSERT INTO Shift (VolunteerID, ShiftDate, StartTime, EndTime, ShiftHours, LastUpdatedBy, LastUpdated)
     VALUES($volunteerID, $shiftDate, '$startTime', $endTime, $shiftHours, '$shiftLastUpdatedBy', $shiftLastUpdated)";
+
     $stmt = mysqli_query($conn, $sqlInsertShift);
-//    $stmt->bindParam(':volunteerID', $volunteerID);
-//    $stmt->bindParam(':shiftDate', $shiftDate);
-//    $stmt->bindParam(':startTime', $startTime);
-//    $stmt->bindParam(':endTime', $endTime);
-//    $stmt->bindParam(':shiftHours', $shiftHours);
-//    $stmt->bindParam(':lastUpdatedBy', $shiftLastUpdatedBy);
-//    $stmt->bindParam(':lastUpdated', $shiftLastUpdated);
-//
-//
-//    if ($stmt)
-//    {
-//        $stmt->execute();
-//        var_dump($stmt);
-//        $message = 'Successfully checked in';
-//        //header("Location: /volunteer_dashboard.php");
-//    }
-//    else {
-//        $message = 'Issue checking in';
-//    }
+
+    mysqli_close($conn);
+
 }
 ?>
 
@@ -90,7 +92,7 @@ if (isset($_POST['CheckIn'])) {
                             <img alt="image" class="img-circle" src="img/profile_pic.jpg" />
                              </span>
                         <a data-toggle="dropdown" class="dropdown-toggle" href="#">
-                            <span class="clear"> <span class="block m-t-xs"> <strong class="font-bold">Shelly Hokanson</strong>
+                            <span class="clear"> <span class="block m-t-xs"> <strong class="font-bold"><?php echo $VolunteerName?></strong>
                              </span> <span class="text-muted text-xs block">Volunteer<b class="caret"></b></span> </span> </a>
                         <ul class="dropdown-menu animated fadeInRight m-t-xs">
                             <li><a href="profile.php">Profile</a></li>
@@ -286,9 +288,8 @@ if (isset($_POST['CheckIn'])) {
 
 
 <!-- Modal -->
-
 <div class="modal fade" id="checkInUser" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <form id="checkIn" method="post">
+    <form id="submitCheckIn" method="post">
         <div class="modal-dialog" role="document">
 
             <div class="modal-content">
@@ -312,26 +313,12 @@ if (isset($_POST['CheckIn'])) {
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">CANCEL</button>
-                    <button name="CheckIn" type="submit" class="btn-edit-form">CHECK IN</button>
+                    <button name="submitCheckIn" type="submit" class="btn-edit-form">CHECK IN</button>
                 </div>
-    </form>
 
-    <!-- Modal -->
-    <div class="modal fade" id="checkOutUserTrans" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" id = "closeCheckOut" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body centered">
-                    <h1> 10:00:32 AM </h1>
-                    <h4>You have checked out of your volunteer shift! </h4>
-                </div>
-            </div>
-        </div>
+    </form>
 </div>
+
 </div>
 
 </div>
