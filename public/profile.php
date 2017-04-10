@@ -337,7 +337,12 @@ function displayResume()
     }
     mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
-    $query = "SELECT resumeUploadID, name FROM resumeUpload";
+    $currentAccountID = $_SESSION['AccountID'];
+
+    $query = "SELECT resumeUploadID, name, Person.PersonID FROM resumeUpload
+              JOIN Person ON resumeUpload.PersonID = Person.PersonID
+              JOIN Account ON Person.AccountID = Account.AccountID
+              WHERE Account.AccountID = '$currentAccountID' AND Person.PersonID = resumeUpload.PersonID";
     $result = mysqli_query($conn, $query) or die('Error, query failed');
 
     if(mysqli_num_rows($result)==0){
@@ -345,7 +350,7 @@ function displayResume()
     }
     else{
         while(list($resumeUploadID, $name) = mysqli_fetch_array($result)){
-            echo "<a href=\"download.php?resumeUploadID=$resumeUploadID\"><img src=\"img/doc.jpg\" class=\"img-responsive\"></a><br>";
+            echo "<a href=\"download.php?resumeUploadID=$resumeUploadID\"><img src=\"img/resumeDoc.jpg\" class=\"img-responsive\"></a><br>";
         }
     }
 }
@@ -365,7 +370,12 @@ function displayVaccine()
     }
     mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
-    $query = "SELECT vaccineUploadID, name FROM vaccineUpload";
+    $currentAccountID = $_SESSION['AccountID'];
+
+    $query = "SELECT vaccineUploadID, name, Person.PersonID FROM vaccineUpload
+              JOIN Person ON vaccineUpload.PersonID = Person.PersonID
+              JOIN Account ON Person.AccountID = Account.AccountID
+              WHERE Account.AccountID = '$currentAccountID' AND Person.PersonID = vaccineUpload.PersonID";
     $result = mysqli_query($conn, $query) or die('Error, query failed');
 
     if(mysqli_num_rows($result)==0){
@@ -373,7 +383,7 @@ function displayVaccine()
     }
     else{
         while(list($vaccineUploadID, $name) = mysqli_fetch_array($result)){
-            echo "<a href=\"download.php?vaccineUploadID=$vaccineUploadID\"><img src=\"img/doc.jpg\" class=\"img-responsive\"></a><br>";
+            echo "<a href=\"download.php?vaccineUploadID=$vaccineUploadID\"><img src=\"img/vaccineDoc.jpg\" class=\"img-responsive\"></a><br>";
         }
     }
 }
@@ -393,7 +403,12 @@ function displayPermit()
     }
     mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
-    $query = "SELECT permitUploadID, name FROM permitUpload";
+    $currentAccountID = $_SESSION['AccountID'];
+
+    $query = "SELECT permitUploadID, name, Person.PersonID FROM permitUpload
+              JOIN Person ON permitUpload.PersonID = Person.PersonID
+              JOIN Account ON Person.AccountID = Account.AccountID
+              WHERE Account.AccountID = '$currentAccountID' AND Person.PersonID = permitUpload.PersonID";
     $result = mysqli_query($conn, $query) or die('Error, query failed');
 
     if(mysqli_num_rows($result)==0){
@@ -401,7 +416,7 @@ function displayPermit()
     }
     else{
         while(list($permitUploadID, $name) = mysqli_fetch_array($result)){
-            echo "<a href=\"download.php?permitUploadID=$permitUploadID\"><img src=\"img/doc.jpg\" class=\"img-responsive\"></a><br>";
+            echo "<a href=\"download.php?permitUploadID=$permitUploadID\"><img src=\"img/permitDoc.jpg\" class=\"img-responsive\"></a><br>";
         }
     }
 }
