@@ -65,4 +65,29 @@ if(isset($_GET['vaccineUploadID'])){
     print $content;
 }
 
+echo "<p>Permits:</p><br>";
+$query = "SELECT permitUploadID, name FROM permitUpload";
+$result = mysqli_query($conn, $query) or die('Error, query failed');
+
+if(mysqli_num_rows($result)==0){
+    echo "Database is empty <br>";
+}
+else{
+    while(list($permitUploadID, $name) = mysqli_fetch_array($result)){
+        echo "<a href=\"download.php?permitUploadID=$permitUploadID\">$name</a><br>";
+    }
+}
+
+
+if(isset($_GET['permitUploadID'])){
+    $permitUploadID    = $_GET['permitUploadID'];
+    $query = "SELECT name, type, size, content FROM permitUpload WHERE permitUploadID= '$permitUploadID'";
+    $result = mysqli_query($conn, $query) or die('Error, query failed');
+    list($name, $type, $size, $content) =  mysqli_fetch_row($result);
+    header("Content-Disposition: attachment; filename=\"$name\"");
+    header("Content-type: $type");
+    header("Content-length: $size");
+    print $content;
+}
+
 ?>
