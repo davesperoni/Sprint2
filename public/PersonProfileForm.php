@@ -72,7 +72,7 @@ if (isset($_POST['SubmitPersonProfileForm'])) {
     $PersonStateAbb = $_POST['PersonState'];
     $PersonCountryAbb = $_POST['PersonCountry'];
     $PersonZipCode = $_POST['PersonZipCode'];
-    $PersonEmail = $_POST['PersonEmail'];
+    //$PersonEmail = $_POST['PersonEmail'];
     $PersonPhoneNumber= $_POST['PersonPhoneNumber'];
     $PersonDateOfBirthYear = $_POST['PersonDOBYear'];
     $PersonDateOfBirthMonth = $_POST['PersonDOBMonth'];
@@ -301,10 +301,10 @@ if (isset($_POST['SubmitPersonProfileForm'])) {
     }
 
     // FOR PERMIT
-    $fileName = $_FILES['vaccineUpload']['name'];
-    $tmpName  = $_FILES['vaccineUpload']['tmp_name'];
-    $fileSize = $_FILES['vaccineUpload']['size'];
-    $fileType = $_FILES['vaccineUpload']['type'];
+    $fileName = $_FILES['permitUpload']['name'];
+    $tmpName  = $_FILES['permitUpload']['tmp_name'];
+    $fileSize = $_FILES['permitUpload']['size'];
+    $fileType = $_FILES['permitUpload']['type'];
 
     $fp      = fopen($tmpName, 'r');
     $content = fread($fp, filesize($tmpName));
@@ -355,7 +355,7 @@ if (isset($_POST['SubmitPersonProfileForm'])) {
                 <p>Thank you for your interest in The Wildlife Center of Virginia. Please fill out the form below to create an account.</p></div>
 
             <div class="col-sm-12">
-                <form role="form" name="PersonProfileForm" method="post" action="PersonProfileForm.php">
+                <form role="form" name="PersonProfileForm" method="post" action="PersonProfileForm.php" enctype="multipart/form-data">
                     <div class="col-md-2 col-md-offset-3"><div class="form-group"><label>First Name</label> <input type="name" name="PersonFirstName" placeholder="Enter first name" class="form-control" required></div></div>
                     <div class="col-md-2"><div class="form-group"><label>Middle Initial</label> <input type="name" name="PersonMiddleInitial" placeholder="Enter middle initial" class="form-control" required></div></div>
                     <div class="col-md-2"><div class="form-group"><label>Last Name</label> <input type="name" name="PersonLastName" placeholder="Enter last name" class="form-control" required></div></div>
@@ -939,7 +939,7 @@ if (isset($_POST['SubmitPersonProfileForm'])) {
                             </div></div>
 
                         <div class="col-md-6 col-md-offset-3"><label>If yes, please upload a copy of your paperwork.</label></div>
-                        <div class="col-md-6 col-md-offset-3"><div class="form-group"><label class="btn btn-default btn-file"><input type="file" hidden>
+                        <div class="col-md-6 col-md-offset-3"><div class="form-group"><label class="btn btn-default btn-file"><input name="vaccineUpload" type="file" hidden>
                                 </label></div></div>
 
                         <div class="col-md-6 col-md-offset-3"><label>Do you have a valid permit to rehabilitate wildlife in the state of Virginia?</label></div>
@@ -959,7 +959,7 @@ if (isset($_POST['SubmitPersonProfileForm'])) {
                                 </select>
                             </div></div>
                         <div class="col-md-6 col-md-offset-3"><label>If yes, please upload a copy of your paperwork.</label></div>
-                        <div class="col-md-6 col-md-offset-3"><div class="form-group"><label class="btn btn-default btn-file"><input type="file" hidden>
+                        <div class="col-md-6 col-md-offset-3"><div class="form-group"><label class="btn btn-default btn-file"><input name="permitUpload" type="file" hidden>
                                 </label></div></div>
 
 
@@ -1024,7 +1024,7 @@ if (isset($_POST['SubmitPersonProfileForm'])) {
                             </div></div>
 
                         <div class="col-md-6 col-md-offset-3"><label>Please attach your resume.</label></div>
-                        <div class="col-md-6 col-md-offset-3"><label class="btn btn-default btn-file" name ="resumeUpload" ><input type="file" hidden required>
+                        <div class="col-md-6 col-md-offset-3"><label class="btn btn-default btn-file"><input name="resumeUpload" type="file" hidden required>
                             </label></div>
 
                 </form>
