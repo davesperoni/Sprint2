@@ -256,32 +256,155 @@ $resultSatMorn = mysqli_fetch_row($resultsSaturdayMorning);
 $resultSatAfternoon = mysqli_fetch_row($resultsSaturdayAfternoon);
 $resultSatNight = mysqli_fetch_row($resultsSaturdayNight);
 
-//if (isset($_POST['uploadProfilePicture'])) {
-//
-//
-//// FOR PERMIT
-//    $fileName = $_FILES['pictureUpload']['name'];
-//    $tmpName = $_FILES['pictureUpload']['tmp_name'];
-//    $fileSize = $_FILES['pictureUpload']['size'];
-//    $fileType = $_FILES['pictureUpload']['type'];
-//
-//    $fp = fopen($tmpName, 'r');
-//    $content = fread($fp, filesize($tmpName));
-//    $content = addslashes($content);
-//    fclose($fp);
-//
-//    $sqlInsertPicture = "INSERT INTO profilePicUpload (PersonID, name, size, type, content, LastUpdatedBy, LastUpdated) " .
-//        "VALUES ('$PersonID', '$fileName', '$fileSize', '$fileType', '$content', 'System', CURRENT_TIMESTAMP)";
-//
-//    $stmt = mysqli_prepare($conn, $sqlInsertPicture);
-//
-//    if ($stmt) {
-//
-//        $stmt->execute();
-//    }
-//
-//
-//}
+if(isset($_POST['uploadProfilePicture']))
+{
+
+        $image = addslashes($_FILES['image']['tmp_name']);
+        $name = addslashes($_FILES['image']['name']);
+        $image = file_get_contents($image);
+        $image = base64_encode($image);
+
+        saveImage($name, $image);
+
+}
+
+function saveImage($name, $image)
+{
+    $server = "127.0.0.1";
+    $username = "homestead";
+    $password = "secret";
+    $database = "wildlifeDB";
+
+    $conn = new mysqli($server, $username, $password, $database);
+
+    if ($conn->connect_error) {
+        die("connection failed!\n" . $conn->connect_error);
+    } else {
+    }
+    mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+
+    // Need to figure out how to get session variable for PersonID to insert
+    // and select as well.. Right now it currently displays all pics in DB
+    $currentAccountID = $_SESSION['AccountID'];
+
+    $sqlInsertPic = "INSERT INTO picUpload (AccountID, name, image) VALUES ('$currentAccountID','$name','$image')";
+    $result = mysqli_query($conn, $sqlInsertPic) or die('Error, query failed');
+}
+
+function displayImage()
+{
+    $server = "127.0.0.1";
+    $username = "homestead";
+    $password = "secret";
+    $database = "wildlifeDB";
+
+    $conn = new mysqli($server, $username, $password, $database);
+
+    if ($conn->connect_error) {
+        die("connection failed!\n" . $conn->connect_error);
+    } else {
+    }
+    mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+
+    $currentAccountID = $_SESSION['AccountID'];
+
+    $sqlDisplayPic = "SELECT * FROM picUpload WHERE AccountID = '$currentAccountID'";
+    $result = mysqli_query($conn, $sqlDisplayPic) or die('Error, query failed');
+
+    if(mysqli_num_rows($result)==0){
+        echo '<img src="img/emptyprofilepic.png" class="img-responsive col-xs-8' . '">';
+    }
+    else {
+        while ($row = mysqli_fetch_array($result)) {
+            echo '<img class="img-responsive col-xs-8" src="data:image;base64,' . $row[3] . '">';
+        }
+    }
+
+}
+
+function displayResume()
+{
+    $server = "127.0.0.1";
+    $username = "homestead";
+    $password = "secret";
+    $database = "wildlifeDB";
+
+    $conn = new mysqli($server, $username, $password, $database);
+
+    if ($conn->connect_error) {
+        die("connection failed!\n" . $conn->connect_error);
+    } else {
+    }
+    mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+
+    $query = "SELECT resumeUploadID, name FROM resumeUpload";
+    $result = mysqli_query($conn, $query) or die('Error, query failed');
+
+    if(mysqli_num_rows($result)==0){
+        echo "";
+    }
+    else{
+        while(list($resumeUploadID, $name) = mysqli_fetch_array($result)){
+            echo "<a href=\"download.php?resumeUploadID=$resumeUploadID\"><img src=\"img/doc.jpg\" class=\"img-responsive\"></a><br>";
+        }
+    }
+}
+
+function displayVaccine()
+{
+    $server = "127.0.0.1";
+    $username = "homestead";
+    $password = "secret";
+    $database = "wildlifeDB";
+
+    $conn = new mysqli($server, $username, $password, $database);
+
+    if ($conn->connect_error) {
+        die("connection failed!\n" . $conn->connect_error);
+    } else {
+    }
+    mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+
+    $query = "SELECT vaccineUploadID, name FROM vaccineUpload";
+    $result = mysqli_query($conn, $query) or die('Error, query failed');
+
+    if(mysqli_num_rows($result)==0){
+        echo "";
+    }
+    else{
+        while(list($vaccineUploadID, $name) = mysqli_fetch_array($result)){
+            echo "<a href=\"download.php?vaccineUploadID=$vaccineUploadID\"><img src=\"img/doc.jpg\" class=\"img-responsive\"></a><br>";
+        }
+    }
+}
+
+function displayPermit()
+{
+    $server = "127.0.0.1";
+    $username = "homestead";
+    $password = "secret";
+    $database = "wildlifeDB";
+
+    $conn = new mysqli($server, $username, $password, $database);
+
+    if ($conn->connect_error) {
+        die("connection failed!\n" . $conn->connect_error);
+    } else {
+    }
+    mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+
+    $query = "SELECT permitUploadID, name FROM permitUpload";
+    $result = mysqli_query($conn, $query) or die('Error, query failed');
+
+    if(mysqli_num_rows($result)==0){
+        echo "";
+    }
+    else{
+        while(list($permitUploadID, $name) = mysqli_fetch_array($result)){
+            echo "<a href=\"download.php?permitUploadID=$permitUploadID\"><img src=\"img/doc.jpg\" class=\"img-responsive\"></a><br>";
+        }
+    }
+}
 
 
 
@@ -590,7 +713,9 @@ $resultSatNight = mysqli_fetch_row($resultsSaturdayNight);
                         <div>
                             <div class="ibox-content">
                                 <div class="profile">
-                                    <img src="img/profilepic.png" class="img-responsive col-xs-8">
+                                    <?php
+                                        displayImage();
+                                    ?>
                                 </div>
                                 <div class="col-xs-1">
                                     <div class="edit">
@@ -600,7 +725,7 @@ $resultSatNight = mysqli_fetch_row($resultsSaturdayNight);
 
                                         <!-- Modal -->
                                         <div class="modal fade" id="profilePicture" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                            <form id ="changeProfilePictureForm" method = "post">
+                                            <form id ="changeProfilePictureForm" method = "post" enctype="multipart/form-data">
                                             <div class="modal-dialog" role="document">
                                                 <div class="modal-content">
                                                     <div class="modal-header">
@@ -613,7 +738,7 @@ $resultSatNight = mysqli_fetch_row($resultsSaturdayNight);
                                                     <div class="modal-body btmSpace">
 
                                                         <div class="fileinput fileinput-new pull-left moveDown" data-provides="fileinput">
-                                                            <span class="btn btn-default btn-file" name ="pictureUpload"><input type="file"></span>
+                                                            <span class="btn btn-default btn-file"><input type="file" name="image"></span>
                                                             <span class="fileinput-filename"></span>
                                                         </div>
 
@@ -1029,32 +1154,23 @@ $resultSatNight = mysqli_fetch_row($resultsSaturdayNight);
                             <div class="col-md-12">
                                 <div class="col-md-4">
                                     <div class="docspadding">
-                                        <img src="img/doc.jpg" class="img-responsive">
+                                        <?php
+                                            displayResume();
+                                        ?>
                                     </div>
                                 </div>
                                 <div class="col-md-4">
                                     <div class="docspadding">
-                                        <img src="img/doc.jpg" class="img-responsive">
+                                        <?php
+                                        displayVaccine();
+                                        ?>
                                     </div>
                                 </div>
                                 <div class="col-md-4">
                                     <div class="docspadding">
-                                        <img src="img/doc.jpg" class="img-responsive">
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="docspadding">
-                                        <img src="img/doc.jpg" class="img-responsive">
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="docspadding">
-                                        <img src="img/doc.jpg" class="img-responsive">
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="docspadding">
-                                        <img src="img/doc.jpg" class="img-responsive">
+                                        <?php
+                                        displayPermit();
+                                        ?>
                                     </div>
                                 </div>
                             </div>
