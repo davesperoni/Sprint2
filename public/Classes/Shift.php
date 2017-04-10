@@ -8,9 +8,10 @@
  */
 class Shift
 {
-    public function __construct($VolunteerID, $ShiftDate, $StartTime, $EndTime, $ShiftHours)
+    public function __construct($VolunteerID, $DepartmentID, $ShiftDate, $StartTime, $EndTime, $ShiftHours)
     {
         $this->volunteerID = $VolunteerID;
+        $this->departmentID = $DepartmentID;
         $this->shiftDate = $ShiftDate;
         $this->startTime = $StartTime;
         $this->endTime = $EndTime;
@@ -22,6 +23,12 @@ class Shift
     {
 
         return $this->volunteerID;
+
+    }
+    public function getShiftDepartmentID()
+    {
+
+        return $this->departmentID;
 
     }
 

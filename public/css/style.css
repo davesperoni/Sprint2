@@ -8732,7 +8732,7 @@ hr {
 
 
 h1 {
-    font-family: BebasNeue;
+    font-family: Bebas;
     font-size: 80px;
     padding-top: 0px;
     padding-bottom: 0px;
@@ -9562,4 +9562,81 @@ padding-right: 30px;
   color: #9e371c;
 }
 
+
+
 /*End CSS for Archived Apps*/
+
+/* accept reject styles */
+.accept-reject-btn
+{
+ background-color: #9E371C;
+ color: white;
+}
+
+.accept-reject-btn:hover
+{
+  background-color: #262015;
+  color: white;
+}
+
+#colorGreen
+{
+  padding-left: 4px;
+  color: #76b298;
+}
+
+#colorRed
+{
+  padding-left: 4px;
+  color: #9E371C;
+}
+
+#noPad
+{
+  padding-right: 0px;
+}
+
+.review-later
+{
+  text-decoration: underline;
+  color: gray;
+  padding-right: 4px;
+}
+
+.review-later:hover
+{
+  color: #9E371C;
+}
+
+.orangeColor
+{
+  color: #9E371C !important;
+}
+/* transport modal styles */
+
+.text-left
+{
+  text-align: left;
+}
+
+.orangeBackground
+{
+
+  background-color: #9E371C;
+  padding: 10px 10px 15px 10px;
+}
+
+.whiteText
+{
+  color: white;
+}
+
+.space-left
+{
+  padding-left: 8px;
+}
+
+input, textarea
+{
+  color: black;
+}
