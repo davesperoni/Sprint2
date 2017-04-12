@@ -1,3 +1,36 @@
+
+<?php
+
+    /*
+	Updated
+	Author: Drew Johnson
+	Date: 4/11/2017
+*/
+	
+	error_reporting(-1);
+	ini_set('display_errors', 'On');
+	set_error_handler("var_dump");
+	//var_dump($email);
+	
+	if (isset($_POST['button_pressed'])) 
+	{
+	
+		//$email = $_POST['email'];
+		//$to = 'johnsoaw1022@gmail.com, mandelja1@gmail.com'; //uncomment this line for demo?
+		$to = $_POST['email'];
+		$subject = 'Become A Volunteer';
+		$message = 'Hello, thank you for your interest in volunteering at the Wildlife Center of Virginia. Please follow the link to create an account. http://54.186.42.239/createaccount.php';
+		$headers = 'From: vawildlifecenter@gmail.com';
+
+		mail($to, $subject, $message, $headers);
+		
+		//echo 'Email sent';
+		
+	}
+	
+?>
+
+
 <!DOCTYPE html>
 <html>
 
@@ -32,13 +65,13 @@
                     <div class="row">
 
                         <div class="col-lg-12">
-                            <form class="m-t" role="form" action="index.html">
+                            <form class="m-t" role="form" action="" method="post">
                                 <div class="form-group">
-                                    <input type="email" class="form-control" placeholder="Email address" required="">
+                                    <input type="email" name="email" class="form-control" placeholder="Email address" required="">
                                 </div>
 
-                                <button type="submit" class="btn btn-primary block full-width m-b">Send Application</button>
-
+                                <button type="submit" name="submit" class="btn btn-primary block full-width m-b">Send Application</button>
+								<input type="hidden" name="button_pressed" value="1"/>
                             </form>
                         </div>
                     </div>

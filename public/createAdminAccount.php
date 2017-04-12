@@ -1,57 +1,58 @@
 <?php
 
-session_start();
+    session_start();
 
-//if this is set we know that the user is logged in
-if(isset($_SESSION['AccountID'])){
-    header("Location: /profile.php");
-}
+    //if this is set we know that the user is logged in
+    if(isset($_SESSION['AccountID'])){
+        header("Location: /profile.php");
+    }
 
-require("Classes/Account.php");
-require 'databasePDO.php';
-require 'database.php';
-$message = ' ';
-
-
-if(!empty($_POST['email']) && !empty($_POST['password'])):
-
-    // Enter the new user in the database
-    $sql = "INSERT INTO Account (Email, Password, isAdmin, LastUpdatedBy, LastUpdated) VALUES (:email, :password, 'y', :updatedBy, CURRENT_TIMESTAMP)";
-    $stmt = $connPDO->prepare($sql);
-
-    $email = $_POST['email'];
-    $password = $_POST['password'];
-
-    $newAccount = new Account($email, $password);
-    $email = $newAccount->getEmail();
-    $password = $newAccount->getPassword();
-    $updatedBy = $newAccount->getLastUpdatedBy();
-    $lastUpdated = $newAccount->getLastUpdated();
-
-    $stmt->bindParam(':email', $email);
-    //take out hash to turn off notice
-    $var = password_hash($password, PASSWORD_BCRYPT);
-    $stmt->bindParam(':password', $var);
-
-    //$stmt->bindParam(':isAdmin', $isAdmin);
+    require("Classes/Account.php");
+    require 'databasePDO.php';
+    require 'database.php';
+    $message = ' ';
 
 
-    $stmt->bindParam(':updatedBy', $updatedBy);
-  //  $stmt->bindParam(':LastUpdatedBy', $updatedBy);
-    //$stmt->bindParam(':LastUpdated', $lastUpdated);
+    if(!empty($_POST['email']) && !empty($_POST['password'])):
 
-    //$updatedBy = "System";
-    //$lastUpdated = "2017-01-01";
+        // Enter the new user in the database
+        $sql = "INSERT INTO Account (Email, Password, isAdmin, LastUpdatedBy, LastUpdated) 
+                VALUES (:email, :password, 'y', :updatedBy, CURRENT_TIMESTAMP)";
+        $stmt = $connPDO->prepare($sql);
 
-    if( $stmt->execute() ):
-        $message = 'Successfully created new user';
-        header("Location: /login.php");
+        $email = $_POST['email'];
+        $password = $_POST['password'];
 
-    else:
-        $message = 'Issue creating account';
+        $newAccount = new Account($email, $password);
+        $email = $newAccount->getEmail();
+        $password = $newAccount->getPassword();
+        $updatedBy = $newAccount->getLastUpdatedBy();
+        $lastUpdated = $newAccount->getLastUpdated();
+
+        $stmt->bindParam(':email', $email);
+        //take out hash to turn off notice
+        $var = password_hash($password, PASSWORD_BCRYPT);
+        $stmt->bindParam(':password', $var);
+
+        //$stmt->bindParam(':isAdmin', $isAdmin);
+
+
+        $stmt->bindParam(':updatedBy', $updatedBy);
+        //$stmt->bindParam(':LastUpdatedBy', $updatedBy);
+        //$stmt->bindParam(':LastUpdated', $lastUpdated);
+
+        //$updatedBy = "System";
+        //$lastUpdated = "2017-01-01";
+
+        if( $stmt->execute() ):
+            $message = 'Successfully created new user';
+            header("Location: /login.php");
+
+        else:
+            $message = 'Issue creating account';
+        endif;
+
     endif;
-
-endif;
 
 ?>
 

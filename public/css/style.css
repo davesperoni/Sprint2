@@ -9248,38 +9248,6 @@ body
   color: #F0EEEC;
 }
 
-/*APPLICANT DASHBOARD STYLES */
-
-.hey-applicant
-{
-  font-family: 'Montserrat';
-  font-size: 16px;
-  top: 220px;
-  position: relative;
-  color: #F0EEEC;
-  font-weight: 300;
-}
-
-.app-types
-{
-  font-family: Bebas;
-  color: #9e371c;
-  font-size: 34px;
-  margin-top: 0px;
-}
-
-.app-text
-{
-  font-family: 'Montserrat';
-  font-size: 16px;
-  font-weight: 300;
-}
-
-.position-title
-{
-  font-family: 'Montserrat';
-  font-size: 21px;
-}
 
 /* AMANDA'S STYLES FOR LOGIN PAGE */
 .login-background
@@ -9574,3 +9542,68 @@ padding-right: 30px;
 }
 
 /*End CSS for Archived Apps*/
+
+
+/*APPLICANT DASHBOARD STYLES */
+
+.hey-applicant
+{
+  font-family: 'Montserrat';
+  font-size: 16px;
+  top: 220px;
+  position: relative;
+  color: #F0EEEC;
+  font-weight: 300;
+}
+
+.app-types
+{
+  font-family: Bebas;
+  color: #9e371c;
+  font-size: 34px;
+  margin-top: 0px;
+}
+
+.app-text
+{
+  font-family: 'Montserrat';
+  font-size: 16px;
+  font-weight: 300;
+}
+
+.position-title
+{
+  font-family: 'Montserrat';
+  font-size: 21px;
+  padding: 10px 5px 0px 10px;
+
+}
+
+.moveToBtm
+{
+  margin-top: 600px;
+}
+
+.moveMore
+{
+  margin-top: 70px !important;
+}
+
+.slick-prev:before, .slick-next:before
+{
+  color: #9E371C !important;
+}
+
+.ibox-title-applicant
+{
+  background-color: #f3f3f4;
+  color: #9E371C;
+  font-family: serif;
+  font-size: 32px;
+  padding: 5px 5px 5px 10px;
+}
+
+.app-types
+{
+  margin-top: 200px !important;
+}

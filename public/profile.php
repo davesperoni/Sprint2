@@ -1,636 +1,641 @@
-<?php include("Classes/Availability.php"); ?>
+<?php
+    include("Classes/Availability.php");
+?>
+
 <?php
 
-session_start();
+    session_start();
 
-require 'databasePDO.php';
-require 'database.php';
+    require 'databasePDO.php';
+    require 'database.php';
 
-if(isset($_SESSION['AccountID'])){
+    if(isset($_SESSION['AccountID'])){
 
 
-    $records = $connPDO->prepare('SELECT AccountID,email,password FROM Account WHERE AccountID = :AccountID');
+        $records = $connPDO->prepare('SELECT AccountID,email,password FROM Account WHERE AccountID = :AccountID');
+        $records->bindParam(':AccountID', $_SESSION['AccountID']);
+        $records->execute();
+        $results = $records->fetch(PDO::FETCH_ASSOC);
+
+        $user = NULL;
+
+        if(count($results) > 0){
+            $user = $results;
+        }
+
+    }
+?>
+
+<?php
+    $records = $connPDO->prepare('select PersonID, FirstName, MiddleInitial, LastName, PhoneNumber, Allergy, PhysicalLimitation FROM Person where AccountID = :AccountID');
     $records->bindParam(':AccountID', $_SESSION['AccountID']);
     $records->execute();
     $results = $records->fetch(PDO::FETCH_ASSOC);
 
-    $user = NULL;
-
     if(count($results) > 0){
-        $user = $results;
+        $personInformation = $results;
     }
 
-}
+    $VolunteerName = $personInformation['FirstName'] . " " . $personInformation['MiddleInitial'] . " " . $personInformation['LastName'];
+    $VolunteerPhoneNumber = $personInformation['PhoneNumber'];
+    $VolunteerEmail = $user['email'];
+    $PersonID = $personInformation['PersonID'];
+    $VolunteerAllergy = $personInformation['Allergy'];
+    $VolunteerPhysicalLimitation = $personInformation['PhysicalLimitation'];
+
+    $records = $connPDO->prepare('select EmergencyContact.FirstName, EmergencyContact.MiddleInitial, EmergencyContact.LastName, EmergencyContact.PhoneNumber, EmergencyContact.Relationship from EmergencyContact join Person on EmergencyContact.EmergencyContactID = Person.EmergencyContactID where PersonID = :PersonID');
+    $records->bindParam(':PersonID', $PersonID);
+    $records->execute();
+    $results = $records->fetch(PDO::FETCH_ASSOC);
+
+    if(count($results) > 0) {
+        $emergencyContact = $results;
+    }
+
+    $EmergencyContactName = $emergencyContact['FirstName'] . " " . $emergencyContact['MiddleInitial'] . " " . $emergencyContact['LastName'];
+    $EmergencyContactFirstName = $emergencyContact['FirstName'];
+    $EmergencyContactMI = $emergencyContact['MiddleInitial'];
+    $EmergencyContactLastName = $emergencyContact['LastName'];
+    $EmergencyContactPhoneNumber = $emergencyContact['PhoneNumber'];
+    $EmergencyContactRelationship = $emergencyContact['Relationship'];
+
+
+    $records = $connPDO->prepare('select Volunteer.YTDHours, Volunteer.YTDMiles, Volunteer.Notes from Volunteer where PersonID = :PersonID');
+    $records->bindParam(':PersonID', $PersonID);
+    $records->execute();
+    $results = $records->fetch(PDO::FETCH_ASSOC);
+
+    if(count($results) > 0) {
+        $volunteerInformation = $results;
+    }
+
+    $volunteerYTDHours = $volunteerInformation['YTDHours'];
+    $volunteerYTDMiles = $volunteerInformation['YTDMiles'];
+    $volunteerNotes = $volunteerInformation['Notes'];
+
+
+    // SUNDAY
+
+    $sqlSunday = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
+    JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =1;";
+    $resultsSunday = mysqli_query($conn, $sqlSunday);
+
+    /*$sqlUpdateSunday = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
+    JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =1;";
+    $resultsUpdateSunday = mysqli_query($conn, $sqlUpdateSunday);*/
+
+    $sqlSundayMorning = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
+    JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =1 AND Availability.AvailableShift = 'morning';";
+    $resultsSundayMorning = mysqli_query($conn, $sqlSundayMorning);
+
+    $sqlSundayAfternoon = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
+    JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =1 AND Availability.AvailableShift = 'afternoon';";
+    $resultsSundayAfternoon = mysqli_query($conn, $sqlSundayAfternoon);
+
+    $sqlSundayNight = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
+    JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =1 AND Availability.AvailableShift = 'night';";
+    $resultsSundayNight = mysqli_query($conn, $sqlSundayNight);
+
+    $resultSunMorn = mysqli_fetch_row($resultsSundayMorning);
+    $resultSunAfternoon = mysqli_fetch_row($resultsSundayAfternoon);
+    $resultSunNight = mysqli_fetch_row($resultsSundayNight);
+
+
+    // MONDAY
+
+    $sqlMonday = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
+    JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =2;";
+    $resultsMonday = mysqli_query($conn, $sqlMonday);
+
+    /*$sqlUpdateMonday = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
+    JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =2;";
+    $resultsUpdateMonday = mysqli_query($conn, $sqlUpdateMonday);*/
+
+    $sqlMondayMorning = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
+    JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =2 AND Availability.AvailableShift = 'morning';";
+    $resultsMondayMorning = mysqli_query($conn, $sqlMondayMorning);
+
+    $sqlMondayAfternoon = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
+    JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =2 AND Availability.AvailableShift = 'afternoon';";
+    $resultsMondayAfternoon = mysqli_query($conn, $sqlMondayAfternoon);
+
+    $sqlMondayNight = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
+    JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =2 AND Availability.AvailableShift = 'night';";
+    $resultsMondayNight = mysqli_query($conn, $sqlMondayNight);
+
+    $resultMonMorn = mysqli_fetch_row($resultsMondayMorning);
+    $resultMonAfternoon = mysqli_fetch_row($resultsMondayAfternoon);
+    $resultMonNight = mysqli_fetch_row($resultsMondayNight);
+
+    // TUESDAY
+
+    $sqlTuesday = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
+    JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =3;";
+    $resultsTuesday = mysqli_query($conn, $sqlTuesday);
+
+    /*$sqlUpdateTuesday = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
+    JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =3;";
+    $resultsUpdateTuesday = mysqli_query($conn, $sqlUpdateTuesday);*/
+
+    $sqlTuesdayMorning = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
+    JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =3 AND Availability.AvailableShift = 'morning';";
+    $resultsTuesdayMorning = mysqli_query($conn, $sqlTuesdayMorning);
+
+    $sqlTuesdayAfternoon = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
+    JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =3 AND Availability.AvailableShift = 'afternoon';";
+    $resultsTuesdayAfternoon = mysqli_query($conn, $sqlTuesdayAfternoon);
+
+    $sqlTuesdayNight = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
+    JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =3 AND Availability.AvailableShift = 'night';";
+    $resultsTuesdayNight = mysqli_query($conn, $sqlTuesdayNight);
+
+    $resultTueMorn = mysqli_fetch_row($resultsTuesdayMorning);
+    $resultTueAfternoon = mysqli_fetch_row($resultsTuesdayAfternoon);
+    $resultTueNight = mysqli_fetch_row($resultsTuesdayNight);
+
+
+    // WEDNESDAY
+
+    $sqlWednesday = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
+    JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =4;";
+    $resultsWednesday = mysqli_query($conn, $sqlWednesday);
+
+    /*$sqlUpdateWednesday = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
+    JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =4;";
+    $resultsUpdateWednesday = mysqli_query($conn, $sqlUpdateWednesday);*/
+
+    $sqlWednesdayMorning = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
+    JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =4 AND Availability.AvailableShift = 'morning';";
+    $resultsWednesdayMorning = mysqli_query($conn, $sqlWednesdayMorning);
+
+    $sqlWednesdayAfternoon = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
+    JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =4 AND Availability.AvailableShift = 'afternoon';";
+    $resultsWednesdayAfternoon = mysqli_query($conn, $sqlWednesdayAfternoon);
+
+    $sqlWednesdayNight = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
+    JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =4 AND Availability.AvailableShift = 'night';";
+    $resultsWednesdayNight = mysqli_query($conn, $sqlWednesdayNight);
+
+    $resultWedMorn = mysqli_fetch_row($resultsWednesdayMorning);
+    $resultWedAfternoon = mysqli_fetch_row($resultsWednesdayAfternoon);
+    $resultWedNight = mysqli_fetch_row($resultsWednesdayNight);
+
+    // THURSDAY
+
+    $sqlThursday = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
+    JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =5;";
+    $resultsThursday = mysqli_query($conn, $sqlThursday);
+
+    /*$sqlUpdateThursday = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
+    JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =5;";
+    $resultsUpdateThursday = mysqli_query($conn, $sqlUpdateThursday);*/
+
+    $sqlThursdayMorning = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
+    JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =5 AND Availability.AvailableShift = 'morning';";
+    $resultsThursdayMorning = mysqli_query($conn, $sqlThursdayMorning);
+
+    $sqlThursdayAfternoon = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
+    JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =5 AND Availability.AvailableShift = 'afternoon';";
+    $resultsThursdayAfternoon = mysqli_query($conn, $sqlThursdayAfternoon);
+
+    $sqlThursdayNight = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
+    JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =5 AND Availability.AvailableShift = 'night';";
+    $resultsThursdayNight = mysqli_query($conn, $sqlThursdayNight);
+
+    $resultThurMorn = mysqli_fetch_row($resultsThursdayMorning);
+    $resultThurAfternoon = mysqli_fetch_row($resultsThursdayAfternoon);
+    $resultThurNight = mysqli_fetch_row($resultsThursdayNight);
+
+    // FRIDAY
+
+    $sqlFriday = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
+    JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =6;";
+    $resultsFriday = mysqli_query($conn, $sqlFriday);
+
+    /*$sqlUpdateFriday = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
+    JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =6;";
+    $resultsUpdateFriday = mysqli_query($conn, $sqlUpdateFriday);*/
+
+    $sqlFridayMorning = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
+    JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =6 AND Availability.AvailableShift = 'morning';";
+    $resultsFridayMorning = mysqli_query($conn, $sqlFridayMorning);
+
+    $sqlFridayAfternoon = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
+    JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =6 AND Availability.AvailableShift = 'afternoon';";
+    $resultsFridayAfternoon = mysqli_query($conn, $sqlFridayAfternoon);
+
+    $sqlFridayNight = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
+    JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =6 AND Availability.AvailableShift = 'night';";
+    $resultsFridayNight = mysqli_query($conn, $sqlFridayNight);
+
+    $resultFriMorn = mysqli_fetch_row($resultsFridayMorning);
+    $resultFriAfternoon = mysqli_fetch_row($resultsFridayAfternoon);
+    $resultFriNight = mysqli_fetch_row($resultsFridayNight);
+
+    // SATURDAY
+
+    $sqlSaturday = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
+    JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =7;";
+    $resultsSaturday = mysqli_query($conn, $sqlSaturday);
+
+    /*$sqlUpdateSaturday = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
+    JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =7;";
+    $resultsUpdateSaturday = mysqli_query($conn, $sqlUpdateSaturday);*/
+
+    $sqlSaturdayMorning = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
+    JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =7 AND Availability.AvailableShift = 'morning';";
+    $resultsSaturdayMorning = mysqli_query($conn, $sqlSaturdayMorning);
+
+    $sqlSaturdayAfternoon = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
+    JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =7 AND Availability.AvailableShift = 'afternoon';";
+    $resultsSaturdayAfternoon = mysqli_query($conn, $sqlSaturdayAfternoon);
+
+    $sqlSaturdayNight = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
+    JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =7 AND Availability.AvailableShift = 'night';";
+    $resultsSaturdayNight = mysqli_query($conn, $sqlSaturdayNight);
+
+    $resultSatMorn = mysqli_fetch_row($resultsSaturdayMorning);
+    $resultSatAfternoon = mysqli_fetch_row($resultsSaturdayAfternoon);
+    $resultSatNight = mysqli_fetch_row($resultsSaturdayNight);
+
+    if(isset($_POST['uploadProfilePicture']))
+    {
+
+            $image = addslashes($_FILES['image']['tmp_name']);
+            $name = addslashes($_FILES['image']['name']);
+            $image = file_get_contents($image);
+            $image = base64_encode($image);
+
+            saveImage($name, $image);
+
+    }
+
+    function saveImage($name, $image)
+    {
+        $server = "localhost";
+        $username = "root";
+        $password = "secret";
+        $database = "wildlifeDB";
+
+        $conn = new mysqli($server, $username, $password, $database);
+
+        if ($conn->connect_error) {
+            die("connection failed!\n" . $conn->connect_error);
+        } else {
+        }
+        mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+
+        // Need to figure out how to get session variable for PersonID to insert
+        // and select as well.. Right now it currently displays all pics in DB
+        $currentAccountID = $_SESSION['AccountID'];
+
+        $sqlDeleteOldPic = "DELETE FROM picUpload WHERE AccountID = '$currentAccountID'";
+        $result = mysqli_query($conn, $sqlDeleteOldPic) or die('Error, query failed');
+
+        $sqlInsertPic = "INSERT INTO picUpload (AccountID, name, image) VALUES ('$currentAccountID','$name','$image')";
+        $result = mysqli_query($conn, $sqlInsertPic) or die('Error, query failed');
+    }
+
+    function displayImage()
+    {
+        $server = "localhost";
+        $username = "root";
+        $password = "secret";
+        $database = "wildlifeDB";
+
+        $conn = new mysqli($server, $username, $password, $database);
+
+        if ($conn->connect_error) {
+            die("connection failed!\n" . $conn->connect_error);
+        } else {
+        }
+        mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+
+        $currentAccountID = $_SESSION['AccountID'];
+
+        $sqlDisplayPic = "SELECT * FROM picUpload WHERE AccountID = '$currentAccountID'";
+        $result = mysqli_query($conn, $sqlDisplayPic) or die('Error, query failed');
+
+        if(mysqli_num_rows($result)==0){
+            echo '<img src="img/emptyprofilepic.png" class="img-responsive col-xs-8' . '">';
+        }
+        else {
+            while ($row = mysqli_fetch_array($result)) {
+                echo '<img class="img-responsive col-xs-8" src="data:image;base64,' . $row[3] . '">';
+            }
+        }
+
+    }
+
+    function displayResume()
+    {
+        $server = "localhost";
+        $username = "root";
+        $password = "secret";
+        $database = "wildlifeDB";
+
+        $conn = new mysqli($server, $username, $password, $database);
+
+        if ($conn->connect_error) {
+            die("connection failed!\n" . $conn->connect_error);
+        } else {
+        }
+        mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+
+        $currentAccountID = $_SESSION['AccountID'];
+
+        $query = "SELECT resumeUploadID, name, Person.PersonID FROM resumeUpload
+                  JOIN Person ON resumeUpload.PersonID = Person.PersonID
+                  JOIN Account ON Person.AccountID = Account.AccountID
+                  WHERE Account.AccountID = '$currentAccountID' AND Person.PersonID = resumeUpload.PersonID";
+        $result = mysqli_query($conn, $query) or die('Error, query failed');
+
+        if(mysqli_num_rows($result)==0){
+            echo "";
+        }
+        else{
+            while(list($resumeUploadID, $name) = mysqli_fetch_array($result)){
+                echo "<a href=\"download.php?resumeUploadID=$resumeUploadID\"><img src=\"img/resumeDoc.jpg\" class=\"img-responsive\"></a><br>";
+            }
+        }
+    }
+
+    function displayVaccine()
+    {
+        $server = "localhost";
+        $username = "root";
+        $password = "secret";
+        $database = "wildlifeDB";
+
+        $conn = new mysqli($server, $username, $password, $database);
+
+        if ($conn->connect_error) {
+            die("connection failed!\n" . $conn->connect_error);
+        } else {
+        }
+        mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+
+        $currentAccountID = $_SESSION['AccountID'];
+
+        $query = "SELECT vaccineUploadID, name, Person.PersonID FROM vaccineUpload
+                  JOIN Person ON vaccineUpload.PersonID = Person.PersonID
+                  JOIN Account ON Person.AccountID = Account.AccountID
+                  WHERE Account.AccountID = '$currentAccountID' AND Person.PersonID = vaccineUpload.PersonID";
+        $result = mysqli_query($conn, $query) or die('Error, query failed');
+
+        if(mysqli_num_rows($result)==0){
+            echo "";
+        }
+        else{
+            while(list($vaccineUploadID, $name) = mysqli_fetch_array($result)){
+                echo "<a href=\"download.php?vaccineUploadID=$vaccineUploadID\"><img src=\"img/vaccineDoc.jpg\" class=\"img-responsive\"></a><br>";
+            }
+        }
+    }
+
+    function displayPermit()
+    {
+        $server = "localhost";
+        $username = "root";
+        $password = "secret";
+        $database = "wildlifeDB";
+
+        $conn = new mysqli($server, $username, $password, $database);
+
+        if ($conn->connect_error) {
+            die("connection failed!\n" . $conn->connect_error);
+        } else {
+        }
+        mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+
+        $currentAccountID = $_SESSION['AccountID'];
+
+        $query = "SELECT permitUploadID, name, Person.PersonID FROM permitUpload
+                  JOIN Person ON permitUpload.PersonID = Person.PersonID
+                  JOIN Account ON Person.AccountID = Account.AccountID
+                  WHERE Account.AccountID = '$currentAccountID' AND Person.PersonID = permitUpload.PersonID";
+        $result = mysqli_query($conn, $query) or die('Error, query failed');
+
+        if(mysqli_num_rows($result)==0){
+            echo "";
+        }
+        else{
+            while(list($permitUploadID, $name) = mysqli_fetch_array($result)){
+                echo "<a href=\"download.php?permitUploadID=$permitUploadID\"><img src=\"img/permitDoc.jpg\" class=\"img-responsive\"></a><br>";
+            }
+        }
+    }
+
+
+
+     if (isset($_POST['UpdateProfile'])) {
+
+
+         $updateVolunteerPhoneNumber = $_POST['updateVolunteerPhoneNumber'];
+         $updateVolunteerEmail = $_POST['updateVolunteerEmail'];
+         $updateVolunteerAllergy = $_POST['updateVolunteerAllergies'];
+         $updateVolunteerPhysicalLimitation = $_POST['updateVolunteerPhysicalLimitations'];
+
+
+         $sqlPersonInformation = "UPDATE Person p SET p.PhoneNumber = :phoneNumber, p.Allergy = :allergy, p.PhysicalLimitation = :physicalLimitation where p.PersonID = :PersonID";
+         $stmt = $connPDO->prepare($sqlPersonInformation);
+
+         $stmt->bindParam(':phoneNumber', $updateVolunteerPhoneNumber);
+         $stmt->bindParam(':allergy', $updateVolunteerAllergy);
+         $stmt->bindParam(':physicalLimitation', $updateVolunteerPhysicalLimitation);
+         $stmt->bindParam(':PersonID', $PersonID);
+
+
+         if ($stmt->execute()) {
+
+         } else {
+         }
+
+         $sqlAccountInformation = "UPDATE Account a join Person p on a.AccountID = p.AccountID SET a.Email = :email where p.PersonID = :PersonID";
+         $stmt = $connPDO->prepare($sqlAccountInformation);
+
+         $stmt->bindParam(':email', $updateVolunteerEmail);
+         $stmt->bindParam(':PersonID', $PersonID);
+
+         if ($stmt->execute()) {
+
+         } else {
+         }
+
+         $updateEmergencyFirstName = $_POST['updateEmergencyFirstName'];
+         $updateEmergencyMiddleInitial = $_POST['updateEmergencyMiddleInitial'];
+         $updateEmergencyLastName = $_POST['updateEmergencyLastName'];
+         $updateEmergencyPhoneNumber= $_POST['updateEmergencyPhoneNumber'];
+         $updateEmergencyRelationship = $_POST['updateEmergencyRelationship'];
+         $updateEmergencyLastUpdatedBy = "System";
+
+
+         $sqlUpdateEmergencyContactInformation = "UPDATE EmergencyContact e join Person p on e.EmergencyContactID = p.EmergencyContactID SET e.FirstName = :firstName , e.MiddleInitial = :middleInitial, e.LastName = :lastName, e.PhoneNumber = :phoneNumber, e.Relationship = :relationship, e.LastUpdatedBy = :lastUpdatedBy, e.LastUpdated = CURRENT_TIMESTAMP where p.PersonID = :PersonID";
+
+         $stmt = $connPDO->prepare($sqlUpdateEmergencyContactInformation);
+
+         $stmt->bindParam(':firstName', $updateEmergencyFirstName);
+         $stmt->bindParam(':middleInitial', $updateEmergencyMiddleInitial);
+         $stmt->bindParam(':lastName', $updateEmergencyLastName);
+         $stmt->bindParam(':phoneNumber', $updateEmergencyPhoneNumber);
+         $stmt->bindParam(':relationship', $updateEmergencyRelationship);
+         $stmt->bindParam(':PersonID', $PersonID);
+         $stmt->bindParam(':lastUpdatedBy', $updateEmergencyLastUpdatedBy);
+
+
+         if ($stmt->execute()) {
+
+         } else {
+         }
+
+
+        $sqlDeleteAvailability = "delete from Availability where PersonID = :PersonID";
+
+         $stmt = $connPDO->prepare($sqlDeleteAvailability);
+         $stmt->bindParam(':PersonID', $PersonID);
+
+         if ($stmt->execute()) {
+
+         } else {
+         }
+
+
+         if(!empty($_POST['updateMonday']))
+         {
+             foreach($_POST['updateMonday'] as $updateMonday) {
+
+                 $newShift = new Availability(2, $PersonID, $updateMonday);
+                 $AvailabilityDayID = $newShift->getAvailabilityDayID();
+                 $AvailabilityPersonID = $newShift->getAvailabilityPersonID();
+                 $AvailabilityShift = $newShift->getAvailabilityShift();
+                 $AvailabilityLastUpdatedBy = $newShift->getAvailabilityLastUpdatedBy();
+                 $AvailabilityLastUpdated = $newShift->getAvailabilityLastUpdated();
+                 $sqlInsertShift = "INSERT INTO Availability (DayID, PersonID, AvailableShift, LastUpdatedBy, LastUpdated) VALUES(?, ?, ?, ?, CURRENT_TIMESTAMP)";
+                 $stmt = mysqli_prepare($conn, $sqlInsertShift);
+                 $stmt->bind_param("iiss", $AvailabilityDayID, $AvailabilityPersonID, $AvailabilityShift, $AvailabilityLastUpdatedBy);
+                 if ($stmt) {
+                     $stmt->execute();
+                 }
+             }
+         }
+         if(!empty($_POST['updateTuesday']))
+         {
+             foreach($_POST['updateTuesday'] as $updateTuesday) {
+
+                 $newShift = new Availability(3, $PersonID, $updateTuesday);
+                 $AvailabilityDayID = $newShift->getAvailabilityDayID();
+                 $AvailabilityPersonID = $newShift->getAvailabilityPersonID();
+                 $AvailabilityShift = $newShift->getAvailabilityShift();
+                 $AvailabilityLastUpdatedBy = $newShift->getAvailabilityLastUpdatedBy();
+                 $AvailabilityLastUpdated = $newShift->getAvailabilityLastUpdated();
+                 $sqlInsertShift = "INSERT INTO Availability (DayID, PersonID, AvailableShift, LastUpdatedBy, LastUpdated) VALUES(?, ?, ?, ?, CURRENT_TIMESTAMP)";
+                 $stmt = mysqli_prepare($conn, $sqlInsertShift);
+                 $stmt->bind_param("iiss", $AvailabilityDayID, $AvailabilityPersonID, $AvailabilityShift, $AvailabilityLastUpdatedBy);
+                 if ($stmt) {
+                     $stmt->execute();
+                 }
+             }
+         }
+         if(!empty($_POST['updateWednesday']))
+         {
+             foreach($_POST['updateWednesday'] as $updateWednesday) {
+
+                 $newShift = new Availability(4, $PersonID, $updateWednesday);
+                 $AvailabilityDayID = $newShift->getAvailabilityDayID();
+                 $AvailabilityPersonID = $newShift->getAvailabilityPersonID();
+                 $AvailabilityShift = $newShift->getAvailabilityShift();
+                 $AvailabilityLastUpdatedBy = $newShift->getAvailabilityLastUpdatedBy();
+                 $AvailabilityLastUpdated = $newShift->getAvailabilityLastUpdated();
+                 $sqlInsertShift = "INSERT INTO Availability (DayID, PersonID, AvailableShift, LastUpdatedBy, LastUpdated) VALUES(?, ?, ?, ?, CURRENT_TIMESTAMP)";
+                 $stmt = mysqli_prepare($conn, $sqlInsertShift);
+                 $stmt->bind_param("iiss", $AvailabilityDayID, $AvailabilityPersonID, $AvailabilityShift, $AvailabilityLastUpdatedBy);
+                 if ($stmt) {
+                     $stmt->execute();
+                 }
+             }
+         }
+         if(!empty($_POST['updateThursday']))
+         {
+             foreach($_POST['updateThursday'] as $updateThursday) {
+
+                 $newShift = new Availability(5, $PersonID, $updateThursday);
+                 $AvailabilityDayID = $newShift->getAvailabilityDayID();
+                 $AvailabilityPersonID = $newShift->getAvailabilityPersonID();
+                 $AvailabilityShift = $newShift->getAvailabilityShift();
+                 $AvailabilityLastUpdatedBy = $newShift->getAvailabilityLastUpdatedBy();
+                 $AvailabilityLastUpdated = $newShift->getAvailabilityLastUpdated();
+                 $sqlInsertShift = "INSERT INTO Availability (DayID, PersonID, AvailableShift, LastUpdatedBy, LastUpdated) VALUES(?, ?, ?, ?, CURRENT_TIMESTAMP)";
+                 $stmt = mysqli_prepare($conn, $sqlInsertShift);
+                 $stmt->bind_param("iiss", $AvailabilityDayID, $AvailabilityPersonID, $AvailabilityShift, $AvailabilityLastUpdatedBy);
+                 if ($stmt) {
+                     $stmt->execute();
+                 }
+             }
+         }
+         if(!empty($_POST['updateFriday']))
+         {
+             foreach($_POST['updateFriday'] as $updateFriday) {
+                 $DayID = 6;
+
+                 $newShift = new Availability(6, $PersonID, $updateFriday);
+                 $AvailabilityDayID = $newShift->getAvailabilityDayID();
+                 $AvailabilityPersonID = $newShift->getAvailabilityPersonID();
+                 $AvailabilityShift = $newShift->getAvailabilityShift();
+                 $AvailabilityLastUpdatedBy = $newShift->getAvailabilityLastUpdatedBy();
+                 $AvailabilityLastUpdated = $newShift->getAvailabilityLastUpdated();
+                 $sqlInsertShift = "INSERT INTO Availability (DayID, PersonID, AvailableShift, LastUpdatedBy, LastUpdated) VALUES(?, ?, ?, ?, CURRENT_TIMESTAMP)";
+                 $stmt = mysqli_prepare($conn, $sqlInsertShift);
+                 $stmt->bind_param("iiss", $AvailabilityDayID, $AvailabilityPersonID, $AvailabilityShift, $AvailabilityLastUpdatedBy);
+                 if ($stmt) {
+                     $stmt->execute();
+                 }
+             }
+         }
+         if(!empty($_POST['updateSaturday']))
+         {
+             foreach($_POST['updateSaturday'] as $updateSaturday) {
+
+                 $newShift = new Availability(7, $PersonID, $updateSaturday);
+
+                 $AvailabilityDayID = $newShift->getAvailabilityDayID();
+                 $AvailabilityPersonID = $newShift->getAvailabilityPersonID();
+                 $AvailabilityShift = $newShift->getAvailabilityShift();
+                 $AvailabilityLastUpdatedBy = $newShift->getAvailabilityLastUpdatedBy();
+                 $AvailabilityLastUpdated = $newShift->getAvailabilityLastUpdated();
+                 $sqlInsertShift = "INSERT INTO Availability (DayID, PersonID, AvailableShift, LastUpdatedBy, LastUpdated) VALUES(?, ?, ?, ?, CURRENT_TIMESTAMP)";
+                 $stmt = mysqli_prepare($conn, $sqlInsertShift);
+                 $stmt->bind_param("iiss", $AvailabilityDayID, $AvailabilityPersonID, $AvailabilityShift, $AvailabilityLastUpdatedBy);
+                 if ($stmt) {
+                     $stmt->execute();
+                 }
+             }
+         }
+         if(!empty($_POST['updateSunday']))
+         {
+             foreach($_POST['updateSunday'] as $updateSunday) {
+
+                 $newShift = new Availability(1, $PersonID, $updateSunday);
+                 $AvailabilityDayID = $newShift->getAvailabilityDayID();
+                 $AvailabilityPersonID = $newShift->getAvailabilityPersonID();
+                 $AvailabilityShift = $newShift->getAvailabilityShift();
+                 $AvailabilityLastUpdatedBy = $newShift->getAvailabilityLastUpdatedBy();
+                 $AvailabilityLastUpdated = $newShift->getAvailabilityLastUpdated();
+                 $sqlInsertShift = "INSERT INTO Availability (DayID, PersonID, AvailableShift, LastUpdatedBy, LastUpdated) VALUES(?, ?, ?, ?, CURRENT_TIMESTAMP)";
+                 $stmt = mysqli_prepare($conn, $sqlInsertShift);
+                 $stmt->bind_param("iiss", $AvailabilityDayID, $AvailabilityPersonID, $AvailabilityShift, $AvailabilityLastUpdatedBy);
+                 if ($stmt) {
+                     $stmt->execute();
+                 }
+             }
+         }
+
+
+
+         }
 
 ?>
 
-<?php
-$records = $connPDO->prepare('select PersonID, FirstName, MiddleInitial, LastName, PhoneNumber, Allergy, PhysicalLimitation FROM Person where AccountID = :AccountID');
-$records->bindParam(':AccountID', $_SESSION['AccountID']);
-$records->execute();
-$results = $records->fetch(PDO::FETCH_ASSOC);
 
-if(count($results) > 0){
-    $personInformation = $results;
-}
-
-$VolunteerName = $personInformation['FirstName'] . " " . $personInformation['MiddleInitial'] . " " . $personInformation['LastName'];
-$VolunteerPhoneNumber = $personInformation['PhoneNumber'];
-$VolunteerEmail = $user['email'];
-$PersonID = $personInformation['PersonID'];
-$VolunteerAllergy = $personInformation['Allergy'];
-$VolunteerPhysicalLimitation = $personInformation['PhysicalLimitation'];
-
-$records = $connPDO->prepare('select EmergencyContact.FirstName, EmergencyContact.MiddleInitial, EmergencyContact.LastName, EmergencyContact.PhoneNumber, EmergencyContact.Relationship from EmergencyContact join Person on EmergencyContact.EmergencyContactID = Person.EmergencyContactID where PersonID = :PersonID');
-$records->bindParam(':PersonID', $PersonID);
-$records->execute();
-$results = $records->fetch(PDO::FETCH_ASSOC);
-
-if(count($results) > 0) {
-    $emergencyContact = $results;
-}
-
-$EmergencyContactName = $emergencyContact['FirstName'] . " " . $emergencyContact['MiddleInitial'] . " " . $emergencyContact['LastName'];
-$EmergencyContactFirstName = $emergencyContact['FirstName'];
-$EmergencyContactMI = $emergencyContact['MiddleInitial'];
-$EmergencyContactLastName = $emergencyContact['LastName'];
-$EmergencyContactPhoneNumber = $emergencyContact['PhoneNumber'];
-$EmergencyContactRelationship = $emergencyContact['Relationship'];
-
-
-$records = $connPDO->prepare('select Volunteer.YTDHours, Volunteer.YTDMiles, Volunteer.Notes from Volunteer where PersonID = :PersonID');
-$records->bindParam(':PersonID', $PersonID);
-$records->execute();
-$results = $records->fetch(PDO::FETCH_ASSOC);
-
-if(count($results) > 0) {
-    $volunteerInformation = $results;
-}
-
-$volunteerYTDHours = $volunteerInformation['YTDHours'];
-$volunteerYTDMiles = $volunteerInformation['YTDMiles'];
-$volunteerNotes = $volunteerInformation['Notes'];
-
-
-// SUNDAY
-
-$sqlSunday = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
-JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =1;";
-$resultsSunday = mysqli_query($conn, $sqlSunday);
-
-/*$sqlUpdateSunday = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
-JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =1;";
-$resultsUpdateSunday = mysqli_query($conn, $sqlUpdateSunday);*/
-
-$sqlSundayMorning = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
-JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =1 AND Availability.AvailableShift = 'morning';";
-$resultsSundayMorning = mysqli_query($conn, $sqlSundayMorning);
-
-$sqlSundayAfternoon = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
-JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =1 AND Availability.AvailableShift = 'afternoon';";
-$resultsSundayAfternoon = mysqli_query($conn, $sqlSundayAfternoon);
-
-$sqlSundayNight = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
-JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =1 AND Availability.AvailableShift = 'night';";
-$resultsSundayNight = mysqli_query($conn, $sqlSundayNight);
-
-$resultSunMorn = mysqli_fetch_row($resultsSundayMorning);
-$resultSunAfternoon = mysqli_fetch_row($resultsSundayAfternoon);
-$resultSunNight = mysqli_fetch_row($resultsSundayNight);
-
-
-// MONDAY
-
-$sqlMonday = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
-JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =2;";
-$resultsMonday = mysqli_query($conn, $sqlMonday);
-
-/*$sqlUpdateMonday = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
-JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =2;";
-$resultsUpdateMonday = mysqli_query($conn, $sqlUpdateMonday);*/
-
-$sqlMondayMorning = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
-JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =2 AND Availability.AvailableShift = 'morning';";
-$resultsMondayMorning = mysqli_query($conn, $sqlMondayMorning);
-
-$sqlMondayAfternoon = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
-JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =2 AND Availability.AvailableShift = 'afternoon';";
-$resultsMondayAfternoon = mysqli_query($conn, $sqlMondayAfternoon);
-
-$sqlMondayNight = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
-JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =2 AND Availability.AvailableShift = 'night';";
-$resultsMondayNight = mysqli_query($conn, $sqlMondayNight);
-
-$resultMonMorn = mysqli_fetch_row($resultsMondayMorning);
-$resultMonAfternoon = mysqli_fetch_row($resultsMondayAfternoon);
-$resultMonNight = mysqli_fetch_row($resultsMondayNight);
-
-// TUESDAY
-
-$sqlTuesday = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
-JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =3;";
-$resultsTuesday = mysqli_query($conn, $sqlTuesday);
-
-/*$sqlUpdateTuesday = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
-JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =3;";
-$resultsUpdateTuesday = mysqli_query($conn, $sqlUpdateTuesday);*/
-
-$sqlTuesdayMorning = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
-JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =3 AND Availability.AvailableShift = 'morning';";
-$resultsTuesdayMorning = mysqli_query($conn, $sqlTuesdayMorning);
-
-$sqlTuesdayAfternoon = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
-JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =3 AND Availability.AvailableShift = 'afternoon';";
-$resultsTuesdayAfternoon = mysqli_query($conn, $sqlTuesdayAfternoon);
-
-$sqlTuesdayNight = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
-JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =3 AND Availability.AvailableShift = 'night';";
-$resultsTuesdayNight = mysqli_query($conn, $sqlTuesdayNight);
-
-$resultTueMorn = mysqli_fetch_row($resultsTuesdayMorning);
-$resultTueAfternoon = mysqli_fetch_row($resultsTuesdayAfternoon);
-$resultTueNight = mysqli_fetch_row($resultsTuesdayNight);
-
-
-// WEDNESDAY
-
-$sqlWednesday = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
-JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =4;";
-$resultsWednesday = mysqli_query($conn, $sqlWednesday);
-
-/*$sqlUpdateWednesday = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
-JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =4;";
-$resultsUpdateWednesday = mysqli_query($conn, $sqlUpdateWednesday);*/
-
-$sqlWednesdayMorning = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
-JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =4 AND Availability.AvailableShift = 'morning';";
-$resultsWednesdayMorning = mysqli_query($conn, $sqlWednesdayMorning);
-
-$sqlWednesdayAfternoon = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
-JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =4 AND Availability.AvailableShift = 'afternoon';";
-$resultsWednesdayAfternoon = mysqli_query($conn, $sqlWednesdayAfternoon);
-
-$sqlWednesdayNight = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
-JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =4 AND Availability.AvailableShift = 'night';";
-$resultsWednesdayNight = mysqli_query($conn, $sqlWednesdayNight);
-
-$resultWedMorn = mysqli_fetch_row($resultsWednesdayMorning);
-$resultWedAfternoon = mysqli_fetch_row($resultsWednesdayAfternoon);
-$resultWedNight = mysqli_fetch_row($resultsWednesdayNight);
-
-// THURSDAY
-
-$sqlThursday = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
-JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =5;";
-$resultsThursday = mysqli_query($conn, $sqlThursday);
-
-/*$sqlUpdateThursday = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
-JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =5;";
-$resultsUpdateThursday = mysqli_query($conn, $sqlUpdateThursday);*/
-
-$sqlThursdayMorning = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
-JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =5 AND Availability.AvailableShift = 'morning';";
-$resultsThursdayMorning = mysqli_query($conn, $sqlThursdayMorning);
-
-$sqlThursdayAfternoon = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
-JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =5 AND Availability.AvailableShift = 'afternoon';";
-$resultsThursdayAfternoon = mysqli_query($conn, $sqlThursdayAfternoon);
-
-$sqlThursdayNight = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
-JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =5 AND Availability.AvailableShift = 'night';";
-$resultsThursdayNight = mysqli_query($conn, $sqlThursdayNight);
-
-$resultThurMorn = mysqli_fetch_row($resultsThursdayMorning);
-$resultThurAfternoon = mysqli_fetch_row($resultsThursdayAfternoon);
-$resultThurNight = mysqli_fetch_row($resultsThursdayNight);
-
-// FRIDAY
-
-$sqlFriday = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
-JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =6;";
-$resultsFriday = mysqli_query($conn, $sqlFriday);
-
-/*$sqlUpdateFriday = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
-JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =6;";
-$resultsUpdateFriday = mysqli_query($conn, $sqlUpdateFriday);*/
-
-$sqlFridayMorning = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
-JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =6 AND Availability.AvailableShift = 'morning';";
-$resultsFridayMorning = mysqli_query($conn, $sqlFridayMorning);
-
-$sqlFridayAfternoon = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
-JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =6 AND Availability.AvailableShift = 'afternoon';";
-$resultsFridayAfternoon = mysqli_query($conn, $sqlFridayAfternoon);
-
-$sqlFridayNight = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
-JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =6 AND Availability.AvailableShift = 'night';";
-$resultsFridayNight = mysqli_query($conn, $sqlFridayNight);
-
-$resultFriMorn = mysqli_fetch_row($resultsFridayMorning);
-$resultFriAfternoon = mysqli_fetch_row($resultsFridayAfternoon);
-$resultFriNight = mysqli_fetch_row($resultsFridayNight);
-
-// SATURDAY
-
-$sqlSaturday = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
-JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =7;";
-$resultsSaturday = mysqli_query($conn, $sqlSaturday);
-
-/*$sqlUpdateSaturday = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
-JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =7;";
-$resultsUpdateSaturday = mysqli_query($conn, $sqlUpdateSaturday);*/
-
-$sqlSaturdayMorning = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
-JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =7 AND Availability.AvailableShift = 'morning';";
-$resultsSaturdayMorning = mysqli_query($conn, $sqlSaturdayMorning);
-
-$sqlSaturdayAfternoon = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
-JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =7 AND Availability.AvailableShift = 'afternoon';";
-$resultsSaturdayAfternoon = mysqli_query($conn, $sqlSaturdayAfternoon);
-
-$sqlSaturdayNight = "select Availability.AvailableShift from Availability Join Person ON Person.PersonID = Availability.PersonID
-JOIN Day ON Availability.DayID = Day.DayID where Availability.PersonID = $PersonID AND Availability.DayID =7 AND Availability.AvailableShift = 'night';";
-$resultsSaturdayNight = mysqli_query($conn, $sqlSaturdayNight);
-
-$resultSatMorn = mysqli_fetch_row($resultsSaturdayMorning);
-$resultSatAfternoon = mysqli_fetch_row($resultsSaturdayAfternoon);
-$resultSatNight = mysqli_fetch_row($resultsSaturdayNight);
-
-if(isset($_POST['uploadProfilePicture']))
-{
-
-        $image = addslashes($_FILES['image']['tmp_name']);
-        $name = addslashes($_FILES['image']['name']);
-        $image = file_get_contents($image);
-        $image = base64_encode($image);
-
-        saveImage($name, $image);
-
-}
-
-function saveImage($name, $image)
-{
-    $server = "127.0.0.1";
-    $username = "homestead";
-    $password = "secret";
-    $database = "wildlifeDB";
-
-    $conn = new mysqli($server, $username, $password, $database);
-
-    if ($conn->connect_error) {
-        die("connection failed!\n" . $conn->connect_error);
-    } else {
-    }
-    mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
-
-    // Need to figure out how to get session variable for PersonID to insert
-    // and select as well.. Right now it currently displays all pics in DB
-    $currentAccountID = $_SESSION['AccountID'];
-
-    $sqlInsertPic = "INSERT INTO picUpload (AccountID, name, image) VALUES ('$currentAccountID','$name','$image')";
-    $result = mysqli_query($conn, $sqlInsertPic) or die('Error, query failed');
-}
-
-function displayImage()
-{
-    $server = "127.0.0.1";
-    $username = "homestead";
-    $password = "secret";
-    $database = "wildlifeDB";
-
-    $conn = new mysqli($server, $username, $password, $database);
-
-    if ($conn->connect_error) {
-        die("connection failed!\n" . $conn->connect_error);
-    } else {
-    }
-    mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
-
-    $currentAccountID = $_SESSION['AccountID'];
-
-    $sqlDisplayPic = "SELECT * FROM picUpload WHERE AccountID = '$currentAccountID'";
-    $result = mysqli_query($conn, $sqlDisplayPic) or die('Error, query failed');
-
-    if(mysqli_num_rows($result)==0){
-        echo '<img src="img/emptyprofilepic.png" class="img-responsive col-xs-8' . '">';
-    }
-    else {
-        while ($row = mysqli_fetch_array($result)) {
-            echo '<img class="img-responsive col-xs-8" src="data:image;base64,' . $row[3] . '">';
-        }
-    }
-
-}
-
-function displayResume()
-{
-    $server = "127.0.0.1";
-    $username = "homestead";
-    $password = "secret";
-    $database = "wildlifeDB";
-
-    $conn = new mysqli($server, $username, $password, $database);
-
-    if ($conn->connect_error) {
-        die("connection failed!\n" . $conn->connect_error);
-    } else {
-    }
-    mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
-
-    $currentAccountID = $_SESSION['AccountID'];
-
-    $query = "SELECT resumeUploadID, name, Person.PersonID FROM resumeUpload
-              JOIN Person ON resumeUpload.PersonID = Person.PersonID
-              JOIN Account ON Person.AccountID = Account.AccountID
-              WHERE Account.AccountID = '$currentAccountID' AND Person.PersonID = resumeUpload.PersonID";
-    $result = mysqli_query($conn, $query) or die('Error, query failed');
-
-    if(mysqli_num_rows($result)==0){
-        echo "";
-    }
-    else{
-        while(list($resumeUploadID, $name) = mysqli_fetch_array($result)){
-            echo "<a href=\"download.php?resumeUploadID=$resumeUploadID\"><img src=\"img/resumeDoc.jpg\" class=\"img-responsive\"></a><br>";
-        }
-    }
-}
-
-function displayVaccine()
-{
-    $server = "127.0.0.1";
-    $username = "homestead";
-    $password = "secret";
-    $database = "wildlifeDB";
-
-    $conn = new mysqli($server, $username, $password, $database);
-
-    if ($conn->connect_error) {
-        die("connection failed!\n" . $conn->connect_error);
-    } else {
-    }
-    mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
-
-    $currentAccountID = $_SESSION['AccountID'];
-
-    $query = "SELECT vaccineUploadID, name, Person.PersonID FROM vaccineUpload
-              JOIN Person ON vaccineUpload.PersonID = Person.PersonID
-              JOIN Account ON Person.AccountID = Account.AccountID
-              WHERE Account.AccountID = '$currentAccountID' AND Person.PersonID = vaccineUpload.PersonID";
-    $result = mysqli_query($conn, $query) or die('Error, query failed');
-
-    if(mysqli_num_rows($result)==0){
-        echo "";
-    }
-    else{
-        while(list($vaccineUploadID, $name) = mysqli_fetch_array($result)){
-            echo "<a href=\"download.php?vaccineUploadID=$vaccineUploadID\"><img src=\"img/vaccineDoc.jpg\" class=\"img-responsive\"></a><br>";
-        }
-    }
-}
-
-function displayPermit()
-{
-    $server = "127.0.0.1";
-    $username = "homestead";
-    $password = "secret";
-    $database = "wildlifeDB";
-
-    $conn = new mysqli($server, $username, $password, $database);
-
-    if ($conn->connect_error) {
-        die("connection failed!\n" . $conn->connect_error);
-    } else {
-    }
-    mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
-
-    $currentAccountID = $_SESSION['AccountID'];
-
-    $query = "SELECT permitUploadID, name, Person.PersonID FROM permitUpload
-              JOIN Person ON permitUpload.PersonID = Person.PersonID
-              JOIN Account ON Person.AccountID = Account.AccountID
-              WHERE Account.AccountID = '$currentAccountID' AND Person.PersonID = permitUpload.PersonID";
-    $result = mysqli_query($conn, $query) or die('Error, query failed');
-
-    if(mysqli_num_rows($result)==0){
-        echo "";
-    }
-    else{
-        while(list($permitUploadID, $name) = mysqli_fetch_array($result)){
-            echo "<a href=\"download.php?permitUploadID=$permitUploadID\"><img src=\"img/permitDoc.jpg\" class=\"img-responsive\"></a><br>";
-        }
-    }
-}
-
-
-
- if (isset($_POST['UpdateProfile'])) {
-
-
-     $updateVolunteerPhoneNumber = $_POST['updateVolunteerPhoneNumber'];
-     $updateVolunteerEmail = $_POST['updateVolunteerEmail'];
-     $updateVolunteerAllergy = $_POST['updateVolunteerAllergies'];
-     $updateVolunteerPhysicalLimitation = $_POST['updateVolunteerPhysicalLimitations'];
-
-
-     $sqlPersonInformation = "UPDATE Person p SET p.PhoneNumber = :phoneNumber, p.Allergy = :allergy, p.PhysicalLimitation = :physicalLimitation where p.PersonID = :PersonID";
-     $stmt = $connPDO->prepare($sqlPersonInformation);
-
-     $stmt->bindParam(':phoneNumber', $updateVolunteerPhoneNumber);
-     $stmt->bindParam(':allergy', $updateVolunteerAllergy);
-     $stmt->bindParam(':physicalLimitation', $updateVolunteerPhysicalLimitation);
-     $stmt->bindParam(':PersonID', $PersonID);
-
-
-     if ($stmt->execute()) {
-
-     } else {
-     }
-
-     $sqlAccountInformation = "UPDATE Account a join Person p on a.AccountID = p.AccountID SET a.Email = :email where p.PersonID = :PersonID";
-     $stmt = $connPDO->prepare($sqlAccountInformation);
-
-     $stmt->bindParam(':email', $updateVolunteerEmail);
-     $stmt->bindParam(':PersonID', $PersonID);
-
-     if ($stmt->execute()) {
-
-     } else {
-     }
-
-     $updateEmergencyFirstName = $_POST['updateEmergencyFirstName'];
-     $updateEmergencyMiddleInitial = $_POST['updateEmergencyMiddleInitial'];
-     $updateEmergencyLastName = $_POST['updateEmergencyLastName'];
-     $updateEmergencyPhoneNumber= $_POST['updateEmergencyPhoneNumber'];
-     $updateEmergencyRelationship = $_POST['updateEmergencyRelationship'];
-     $updateEmergencyLastUpdatedBy = "System";
-
-
-     $sqlUpdateEmergencyContactInformation = "UPDATE EmergencyContact e join Person p on e.EmergencyContactID = p.EmergencyContactID SET e.FirstName = :firstName , e.MiddleInitial = :middleInitial, e.LastName = :lastName, e.PhoneNumber = :phoneNumber, e.Relationship = :relationship, e.LastUpdatedBy = :lastUpdatedBy, e.LastUpdated = CURRENT_TIMESTAMP where p.PersonID = :PersonID";
-
-     $stmt = $connPDO->prepare($sqlUpdateEmergencyContactInformation);
-
-     $stmt->bindParam(':firstName', $updateEmergencyFirstName);
-     $stmt->bindParam(':middleInitial', $updateEmergencyMiddleInitial);
-     $stmt->bindParam(':lastName', $updateEmergencyLastName);
-     $stmt->bindParam(':phoneNumber', $updateEmergencyPhoneNumber);
-     $stmt->bindParam(':relationship', $updateEmergencyRelationship);
-     $stmt->bindParam(':PersonID', $PersonID);
-     $stmt->bindParam(':lastUpdatedBy', $updateEmergencyLastUpdatedBy);
-
-
-     if ($stmt->execute()) {
-
-     } else {
-     }
-
-
-    $sqlDeleteAvailability = "delete from Availability where PersonID = :PersonID";
-
-     $stmt = $connPDO->prepare($sqlDeleteAvailability);
-     $stmt->bindParam(':PersonID', $PersonID);
-
-     if ($stmt->execute()) {
-
-     } else {
-     }
-
-
-     if(!empty($_POST['updateMonday']))
-     {
-         foreach($_POST['updateMonday'] as $updateMonday) {
-
-             $newShift = new Availability(2, $PersonID, $updateMonday);
-             $AvailabilityDayID = $newShift->getAvailabilityDayID();
-             $AvailabilityPersonID = $newShift->getAvailabilityPersonID();
-             $AvailabilityShift = $newShift->getAvailabilityShift();
-             $AvailabilityLastUpdatedBy = $newShift->getAvailabilityLastUpdatedBy();
-             $AvailabilityLastUpdated = $newShift->getAvailabilityLastUpdated();
-             $sqlInsertShift = "INSERT INTO Availability (DayID, PersonID, AvailableShift, LastUpdatedBy, LastUpdated) VALUES(?, ?, ?, ?, CURRENT_TIMESTAMP)";
-             $stmt = mysqli_prepare($conn, $sqlInsertShift);
-             $stmt->bind_param("iiss", $AvailabilityDayID, $AvailabilityPersonID, $AvailabilityShift, $AvailabilityLastUpdatedBy);
-             if ($stmt) {
-                 $stmt->execute();
-             }
-         }
-     }
-     if(!empty($_POST['updateTuesday']))
-     {
-         foreach($_POST['updateTuesday'] as $updateTuesday) {
-
-             $newShift = new Availability(3, $PersonID, $updateTuesday);
-             $AvailabilityDayID = $newShift->getAvailabilityDayID();
-             $AvailabilityPersonID = $newShift->getAvailabilityPersonID();
-             $AvailabilityShift = $newShift->getAvailabilityShift();
-             $AvailabilityLastUpdatedBy = $newShift->getAvailabilityLastUpdatedBy();
-             $AvailabilityLastUpdated = $newShift->getAvailabilityLastUpdated();
-             $sqlInsertShift = "INSERT INTO Availability (DayID, PersonID, AvailableShift, LastUpdatedBy, LastUpdated) VALUES(?, ?, ?, ?, CURRENT_TIMESTAMP)";
-             $stmt = mysqli_prepare($conn, $sqlInsertShift);
-             $stmt->bind_param("iiss", $AvailabilityDayID, $AvailabilityPersonID, $AvailabilityShift, $AvailabilityLastUpdatedBy);
-             if ($stmt) {
-                 $stmt->execute();
-             }
-         }
-     }
-     if(!empty($_POST['updateWednesday']))
-     {
-         foreach($_POST['updateWednesday'] as $updateWednesday) {
-
-             $newShift = new Availability(4, $PersonID, $updateWednesday);
-             $AvailabilityDayID = $newShift->getAvailabilityDayID();
-             $AvailabilityPersonID = $newShift->getAvailabilityPersonID();
-             $AvailabilityShift = $newShift->getAvailabilityShift();
-             $AvailabilityLastUpdatedBy = $newShift->getAvailabilityLastUpdatedBy();
-             $AvailabilityLastUpdated = $newShift->getAvailabilityLastUpdated();
-             $sqlInsertShift = "INSERT INTO Availability (DayID, PersonID, AvailableShift, LastUpdatedBy, LastUpdated) VALUES(?, ?, ?, ?, CURRENT_TIMESTAMP)";
-             $stmt = mysqli_prepare($conn, $sqlInsertShift);
-             $stmt->bind_param("iiss", $AvailabilityDayID, $AvailabilityPersonID, $AvailabilityShift, $AvailabilityLastUpdatedBy);
-             if ($stmt) {
-                 $stmt->execute();
-             }
-         }
-     }
-     if(!empty($_POST['updateThursday']))
-     {
-         foreach($_POST['updateThursday'] as $updateThursday) {
-
-             $newShift = new Availability(5, $PersonID, $updateThursday);
-             $AvailabilityDayID = $newShift->getAvailabilityDayID();
-             $AvailabilityPersonID = $newShift->getAvailabilityPersonID();
-             $AvailabilityShift = $newShift->getAvailabilityShift();
-             $AvailabilityLastUpdatedBy = $newShift->getAvailabilityLastUpdatedBy();
-             $AvailabilityLastUpdated = $newShift->getAvailabilityLastUpdated();
-             $sqlInsertShift = "INSERT INTO Availability (DayID, PersonID, AvailableShift, LastUpdatedBy, LastUpdated) VALUES(?, ?, ?, ?, CURRENT_TIMESTAMP)";
-             $stmt = mysqli_prepare($conn, $sqlInsertShift);
-             $stmt->bind_param("iiss", $AvailabilityDayID, $AvailabilityPersonID, $AvailabilityShift, $AvailabilityLastUpdatedBy);
-             if ($stmt) {
-                 $stmt->execute();
-             }
-         }
-     }
-     if(!empty($_POST['updateFriday']))
-     {
-         foreach($_POST['updateFriday'] as $updateFriday) {
-             $DayID = 6;
-
-             $newShift = new Availability(6, $PersonID, $updateFriday);
-             $AvailabilityDayID = $newShift->getAvailabilityDayID();
-             $AvailabilityPersonID = $newShift->getAvailabilityPersonID();
-             $AvailabilityShift = $newShift->getAvailabilityShift();
-             $AvailabilityLastUpdatedBy = $newShift->getAvailabilityLastUpdatedBy();
-             $AvailabilityLastUpdated = $newShift->getAvailabilityLastUpdated();
-             $sqlInsertShift = "INSERT INTO Availability (DayID, PersonID, AvailableShift, LastUpdatedBy, LastUpdated) VALUES(?, ?, ?, ?, CURRENT_TIMESTAMP)";
-             $stmt = mysqli_prepare($conn, $sqlInsertShift);
-             $stmt->bind_param("iiss", $AvailabilityDayID, $AvailabilityPersonID, $AvailabilityShift, $AvailabilityLastUpdatedBy);
-             if ($stmt) {
-                 $stmt->execute();
-             }
-         }
-     }
-     if(!empty($_POST['updateSaturday']))
-     {
-         foreach($_POST['updateSaturday'] as $updateSaturday) {
-
-             $newShift = new Availability(7, $PersonID, $updateSaturday);
-
-             $AvailabilityDayID = $newShift->getAvailabilityDayID();
-             $AvailabilityPersonID = $newShift->getAvailabilityPersonID();
-             $AvailabilityShift = $newShift->getAvailabilityShift();
-             $AvailabilityLastUpdatedBy = $newShift->getAvailabilityLastUpdatedBy();
-             $AvailabilityLastUpdated = $newShift->getAvailabilityLastUpdated();
-             $sqlInsertShift = "INSERT INTO Availability (DayID, PersonID, AvailableShift, LastUpdatedBy, LastUpdated) VALUES(?, ?, ?, ?, CURRENT_TIMESTAMP)";
-             $stmt = mysqli_prepare($conn, $sqlInsertShift);
-             $stmt->bind_param("iiss", $AvailabilityDayID, $AvailabilityPersonID, $AvailabilityShift, $AvailabilityLastUpdatedBy);
-             if ($stmt) {
-                 $stmt->execute();
-             }
-         }
-     }
-     if(!empty($_POST['updateSunday']))
-     {
-         foreach($_POST['updateSunday'] as $updateSunday) {
-
-             $newShift = new Availability(1, $PersonID, $updateSunday);
-             $AvailabilityDayID = $newShift->getAvailabilityDayID();
-             $AvailabilityPersonID = $newShift->getAvailabilityPersonID();
-             $AvailabilityShift = $newShift->getAvailabilityShift();
-             $AvailabilityLastUpdatedBy = $newShift->getAvailabilityLastUpdatedBy();
-             $AvailabilityLastUpdated = $newShift->getAvailabilityLastUpdated();
-             $sqlInsertShift = "INSERT INTO Availability (DayID, PersonID, AvailableShift, LastUpdatedBy, LastUpdated) VALUES(?, ?, ?, ?, CURRENT_TIMESTAMP)";
-             $stmt = mysqli_prepare($conn, $sqlInsertShift);
-             $stmt->bind_param("iiss", $AvailabilityDayID, $AvailabilityPersonID, $AvailabilityShift, $AvailabilityLastUpdatedBy);
-             if ($stmt) {
-                 $stmt->execute();
-             }
-         }
-     }
-
-
-
-     }
-
-
-
-?>
 <!DOCTYPE html>
 <html>
 
@@ -1137,11 +1142,47 @@ function displayPermit()
                                 <div class="feed-activity-list">
                                     <div class="col-md-8">
                                         <div class="col-md-3">
-                                            <h1>10</h1>
+                                            <?php
+                                            $currentAccountID = $_SESSION['AccountID'];
+
+                                            $sqlCountResume = "SELECT COUNT(*) AS ResumeCount FROM resumeUpload 
+                                              JOIN Person ON resumeUpload.PersonID = Person.PersonID
+                                              JOIN Account ON Person.AccountID = Account.AccountID
+                                              WHERE Account.AccountID = '$currentAccountID' AND Person.PersonID = resumeUpload.PersonID";
+
+                                            $result = mysqli_query($conn, $sqlCountResume);
+                                            while($row = mysqli_fetch_array($result)) {
+                                                $resumeCount = $row['ResumeCount'];
+                                            }
+
+                                            $sqlCountPermit = "SELECT COUNT(*) AS PermitCount FROM permitUpload 
+                                              JOIN Person ON permitUpload.PersonID = Person.PersonID
+                                              JOIN Account ON Person.AccountID = Account.AccountID
+                                              WHERE Account.AccountID = '$currentAccountID' AND Person.PersonID = permitUpload.PersonID";
+
+                                            $result = mysqli_query($conn, $sqlCountPermit);
+                                            while($row = mysqli_fetch_array($result)) {
+                                                $permitCount = $row['PermitCount'];
+                                            }
+
+                                            $sqlCountVaccine = "SELECT COUNT(*) AS VaccineCount FROM vaccineUpload 
+                                              JOIN Person ON vaccineUpload.PersonID = Person.PersonID
+                                              JOIN Account ON Person.AccountID = Account.AccountID
+                                              WHERE Account.AccountID = '$currentAccountID' AND Person.PersonID = vaccineUpload.PersonID";
+
+                                            $result = mysqli_query($conn, $sqlCountVaccine);
+                                            while($row = mysqli_fetch_array($result)) {
+                                                $vaccineCount = $row['VaccineCount'];
+                                            }
+
+                                            $UploadCount = $resumeCount + $permitCount   + $vaccineCount;
+                                            ?>
+                                            <h1><?php echo $UploadCount ?></h1>
                                         </div>
 
                                         <div class="col-md-6">
                                             <h3>Certifications</h3>
+
                                         </div>
                                     </div>
 
@@ -1152,45 +1193,46 @@ function displayPermit()
                                     </div>
                                     <div id="demo2" class="collapse">
                                         <div class="col-md-12">
-                                            <h4>Outreach</h4>
+                                            <!--<h4>Outreach</h4>
                                             <p class="emergency">Raina Krasner<br/>
                                                 <em>Rkrasner@wildlifecenter.org</em></p>
 
                                             <h4>Veterinary</h4>
                                             <p class="emergency">Leigh-Ann Horne<br/>
-                                                <em>Lhorne@wildlifecenter.org</em></p>
+                                                <em>Lhorne@wildlifecenter.org</em></p> -->
+
+                                            <div class="docs">
+                                                <div class="col-md-12">
+                                                    <div class="col-md-4">
+                                                        <div class="docspadding">
+                                                            <?php
+                                                            displayResume();
+                                                            ?>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <div class="docspadding">
+                                                            <?php
+                                                            displayVaccine();
+                                                            ?>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <div class="docspadding">
+                                                            <?php
+                                                            displayPermit();
+                                                            ?>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="docs">
-                            <div class="col-md-12">
-                                <div class="col-md-4">
-                                    <div class="docspadding">
-                                        <?php
-                                            displayResume();
-                                        ?>
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="docspadding">
-                                        <?php
-                                        displayVaccine();
-                                        ?>
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="docspadding">
-                                        <?php
-                                        displayPermit();
-                                        ?>
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
                     </div>
 
                 </div>

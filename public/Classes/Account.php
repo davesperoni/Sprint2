@@ -15,7 +15,7 @@ class Account
         $this->lastUpdated = "CURRENT_TIMESTAMP";
     }
 
-        public function getEmail() {
+    public function getEmail() {
         return $this->name;
     }
 

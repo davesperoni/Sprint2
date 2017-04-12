@@ -1,30 +1,29 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: ShanikaWije
- * Date: 3/26/2017
- * Time: 3:30 PM
- */
+    /**
+     * Created by PhpStorm.
+     * User: ShanikaWije
+     * Date: 3/26/2017
+     * Time: 3:30 PM
+     */
 
-session_start();
+    session_start();
 
-require 'functions.php';
+    require 'functions.php';
 
-$Date = date("F j, Y");
+    $Date = date("F j, Y");
 
-if(isset($_SESSION['AccountID'])) {
-    $currentAccountID = $_SESSION['AccountID'];
-    if (!isAdmin($currentAccountID)) {
-        if(isVolunteer($currentAccountID)){
-            $message = 'This is not Admin, redirecting';
-            header("Location: /volunteer_dashboard.php");
-        }
-        else{
-            header("Location: /applicant_dashboard.php");
+    if(isset($_SESSION['AccountID'])) {
+        $currentAccountID = $_SESSION['AccountID'];
+        if (!isAdmin($currentAccountID)) {
+            if(isVolunteer($currentAccountID)){
+                $message = 'This is not Admin, redirecting';
+                header("Location: /volunteer_dashboard.php");
+            }
+            else{
+                header("Location: /applicant_dashboard.php");
+            }
         }
     }
-}
-
 
 ?><li><a href="logout.php">Logout</a></li>
 
@@ -80,11 +79,14 @@ if(isset($_SESSION['AccountID'])) {
                     <a href="#"><i class="fa fa-calendar"></i> <span class="nav-label">Calendar</span></a></li>
                 <li>
                 <li>
-                    <a href="#"><i class="fa fa-search"></i> <span class="nav-label">Search</span></a>
+                    <a href="/search_volunteers_admin.html"><i class="fa fa-search"></i> <span class="nav-label">Search</span></a>
                 </li>
                 <li>
                     <a href="/pending_apps.php"><i class="fa fa-clipboard"></i> <span class="nav-label">Applications</span>  </a>
                 </li>
+                <li>
+                    <a href="/statistics_admin.html"><i class="fa fa-bar-chart"></i> <span class="nav-label">Statistics</span>  </a>
+                </li>				
                 <li>
                     <a href="#"><i class="fa fa-user"></i> <span class="nav-label">My Profile</span>  </a>
                 </li>

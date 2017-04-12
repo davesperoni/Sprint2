@@ -1,54 +1,52 @@
 <?php
-session_start();
-include("Classes/Application.php"); ?>
-<?php include("Classes/Application_Outreach.php"); ?>
-
+    session_start();
+    include("Classes/Application.php");
+    include("Classes/Application_Outreach.php");
+?>
 
 <?php
-require 'databasePDO.php';
-require 'functions.php';
+    require 'databasePDO.php';
+    require 'functions.php';
 
-/**
- * Created by PhpStorm.
- * User: ShanikaWije, mandelja, eddiebreyes
- * Date: 4/1/2017
- * Time: 2:25PM
- */
+    /**
+     * Created by PhpStorm.
+     * User: ShanikaWije, mandelja, eddiebreyes
+     * Date: 4/1/2017
+     * Time: 2:25PM
+     */
 
-if (isset($_POST['SubmitPersonApplicationForm']))
-{
-    //maybe replace this with code that points to a completely different page where it shows app pending
-    header("Location: /applicant_dashboard.php");
+    if (isset($_POST['SubmitPersonApplicationForm']))
+    {
+        //maybe replace this with code that points to a completely different page where it shows app pending
+        header("Location: /applicant_dashboard.php");
 
-    //Changes current account to 'applied' so that it can show 'application pending' rather than 'apply'
-    $currentUser = $_SESSION['AccountID'];
-    applicantNowPending($currentUser);
-    echo 'applicant is now pending';
+        //Changes current account to 'applied' so that it can show 'application pending' rather than 'apply'
+        $currentUser = $_SESSION['AccountID'];
+        applicantNowPending($currentUser);
+        echo 'applicant is now pending';
 
-    //Database connection
-    $server = "127.0.0.1";
-    $username = "homestead";
-    $password = "secret";
-    $database = "wildlifeDB";
-    $conn = new mysqli($server, $username, $password, $database);
+        //Database connection
+        $server = "127.0.0.1";
+        $username = "homestead";
+        $password = "secret";
+        $database = "wildlifeDB";
+        $conn = new mysqli($server, $username, $password, $database);
 
-    //Test Connection
-    if ($conn->connect_error) {
-        die("connection failed!\n" . $conn->connect_error);
-    } else {
-    }
+        //Test Connection
+        if ($conn->connect_error) {
+            die("connection failed!\n" . $conn->connect_error);
+        } else {
+        }
 
-    mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+        mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
-    //Set the application departmentID
-    $ApplicationDepartmentID = 2;
+        //Set the application departmentID
+        $ApplicationDepartmentID = 2;
 
-    mysqli_close($conn);
-    ?>
+        mysqli_close($conn);
+?>
 
-
-
-    <?php
+<?php
     $currentUser = $_SESSION['AccountID'];
 
     $sql = "SELECT PersonID from Person WHERE AccountID = :AccountID;";
@@ -159,9 +157,9 @@ if (isset($_POST['SubmitPersonApplicationForm']))
 
     echo "Outreach Application added to database";
 
-
 }
 ?>
+
 
 <html>
 <head>

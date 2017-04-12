@@ -1,43 +1,43 @@
 <?php
-session_start();
+    session_start();
 
-include("Classes/Application.php"); ?>
-<?php include("Classes/Application_AnimalCare.php"); ?>
-<?php include("Classes/Application_Outreach.php"); ?>
-<?php include("Classes/Application_Transport.php"); ?>
-<?php include("Classes/Application_TreatmentTeam.php"); ?>
+    include("Classes/Application.php"); ?>
+    <?php include("Classes/Application_AnimalCare.php"); ?>
+    <?php include("Classes/Application_Outreach.php"); ?>
+    <?php include("Classes/Application_Transport.php"); ?>
+    <?php include("Classes/Application_TreatmentTeam.php"); ?>
 
-<?php
-require 'databasePDO.php';
-require 'database.php';
-require 'functions.php';
+    <?php
+    require 'databasePDO.php';
+    require 'database.php';
+    require 'functions.php';
 
-/**
- * Created by PhpStorm.
- * User: ShanikaWije, mandelja, eddiebreyes
- * Date: 4/4/2017
- * Time: 12:15PM
- */
+    /**
+     * Created by PhpStorm.
+     * User: ShanikaWije, mandelja, eddiebreyes
+     * Date: 4/4/2017
+     * Time: 12:15PM
+     */
 
-$server = "127.0.0.1";
-$username = "homestead";
-$password = "secret";
-$database = "wildlifeDB";
+    $server = "127.0.0.1";
+    $username = "homestead";
+    $password = "secret";
+    $database = "wildlifeDB";
 
-$conn = new mysqli($server, $username, $password, $database);
+    $conn = new mysqli($server, $username, $password, $database);
 
-if ($conn->connect_error)
-{
-    die("Error: Connection failed!\n" . $conn->connect_error);
-}
-else
-{
-}
-mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+    if ($conn->connect_error)
+    {
+        die("Error: Connection failed!\n" . $conn->connect_error);
+    }
+    else
+    {
+    }
+    mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
-$currentUser = $_SESSION['AccountID'];
+    $currentUser = $_SESSION['AccountID'];
 
-mysqli_close($conn);
+    mysqli_close($conn);
 ?>
 
 
@@ -63,8 +63,10 @@ mysqli_close($conn);
 <div class="ibox-content-form">
     <div class="formpadding">
         <div class="row">
-            <div class="smallerheader"><h1>Apply To A Team</h1>
-                <p class="smallheader">Thank you for your interest in The Wildlife Center of Virginia. We have four volunteer teams that work at our organization– Outreach, Animal Care, Veterinary Treatment, and Transport & Rescue. To read more about each team, please visit our <a href="http://wildlifecenter.org/support-center/volunteer-opportunities">volunteer opportunities page.</a></p></div>
+            <div class="col-md-6 col-md-offset-3" >
+                <div class="smallerheader"><h1>Apply To A Team</h1>
+                    <p class="smallheader">Thank you for your interest in The Wildlife Center of Virginia. We have four volunteer teams that work at our organization– Outreach, Animal Care, Veterinary Treatment, and Transport & Rescue. To read more about each team, please visit our <a href="http://wildlifecenter.org/support-center/volunteer-opportunities">volunteer opportunities page.</a></p></div>
+            </div>
 
             <div class="col-sm-12">
                 <form role="form" name="PersonApplicationForm" method="post" action="PersonApplicationForm.php">
