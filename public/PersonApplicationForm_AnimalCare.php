@@ -22,8 +22,6 @@ if (isset($_POST['SubmitPersonApplicationForm']))
 
     //Changes current account to 'applied' so that it can show 'application pending' rather than 'apply'
     $currentUser = $_SESSION['AccountID'];
-    applicantNowPending($currentUser);
-    echo 'applicant is now pending';
 
     //Database connection
     $server = "127.0.0.1";
@@ -200,6 +198,8 @@ if (isset($_POST['SubmitPersonApplicationForm']))
     if($stmt)
     {
         $stmt->execute();
+        applicantNowPending($currentUser);
+        echo 'applicant is now pending';
     }
 
     echo "Animal Care Application added to database";

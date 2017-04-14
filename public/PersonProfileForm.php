@@ -1,24 +1,25 @@
-<?php
-    include("Classes/Person.php");
-    include("Classes/EmergencyContact.php");
-    include("Classes/Availability.php");
-?>
+<?php include("Classes/Person.php"); ?>
+<?php include("Classes/EmergencyContact.php"); ?>
+<?php include("Classes/Availability.php"); ?>
 
 <?php
     session_start();
 
+
     /**
      * Created by PhpStorm.
      * User: Drew
+     * David Speroni : sqitched mysql to mysqli
      * Date: 3/30/17
      * Time: 11:10 AM
      */
 
+
     if (isset($_POST['SubmitPersonProfileForm'])) {
 
         header("Location: /PersonApplicationForm.php");
-        $server = "localhost";
-        $username = "root";
+        $server = "127.0.0.1";
+        $username = "homestead";
         $password = "secret";
         $database = "wildlifeDB";
 
@@ -331,6 +332,7 @@
 
 
     }
+
 ?>
 
 <html>
@@ -514,18 +516,24 @@
                             <select name="PersonState" required>
                                 <?php
             
-								$mysqlserver="localhost";
-								$mysqlusername="root";
+								$mysqlserver="127.0.0.1";
+								$mysqlusername="homestead";
 								$mysqlpassword="secret";
-								$link=mysql_connect($mysqlserver, $mysqlusername, $mysqlpassword) or die ("Error connecting to mysql server: ".mysql_error());
-								
-								$dbname = 'wildlifedb';
-								mysql_select_db($dbname, $link) or die ("Error selecting specified database on mysql server: ".mysql_error());
-								
+                                $mysqlDB="wildlifeDB";
+
+                                $link = mysqli_connect($mysqlserver, $mysqlusername, $mysqlpassword, $mysqlDB);
+
+                                if (!$link) {
+                                    echo "Error: Unable to connect to MySQL." . PHP_EOL;
+                                    echo "Debugging errno: " . mysqli_connect_errno() . PHP_EOL;
+                                    echo "Debugging error: " . mysqli_connect_error() . PHP_EOL;
+                                    exit;
+                                }
+
 								$cdquery="SELECT StateName FROM State ORDER BY isDefault DESC, StateName";
-								$cdresult=mysql_query($cdquery) or die ("Query to get data from firsttable failed: ".mysql_error());
+								$cdresult=mysqli_query($link, $cdquery);;
 								
-								while ($cdrow=mysql_fetch_array($cdresult)) {
+								while ($cdrow=mysqli_fetch_array($cdresult)) {
 								$PersonState=$cdrow["StateName"];
 									echo "<option>
 										$PersonState
@@ -540,29 +548,36 @@
                     <div class="col-md-3"><div class="form-group">
                             <label>County (Virginia Only)</label><br/>
                             <select name="PersonCounty">
+
                             <?php
-            
-								$mysqlserver="localhost";
-								$mysqlusername="root";
-								$mysqlpassword="secret";
-								$link=mysql_connect($mysqlserver, $mysqlusername, $mysqlpassword) or die ("Error connecting to mysql server: ".mysql_error());
-								
-								$dbname = 'wildlifedb';
-								mysql_select_db($dbname, $link) or die ("Error selecting specified database on mysql server: ".mysql_error());
-								
-								$cdquery="SELECT CountyName FROM County";
-								$cdresult=mysql_query($cdquery) or die ("Query to get data from firsttable failed: ".mysql_error());
-								
-								while ($cdrow=mysql_fetch_array($cdresult)) {
-								$PersonCounty=$cdrow["CountyName"];
-									echo "<option>
+
+                            $mysqlserver="127.0.0.1";
+                            $mysqlusername="homestead";
+                            $mysqlpassword="secret";
+                            $mysqlDB="wildlifeDB";
+
+                            $link = mysqli_connect($mysqlserver, $mysqlusername, $mysqlpassword, $mysqlDB);
+
+                            if (!$link) {
+                                echo "Error: Unable to connect to MySQL." . PHP_EOL;
+                                echo "Debugging errno: " . mysqli_connect_errno() . PHP_EOL;
+                                echo "Debugging error: " . mysqli_connect_error() . PHP_EOL;
+                                exit;
+                            }
+
+                            $cdquery="SELECT CountyName FROM County";
+                            $cdresult=mysqli_query($link, $cdquery);;
+
+                            while ($cdrow=mysqli_fetch_array($cdresult)) {
+                                $PersonCounty=$cdrow["CountyName"];
+                                echo "<option>
 										$PersonCounty
 									</option>";
-								
-								}
-									
-									
-								?>
+
+                            }
+
+                            ?>
+
                             </select>
                         </div></div>
 
@@ -571,27 +586,32 @@
                             <label>Country</label><br/>
                             <select name="PersonCountry">
                                 <?php
-            
-								$mysqlserver="localhost";
-								$mysqlusername="root";
-								$mysqlpassword="secret";
-								$link=mysql_connect($mysqlserver, $mysqlusername, $mysqlpassword) or die ("Error connecting to mysql server: ".mysql_error());
-								
-								$dbname = 'wildlifeDB';
-								mysql_select_db($dbname, $link) or die ("Error selecting specified database on mysql server: ".mysql_error());
-								
-								$cdquery="SELECT CountryName FROM Country ORDER BY isDefault DESC, CountryName";
-								$cdresult=mysql_query($cdquery) or die ("Query to get data from firsttable failed: ".mysql_error());
-								
-								while ($cdrow=mysql_fetch_array($cdresult)) {
-								$PersonCountry=$cdrow["CountryName"];
-									echo "<option>
+
+                                $mysqlserver="127.0.0.1";
+                                $mysqlusername="homestead";
+                                $mysqlpassword="secret";
+                                $mysqlDB="wildlifeDB";
+
+                                $link = mysqli_connect($mysqlserver, $mysqlusername, $mysqlpassword, $mysqlDB);
+
+                                if (!$link) {
+                                    echo "Error: Unable to connect to MySQL." . PHP_EOL;
+                                    echo "Debugging errno: " . mysqli_connect_errno() . PHP_EOL;
+                                    echo "Debugging error: " . mysqli_connect_error() . PHP_EOL;
+                                    exit;
+                                }
+
+                                $cdquery="SELECT CountryName FROM Country";
+                                $cdresult=mysqli_query($link, $cdquery);;
+
+                                while ($cdrow=mysqli_fetch_array($cdresult)) {
+                                    $PersonCountry=$cdrow["CountryName"];
+                                    echo "<option>
 										$PersonCountry
 									</option>";
-								
-								}
-									
-								?>
+                                }
+                                ?>
+
                             </select>
                         </div></div>
 
@@ -608,7 +628,6 @@
                     <div class="col-md-6 col-md-offset-3"><div class="form-group"><label>Allergies</label> <textarea rows="4" type="allergies" name="PersonAllergy" placeholder="Enter allergies" class="form-control" required></textarea></div></div>
 
                     <div class="col-md-6 col-md-offset-3"><div class="form-group"><label>Physical Limitations</label> <textarea rows="4" type="limits" name="PersonPhysical" placeholder="Enter physical limitations" class="form-control" required></textarea></div></div>
-
 
                     <div class="form-group"><div class="col-md-6 col-md-offset-3"><label>I have my rabies vaccine: </label><form action="/action_page.php" method="get"></div>
                         <div class="col-md-6 col-md-offset-3"><div class="form-group"><input type="radio" name="PersonRabies" value="Yes">Yes<br/>

@@ -200,6 +200,8 @@ include("Classes/Application.php"); ?>
     if($stmt)
     {
         $stmt->execute();
+        applicantNowPending($currentUser);
+        echo 'applicant is now pending';
     }
 
     echo "Treatment Team Application added to database";

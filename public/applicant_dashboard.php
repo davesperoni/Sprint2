@@ -33,19 +33,6 @@ if(count($results) > 0)
     $personInformation = $results;
 }
 
-$VolunteerFirstName = ucfirst($personInformation['FirstName']);
-$VolunteerMiddleInitial = ucfirst($personInformation['MiddleInitial']);
-$VolunteerLastName = ucfirst($personInformation['LastName']);
-
-if((!empty($VolunteerFirstName)) && (!empty($VolunteerMiddleInitial)) && (!empty($VolunteerLastName)))
-{
-    $VolunteerName = ucfirst($personInformation['FirstName']) . " " . ucfirst($personInformation['MiddleInitial']) . ". " . ucfirst($personInformation['LastName']);
-}
-else
-{
-    $VolunteerName = 'Welcome';
-}
-
 $PersonID = $personInformation['PersonID'];
 
 ?>
@@ -300,57 +287,54 @@ $PersonID = $personInformation['PersonID'];
                         mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
                         if(isApplicant($currentUser)) {
-							$sqlShowApps= "SELECT Person.PersonID AS 'PersonID', Person.FirstName AS 'FN', Person.MiddleInitial AS 'MI',
-                                           Person.LastName AS 'LN', Department.DepartmentName AS 'Dept', 
-                                           Application.LastUpdated AS 'AppLastUpdated', Application.ApplicationStatus AS 'Status', 
-                                           Application.ApplicationID AS 'AppID'
-                                           FROM Person
-                                           JOIN Application ON Person.PersonID = Application.PersonID
-                                           JOIN Department ON Application.DepartmentID = Department.DepartmentID
-                                           WHERE Person.AccountID = $currentUser
-                                           ORDER BY Application.LastUpdated;";
+                            $sqlShowApps = "SELECT Person.FirstName AS 'FN', Person.MiddleInitial AS 'MI',
+                                               Person.LastName AS 'LN', Department.DepartmentName AS 'Dept', 
+                                               Application.LastUpdated AS 'AppLastUpdated', Application.ApplicationStatus AS 'Status', 
+                                               Application.ApplicationID AS 'AppID'
+                                               FROM Person
+                                               JOIN Application ON Person.PersonID = Application.PersonID
+                                               JOIN Department ON Application.DepartmentID = Department.DepartmentID
+                                               WHERE Person.PersonID = $PersonID
+                                               ORDER BY Application.LastUpdated;";
 
-							$result = mysqli_query($conn, $sqlShowApps) or die("Error " . mysqli_error($conn));
+                            $result = mysqli_query($conn, $sqlShowApps) or die("Error " . mysqli_error($conn));
 
-							mysqli_close($conn);
+                            mysqli_close($conn);
 
-							while($row = mysqli_fetch_array($result)) {
-                            ?>
-							<br/>
-							<tbody>
-							<tr>
-						    <?php
-								$FirstName = $row['FN'];
-								$MiddleInitial = $row['MI'];
-								$LastName = $row['LN'];
-								
-								$LastName = $row['LN'];
-								
-								$AppID = $row['AppID'];
+                            while ($row = mysqli_fetch_array($result)) {
+                                ?>
+                                <br/>
+                                <tbody>
+                                <tr>
+                                    <?php
 
-								$ApplicantFullName = $FirstName . " " . $MiddleInitial . " " . $LastName;
-								$DepartmentName = $row['Dept'];
-								$AppLastUpdated = $row['AppLastUpdated'];
-								$ApplicationStatus = $row['Status'];
+                                    $FirstName = $row['FN'];
+                                    $MiddleInitial = $row['MI'];
+                                    $LastName = $row['LN'];
 
-								$phpdate = strtotime($AppLastUpdated);
-								$AppLastUpdated = date('m-d-Y', $phpdate);
+                                    $ApplicantFullName = ucfirst($FirstName) . " " . ucfirst($MiddleInitial) . " " . ucfirst($LastName);
+                                    $DepartmentName = $row['Dept'];
+                                    $AppLastUpdated = $row['AppLastUpdated'];
+                                    $ApplicationStatus = $row['Status'];
 
-								//create an object representing a of your person info here
-								//Pass that object into the array
-								$yourNewPersonObject = [];
+                                    $AppID = $row['AppID'];
 
-								array_push($array, $yourNewPersonObject);
+                                    $phpdate = strtotime($AppLastUpdated);
+                                    $AppLastUpdated = date('m-d-Y', $phpdate);
 
-							} //END OF WHILE LOOP
-							?>
-								<td><?php echo $ApplicantFullName ?></td>
-								<td><?php echo $DepartmentName ?></td>
-								<td><?php echo $AppLastUpdated ?></td>
-								<td><?php echo $ApplicationStatus ?></td>
-								<td><button onclick = "location.href='/PersonApplicationForm.php'" class="btn btn-sm btn-primary pull-right" name="ViewPersonApplication" type="submit" class="viewapp">View</button></td>
-							</tr>
+                                 ?>
+                                <td><?php echo $ApplicantFullName ?></td>
+                                <td><?php echo $DepartmentName ?></td>
+                                <td><?php echo $AppLastUpdated ?></td>
+                                <td><?php echo $ApplicationStatus ?></td>
+                                <td>
+                                    <button onclick="location.href='#'" class="btn btn-sm btn-primary pull-right"
+                                            name="ViewPersonApplication" type="submit" class="viewapp">View
+                                    </button>
+                                </td>
+                            </tr>
                         <?php
+                            } //END OF WHILE LOOP
                         } //END OF IF STATEMENT
                         ?>
 
@@ -486,7 +470,7 @@ $PersonID = $personInformation['PersonID'];
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h3 class="modal-title" id="checkInTitle">Thank you for applying! You will recieve an email about your applicaiton status when updated by an admin.</h3>
+                    <h3 class="modal-title" id="checkInTitle">Thank you for applying! You will receive an email about your application status once it has been reviewed.</h3>
                     <button type="button" id = "closeCheckIn" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>

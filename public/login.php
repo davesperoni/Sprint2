@@ -31,7 +31,7 @@
     }
 
 
-    //This gets the AccountID of the person who logged in based on their email and password and assignes it to a _SESSION variable
+    //This gets the AccountID of the person who logged in based on their email and password and assigns it to a _SESSION variable
     if(!empty($_POST['email']) && !empty($_POST['password'])):
 
         $records = $connPDO->prepare('SELECT AccountID,Email,Password FROM Account WHERE Email = :email');
@@ -71,14 +71,12 @@
                 }
             }
     }
-
     else if(password_verify($_POST['password'], $results['Password'])){
         $message = 'The password was incorrect';
 
     }
-
     else{
-          $message = 'This user does not exist.';
+        $message = 'This user does not exist.';
     }
 
     endif;
@@ -119,7 +117,7 @@
               <p><?= $message ?></p>
           <?php endif; ?>
 
-          <form class = "" action="login.php" method="POST">
+          <form class = "" method="POST" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
           <h3 id = "login-title">SIGN IN</h3>
             <label class = "login-form"> Email: </label><input input type="text" name="email"  size = "30" placeholder="email" > </input> <br>
             <label class = "login-form moveDown"> Password: </label><input type="password" name="password" size = "30" placeholder="password"> </input>
@@ -127,10 +125,10 @@
             <input type="submit" value ="Sign In" class="btn-edit-form moveDown"></input>
             <br>
             <div class = "ugh-move-please">
-            <a class = "form-links moveDown" id = "forgot"> Forgot Your Password? </a><span>|</span><a href="email_application.php" class = "form-links moveDown"> Become a Volunteer</a>
+            <a class = "form-links moveDown" id = "forgot"> Forgot Your Password? </a><span>|</span><a href="email_CreateAnAccount.php" class = "form-links moveDown"> Become A Volunteer </a>
             </form>
 
-          <p>v3.1</p>
+          <p>v3.2</p>
             </div>
         </div><!-- end of first group-->
         </div><!-- end of row--> 
