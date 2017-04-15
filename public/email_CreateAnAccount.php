@@ -17,10 +17,11 @@
     if (isset($_POST['send_email']))
     {
         header("Location: /email_CreateAnAccount_Confirmation.php");
-        //$email = $_POST['email'];
+
         $to = $_POST['email'];
-        $subject = 'Become A Volunteer';
-        $message = 'Hello,' . '/n Thank you for your interest in volunteering at the Wildlife Center of Virginia. Please follow the link below to create an account. http://54.186.42.239/createaccount.php';
+        $subject = 'Wildlife Center of Virginia - Become A Volunteer';
+        $message = 'Hello,' . '\n\n Thank you for your interest in volunteering at the Wildlife Center of Virginia. '
+            .'Please follow the link below to create an account. http://54.186.42.239/createaccount.php';
         $headers = 'From: vawildlifecenter@gmail.com';
 
         mail($to, $subject, $message, $headers);

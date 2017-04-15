@@ -138,7 +138,7 @@
     //changes isVolunteer to y
 
         global $conn;
-        $query = "SELECT ac.AccountID AS 'AccountID', p.PersonID FROM Person p
+        $query = "SELECT ac.AccountID AS 'AccountID', ac.Email, p.PersonID FROM Person p
                   JOIN Application app ON p.PersonID = app.PersonID
                   JOIN Account ac ON p.AccountID = ac.AccountID WHERE ApplicationID = $AID";
 
@@ -146,6 +146,7 @@
 
         while($row = mysqli_fetch_array($sql)) {
             $AccountID = $row['AccountID'];
+            $email = $row['Email'];
 
             $query = "UPDATE Account ";
             $query .= "SET isVolunteer= 'y' ";
@@ -155,7 +156,16 @@
 
             confirm_query($admin_set);
 
-           // echo 'Person is now a volunteer.';
+            // echo 'Person is now a volunteer.';
+            //Send an email to the applicant notifying them that their application has been approved.
+            $to = $email;
+            $subject = 'Wildlife Center of Virginia - Application Status Notification';
+            $emailMessage = 'Hello!'
+                . 'Your application has been approved! To view your volunteer account and sign up for volunteer shifts, log in at http://54.186.42.239/login.php '
+                . '. If you have any questions regarding your account, please contact our team at vawildlifecenter@gmail.com ';
+            $headers = 'From: vawildlifecenter@gmail.com';
+
+            mail($to, $subject, $emailMessage, $headers);
 
             //header("Location: /pending_apps.php");
            // mysqli_close($conn);

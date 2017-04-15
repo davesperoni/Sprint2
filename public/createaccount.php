@@ -50,10 +50,30 @@
 
             if ($stmt->execute()) {
                 $message = 'Successfully created new user';
+
+                //Send a confirmation email to the current user
+                error_reporting(-1);
+                ini_set('display_errors', 'On');
+                set_error_handler("var_dump");
+
+                $to = $email;
+                $subject = 'Wildlife Center of Virginia Account Confirmation';
+                $emailMessage = 'Hello,' . '\n\n Thank you for your interest in volunteering at the Wildlife Center of Virginia. '
+                    . 'You have successfully created your account and you are now able to log in at http://54.186.42.239/login.php '
+                    . '\n\nThe first time you fill out an application, you will be prompted to fill out your profile information and emergency contact information. '
+                    . 'Once your profile is complete, you will be able to submit applications to our various volunteer departments.'
+                    . '\n\nIf you did not create an account with the Wildlife Center of Virginia using this email address, '
+                    . 'please contact our team at vawildlifecenter@gmail.com ';
+                $headers = 'From: vawildlifecenter@gmail.com';
+
+                mail($to, $subject, $emailMessage, $headers);
+
                 header("Location: /login.php");
             } else {
                 $message = 'Issue creating account';
             }
+
+
         }
     }
 ?>
