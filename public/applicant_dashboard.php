@@ -32,7 +32,7 @@ if(count($results) > 0)
 {
     $personInformation = $results;
 }
-
+$VolunteerFirstName = $personInformation['FirstName'];
 $PersonID = $personInformation['PersonID'];
 
 ?>
@@ -183,7 +183,7 @@ $PersonID = $personInformation['PersonID'];
                                 </p>
 
                                 <p class = "app-text">
-                                    <strong>Requirements:</strong> Treatment team volunteers must be must be at least 18 years of age and able to commit to a minimum of one three-hour shift per month for one year. The morning treatment team shift is from 9 am-12 pm, the afternoon shift is from 3 pm-6 pm. Afternoon shifts are not available during the winter months. Space is limited to two volunteers per shift.
+                                    <strong>Requirements:</strong> Animal care volunteers must be at least 18 years of age and able to commit to a minimum of one shift per week for either six months or one year. Shifts run from 8:00 a.m. to 1:00 p.m., seven days per week. Space is limited to one volunteer per shift.
                                 </p>
 
                                 <p class = "app-text">

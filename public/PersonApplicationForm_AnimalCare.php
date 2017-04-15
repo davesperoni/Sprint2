@@ -49,6 +49,7 @@ if (isset($_POST['SubmitPersonApplicationForm']))
     <?php
     $currentUser = $_SESSION['AccountID'];
 
+    //Get the PersonID associated with this person
     $sql = "SELECT PersonID from Person WHERE AccountID = :AccountID;";
     $stmt = $connPDO->prepare($sql);
     $stmt->bindParam(':AccountID', $currentUser);
@@ -195,14 +196,39 @@ if (isset($_POST['SubmitPersonApplicationForm']))
         $ApplicantLivePreyOpinion, $ApplicantOutdoorWork, $ApplicantAnimalRightsGroups, $ApplicantGoals,
         $ApplicantPassionateIssue, $ApplicationLastUpdatedBy);
 
+    //Get the email address associated with the user's account
+    $sql = "SELECT Email from Account WHERE AccountID = :AccountID;";
+    $stmt = $connPDO->prepare($sql);
+    $stmt->bindParam(':AccountID', $currentUser);
+    $stmt->execute();
+    $results = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if(count($results) > 0)
+    {
+        $account = $results;
+    }
+    $ApplicantEmail= $account['Email'];
+
     if($stmt)
     {
+        //Execute the sql statement and change the applicant's status to 'pending'
         $stmt->execute();
+        echo "Animal Care Application added to database. ";
         applicantNowPending($currentUser);
-        echo 'applicant is now pending';
-    }
+        echo 'Applicant is now pending. ';
 
-    echo "Animal Care Application added to database";
+        //Send a confirmation email to the current user
+        error_reporting(-1);
+        ini_set('display_errors', 'On');
+        set_error_handler("var_dump");
+
+        $to = $ApplicantEmail;
+        $subject = 'Wildlife Center of Virginia - Application Confirmation';
+        $message = 'Hello,' . '/n Thank you for your interest in volunteering at the Wildlife Center of Virginia. Your application has been submitted successfully and is now pending review. Once your application has been reviewed, you will receive another email containing your new application status. You can also check your status by logging in at http://54.186.42.239/login.php';
+        $headers = 'From: vawildlifecenter@gmail.com';
+
+        mail($to, $subject, $message, $headers);
+    }
 
 }
 ?>

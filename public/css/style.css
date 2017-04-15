@@ -10,7 +10,7 @@
  *
  *   INSPINIA - Responsive Admin Theme
  *   version 2.7
- *
+ *200px
 */
 h1,
 h2,
@@ -9605,5 +9605,37 @@ padding-right: 30px;
 
 .app-types
 {
-  margin-top: 200px !important;
+  margin-top: 20px !important;
+}
+
+.lessSpaceBtm
+{
+  margin-bottom: -100px !important;
+}
+
+/* Transport modal styles - added 4/13 by Jenny, Shay, Viv */
+.text-left
+{
+  text-align: left;
+}
+
+.orangeBackground
+{
+  background-color: #9E371C;
+  padding: 10px 10px 15px 10px;
+}
+
+.whiteText
+{
+  color: white;
+}
+
+.space-left
+{
+  padding-left: 8px;
+}
+
+input, textarea
+{
+  color: black;
 }
