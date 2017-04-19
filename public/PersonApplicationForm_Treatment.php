@@ -24,8 +24,8 @@ if (isset($_POST['SubmitPersonApplicationForm']))
     $currentUser = $_SESSION['AccountID'];
 
     //Database connection
-    $server = "localhost";
-    $username = "root";
+    $server = "127.0.0.1";
+    $username = "homestead";
     $password = "secret";
     $database = "wildlifeDB";
     $conn = new mysqli($server, $username, $password, $database);

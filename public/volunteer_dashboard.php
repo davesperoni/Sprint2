@@ -511,8 +511,8 @@ if (isset($_POST['submitCheckOut'])) {
                         <option>- Select -</option>
                         <?php
 
-                        $mysqlserver="localhost";
-                        $mysqlusername="root";
+                        $mysqlserver="127.0.0.1";
+                        $mysqlusername="homestead";
                         $mysqlpassword="secret";
                         $mysqlDB="wildlifeDB";
 

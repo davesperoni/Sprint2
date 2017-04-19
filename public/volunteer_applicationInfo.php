@@ -281,8 +281,8 @@ $PersonID = $personInformation['PersonID'];
                         <?php
                         //Display records from the applications table
 
-                        $server = 'localhost';
-                        $username = 'root';
+                        $server = '127.0.0.1';
+                        $username = 'homestead';
                         $password = 'secret';
                         $database = 'wildlifeDB';
 

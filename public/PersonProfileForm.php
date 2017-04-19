@@ -76,8 +76,8 @@ else {
 
     if (isset($_POST['SubmitPersonProfileForm'])) {
 
-        $server = "localhost";
-        $username = "root";
+        $server = "127.0.0.1";
+        $username = "homestead";
         $password = "secret";
         $database = "wildlifeDB";
 
@@ -750,8 +750,8 @@ function test_input($data)
                             <select name="PersonState" required value="<?php echo $PersonState;?>">
                                 <?php
             
-								$mysqlserver="localhost";
-								$mysqlusername="root";
+								$mysqlserver="127.0.0.1";
+								$mysqlusername="homestead";
 								$mysqlpassword="secret";
                                 $mysqlDB="wildlifeDB";
 
@@ -786,8 +786,8 @@ function test_input($data)
 
                             <?php
 
-                            $mysqlserver="localhost";
-                            $mysqlusername="root";
+                            $mysqlserver="127.0.0.1";
+                            $mysqlusername="homestead";
                             $mysqlpassword="secret";
                             $mysqlDB="wildlifeDB";
 
@@ -822,8 +822,8 @@ function test_input($data)
                             <select name="PersonCountry">
                                 <?php
 
-                                $mysqlserver="localhost";
-                                $mysqlusername="root";
+                                $mysqlserver="127.0.0.1";
+                                $mysqlusername="homestead";
                                 $mysqlpassword="secret";
                                 $mysqlDB="wildlifeDB";
 

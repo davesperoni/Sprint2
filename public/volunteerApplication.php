@@ -6,7 +6,7 @@ require 'database.php';
 //$personID  = $_GET['id'];
 $AppID  = $_GET['id'];
 
-/*$server = 'localhoat';
+/*$server = 'localhost';
 $username = 'root';
 $password = 'secret';
 $database = 'habitatDB';

@@ -182,8 +182,8 @@ if (isset($_POST['SubmitMilesLog'])) {
 <?php
 if (isset($_POST['exportMiles'])) {
 
-    $server = 'localhost';
-    $username = 'root';
+    $server = '127.0.0.1';
+    $username = 'homestead';
     $password = 'secret';
     $database = 'wildlifeDB';
 
@@ -230,8 +230,8 @@ WHERE Account.AccountID = '$currentAccountID';");
 <?php
 if (isset($_POST['exportHours'])) {
 
-    $server = 'localhost';
-    $username = 'root';
+    $server = '127.0.0.1';
+    $username = 'homestead';
     $password = 'secret';
     $database = 'wildlifeDB';
 
