@@ -2,31 +2,30 @@
 
 session_start();
 
-$server = "127.0.0.1";
-$username = "homestead";
+$server = "localhost";
+$username = "root";
 $password = "secret";
 $database = "wildlifeDB";
 
+$conn = new mysqli($server, $username, $password, $database);
 
+if ($conn->connect_error) {
+	die("connection failed!\n" . $conn->connect_error);
+} else {
+}
 
-    $conn = new mysqli($server, $username, $password, $database);
+mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
-    if ($conn->connect_error) {
-        die("connection failed!\n" . $conn->connect_error);
-    } else {
-    }
+$sqlShowApps= "SELECT Application.ApplicationID AS 'AppID', Person.PersonID AS 'PersonID', Person.FirstName AS 'FN', Person.MiddleInitial AS 'MI',
+							Person.LastName AS 'LN', Department.DepartmentName AS 'Dept', Application.LastUpdated AS 'AppLastUpdated'
+							FROM Person
+							JOIN Application ON Person.PersonID = Application.PersonID
+							JOIN Department ON Application.DepartmentID = Department.DepartmentID
+							WHERE Application.ApplicationStatus = 'Pending'
+							ORDER BY Person.LastName;";
 
-    mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
-
-    $sqlShowApps= "SELECT Person.PersonID AS 'PersonID', Person.FirstName AS 'FN', Person.MiddleInitial AS 'MI',
-                                Person.LastName AS 'LN', Department.DepartmentName AS 'Dept', Application.LastUpdated AS 'AppLastUpdated'
-                                FROM Person
-                                JOIN Application ON Person.PersonID = Application.PersonID
-                                JOIN Department ON Application.DepartmentID = Department.DepartmentID
-                                ORDER BY Person.LastName;";
-
-    $result = mysqli_query($conn, $sqlShowApps) or die("Error " . mysqli_error($conn));
-    ?>
+$result = mysqli_query($conn, $sqlShowApps) or die("Error " . mysqli_error($conn));
+?>
 
 
 
@@ -71,23 +70,26 @@ $database = "wildlifeDB";
                     </div>
                 </li>
 
-                <li>
-                    <a href="admin_dashboard.php"><i class="fa fa-home"></i> <span class="nav-label">Home</span></a>
+  <li>
+                    <a href="/admin_dashboard.php"><i class="fa fa-home"></i> <span class="nav-label">Home</span></a>
                 </li>
                 <li>
-                    <a href="#"><i class="fa fa-users"></i> <span class="nav-label">Who's Here</span></a>
+                    <a href="/who's_here.php"><i class="fa fa-users"></i> <span class="nav-label">Who's Here</span></a>
                 </li>
                 <li>
-                    <a href="#"><i class="fa fa-calendar"></i> <span class="nav-label">Calendar</span></a></li>
+                    <a target="_blank" href="/Calendar/index.php"><i class="fa fa-calendar"></i> <span class="nav-label">Calendar</span></a></li>
                 <li>
                 <li>
-                    <a href="#"><i class="fa fa-search"></i> <span class="nav-label">Search</span></a>
+                    <a href="/search_volunteers_admin.html"><i class="fa fa-search"></i> <span class="nav-label">Search</span></a>
                 </li>
                 <li class = "active">
-                    <a href="#"><i class="fa fa-clipboard"></i> <span class="nav-label">Applications</span>  </a>
+                    <a href="/pending_apps.php"><i class="fa fa-clipboard"></i> <span class="nav-label">Applications</span>  </a>
                 </li>
                 <li>
-                    <a href="profile.php"><i class="fa fa-user"></i> <span class="nav-label">My Profile</span>  </a>
+                    <a href="/statistics_admin.html"><i class="fa fa-bar-chart"></i> <span class="nav-label">Statistics</span>  </a>
+                </li>				
+                <li>
+                    <a href="/admin_profile.php"><i class="fa fa-user"></i> <span class="nav-label">My Profile</span>  </a>
                 </li>
             </ul>
         </div>
@@ -99,12 +101,12 @@ $database = "wildlifeDB";
         <div class="row border-bottom">
             <nav class="navbar navbar-static-top white-bg" role="navigation" style="margin-bottom: 0">
                 <div class="navbar-header">
-                    <a class="navbar-minimalize minimalize-styl-2 btn btn-primary " href="#"><i class="fa fa-bars"></i> </a>
+                   <!-- <a class="navbar-minimalize minimalize-styl-2 btn btn-primary " href="#"><i class="fa fa-bars"></i> </a> -->
                 </div>
                 <ul class="nav navbar-top-links navbar-right">
                     <li class="dropdown">
                         <a class="dropdown-toggle count-info" data-toggle="dropdown" href="#">
-                            <i class="fa fa-bell"></i>  <span class="label label-primary">8</span>
+                            <i class="fa fa-bell"></i>  <span class="label label-primary"></span>
                         </a>
                         <ul class="dropdown-menu dropdown-alerts">
                             <li>
@@ -177,6 +179,7 @@ $database = "wildlifeDB";
                     <table class="table table-striped">
                         <thead class="pendingapps-header">
                         <tr>
+							<th class="pendingapps_header_content">Application ID</th>
                             <th class="pendingapps_header_content">Names</th>
                             <th class="pendingapps_header_content">Type</th>
                             <th class="pendingapps_header_content">Date</th>
@@ -186,25 +189,21 @@ $database = "wildlifeDB";
                         </thead>
             <?php
 
-
-
                  while($row = mysqli_fetch_array($result)) { ?>
                         <br />
                      <tbody>
                      <tr>
                 <?php
 
-
                     // Create a new array.
-                    $array = array();
-
+                    //$array = array();
 
                     $FirstName = $row['FN'];
                     $MiddleInitial = $row['MI'];
                     $LastName = $row['LN'];
 
                     $PersonID = $row['PersonID'];
-
+                    $AppID = $row['AppID'];
 
                     $ApplicantFullName = $FirstName . " " . $MiddleInitial . " " . $LastName;
                     $DepartmentName = $row['Dept'];
@@ -212,21 +211,17 @@ $database = "wildlifeDB";
 
                     $phpdate = strtotime( $AppLastUpdated );
                     $AppLastUpdated = date( 'm-d-Y', $phpdate);
-
                     //create an object representing a of your person info here
                     //Pass that object into the array
 
-                    array_push($array, $yourNewPersonObject);
-
                 ?>
-
+					<td><?php echo $AppID ?></td>
                     <td><?php echo $ApplicantFullName ?></td>
                     <td><?php echo $DepartmentName ?></td>
                     <td><?php echo $AppLastUpdated ?></td>
 
-
-                         <td><button onclick = "location.href='/pendingapp_profile.php'" class="btn btn-sm btn-primary pull-right" name="ViewPersonApplication" type="submit" class="viewapp">View </button></td>
-
+                         <!--                         <td><button onclick = "location.href='/testApp.php?id=--><?php //echo $PersonID ?><!--" class="btn btn-sm btn-primary pull-right" name="ViewPersonApplication" type="submit" class="viewapp">View </button></td>-->
+							<td><a href="/volunteerApplication.php?id=<?php echo $AppID ?>" role="button" class="btn btn-sm btn-primary pull-right">View</a></td>
 
                         </tr>
                      <?php } ?>
@@ -451,20 +446,5 @@ $database = "wildlifeDB";
     </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 }

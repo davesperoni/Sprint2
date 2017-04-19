@@ -10,7 +10,7 @@
  *
  *   INSPINIA - Responsive Admin Theme
  *   version 2.7
- *
+ *200px
 */
 h1,
 h2,
@@ -8769,7 +8769,7 @@ p {
 }
 
 a {
-  color: #ffffff;
+  color: #262015;
 }
 
 body {
@@ -8814,23 +8814,36 @@ body {
 }
 
 /*Maddy's CSS Changes For Create An Account*/
+.logo_form {
+	text-align: center;
+	display: block;
+    margin: auto;
+}
+
+.formback {
+	background-image: url("../img/autumn.jpg");
+	background-repeat:no-repeat;
+  background-position: right center;
+  background-size: auto;
+}
 
 .grayform {
   background-color: #f0eeec;
   margin-bottom: 50px;
+  min-height: 800px;
   }
   
 .ibox-content-form {
   background-color: #f0eeec;
   color: inherit;
-  padding: 0px 0px 137px 0px;
   border-color: #e7eaec;
   border-image: none;
   border-style: solid solid none;
   border-width: 1px 0;
   margin-right: 0px;
   margin-bottom: 50px;
-  height: 100%;
+  margin-top:50px;
+  height: 80%;
 }
 
 .formpadding {
@@ -8839,8 +8852,8 @@ body {
 
 .smallerheader {
   text-align: center;
-  padding-top: 20px;
-
+  padding-right: 175px;
+    padding-left: 175px;
 }
 
 .smallerheader a {
@@ -8849,10 +8862,6 @@ body {
 
 .smallerheader h1 {
     font-size: 50px;
-}
-
-.smallerheader p {
-  font-weight: bold;
 }
 
 label {
@@ -9248,38 +9257,6 @@ body
   color: #F0EEEC;
 }
 
-/*APPLICANT DASHBOARD STYLES */
-
-.hey-applicant
-{
-  font-family: 'Montserrat';
-  font-size: 16px;
-  top: 220px;
-  position: relative;
-  color: #F0EEEC;
-  font-weight: 300;
-}
-
-.app-types
-{
-  font-family: Bebas;
-  color: #9e371c;
-  font-size: 34px;
-  margin-top: 0px;
-}
-
-.app-text
-{
-  font-family: 'Montserrat';
-  font-size: 16px;
-  font-weight: 300;
-}
-
-.position-title
-{
-  font-family: 'Montserrat';
-  font-size: 21px;
-}
 
 /* AMANDA'S STYLES FOR LOGIN PAGE */
 .login-background
@@ -9403,8 +9380,19 @@ padding-right: 30px;
 {
   padding-left: 5px;
   font-size: 12px;
-  color: black;
+  color: #262015;
 
+}
+
+.editBtn-right
+{
+  padding-left: 15px;
+  color: #262015; 
+}
+
+.editBtn-right a
+{
+  color: #262015;	
 }
 
 .editBtns:hover, .editBtns:focus
@@ -9447,6 +9435,23 @@ padding-right: 30px;
   font-size: 12px;
 
 }
+
+.pendingapps_header_content
+{
+  background-color: #9E371C;
+  color: white;
+}
+
+.btmSpace
+{
+  margin-bottom: 35px;
+}
+
+.btmSpaceLess
+{
+  margin-bottom: 10px;
+}
+
 .btmSpace2
 {
   margin-bottom: 10px;
@@ -9478,6 +9483,7 @@ padding-right: 30px;
 
 /*CSS For Checkout-Maddy*/
 
+/* replaced with code below 
 #checkOut
 {
   position: relative;
@@ -9492,6 +9498,23 @@ padding-right: 30px;
   margin-right: auto;
   z-index: 20;
   width: 20em;
+}
+*/
+
+#checkOut
+{
+  position: relative;
+  background-color: #9e371c;
+  font-size: 42px;
+  top: 300px;
+  font-family: Bebas, sans-serif;
+  color: #fff;
+  padding: 20px 50px 20px 50px;
+  border-radius: 0px 0px 0px 0px;
+  margin-left: auto;
+  margin-right: auto;
+  z-index: 20;
+  width: 50%;
 }
 
 #checkOutTitle {
@@ -9574,3 +9597,165 @@ padding-right: 30px;
 }
 
 /*End CSS for Archived Apps*/
+
+
+/*APPLICANT DASHBOARD STYLES */
+
+.hey-applicant
+{
+  font-family: 'Montserrat';
+  font-size: 16px;
+  top: 220px;
+  position: relative;
+  color: #F0EEEC;
+  font-weight: 300;
+}
+
+.app-types
+{
+  font-family: Bebas;
+  color: #9e371c;
+  font-size: 34px;
+  margin-top: 0px;
+}
+
+.app-text
+{
+  font-family: 'Montserrat';
+  font-size: 16px;
+  font-weight: 300;
+}
+
+.position-title
+{
+  font-family: 'Montserrat';
+  font-size: 21px;
+  padding: 10px 5px 0px 10px;
+
+}
+
+.moveToBtm
+{
+  margin-top: 600px;
+}
+
+.moveMore
+{
+  margin-top: 70px !important;
+}
+
+.slick-prev:before, .slick-next:before
+{
+  color: #9E371C !important;
+}
+
+.ibox-title-applicant
+{
+  background-color: #f3f3f4;
+  color: #9E371C;
+  font-family: serif;
+  font-size: 32px;
+  padding: 5px 5px 5px 10px;
+}
+
+.app-types
+{
+  margin-top: 20px !important;
+}
+
+.lessSpaceBtm
+{
+  margin-bottom: -100px !important;
+}
+
+/* Transport modal styles - added 4/13 by Jenny, Shay, Viv */
+.text-left
+{
+  text-align: left;
+}
+
+.orangeBackground
+{
+  background-color: #9E371C;
+  padding: 10px 10px 15px 10px;
+}
+
+.whiteText
+{
+  color: white;
+}
+
+.space-left
+{
+  padding-left: 8px;
+}
+
+input, textarea
+{
+  color: black;
+}
+
+/*Maddy's Training CSS*/
+
+.training_header_content
+{
+  background-color: #9E371C;
+  color: white;
+  background-image: url(".../img/waterfall.jpg");
+}
+
+.accordion {
+	color: #f3f3f4;
+}
+
+.accordion-padding {
+	padding-left: 20px;
+	padding-right:20px;
+}
+
+.panel-heading {
+	background-color: #9e371c;
+}
+
+.panel-default>.panel-heading {
+	background-color: #9e371c;
+}
+
+/*End of training css*/
+
+
+/*Jenny's validation css*/
+
+.error{
+	color:red
+};
+
+/*end of jenny's validation css*/
+
+/*Forgot password*/
+
+.forgotpassword {
+background-image: url("../img/autumn.jpg");
+	background-repeat:no-repeat;
+  	background-position: right center;
+  	background-size: cover;
+}
+
+.ibox-content-forgotpassword {
+  background-color: #f0eeec;
+  color: #202615;
+  padding: 15px 40px 20px 40px;
+  border-image: none;
+  border-style: solid solid none;
+  border-width: 0px 0;	
+}
+
+.return-to-login {
+	text-align: left;
+	color:#9e371c;
+}
+
+.return-to-login p a {
+	color: #9e371c;
+}
+/*End of forgot password*/

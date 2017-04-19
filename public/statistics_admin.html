@@ -6,7 +6,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Wildlife Center of Virginia | Archived Applications</title>
+    <title>Wildlife Center of Virginia | Search Volunteers</title>
 
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="font-awesome/css/font-awesome.css" rel="stylesheet">
@@ -29,34 +29,38 @@
                             <span class="clear"> <span class="block m-t-xs"> <strong class="font-bold">Raina Krasner</strong>
                              </span> <span class="text-muted text-xs block">Outreach Coordinator<b class="caret"></b></span> </span> </a>
                         <ul class="dropdown-menu animated fadeInRight m-t-xs">
-                            <li><a href="profile.html">Profile</a></li>
+                            <li><a href="#">Profile</a></li>
                             <li class="divider"></li>
-                            <li><a href="login.html">Logout</a></li>
+                            <li><a href="login.php">Logout</a></li>
                         </ul>
                     </div>
                     <div class="logo-element">
                         
                     </div>
                 </li>
-               
-                <li>
-                    <a href="#"><i class="fa fa-home"></i> <span class="nav-label">Home</span></a>
-                </li>
-                 <li>
-                    <a href="#"><i class="fa fa-users"></i> <span class="nav-label">Who's Here</span></a>
+
+				<li>
+                    <a href="/admin_dashboard.php"><i class="fa fa-home"></i> <span class="nav-label">Home</span></a>
                 </li>
                 <li>
-                    <a href="#"><i class="fa fa-calendar"></i> <span class="nav-label">Calendar</span></a></li>
+                    <a href="/who's_here.php"><i class="fa fa-users"></i> <span class="nav-label">Who's Here</span></a>
+                </li>
+                <li>
+                    <a target="_blank" href="/Calendar/index.php"><i class="fa fa-calendar"></i> <span class="nav-label">Calendar</span></a></li>
                 <li>
                 <li>
-                    <a href="#"><i class="fa fa-search"></i> <span class="nav-label">Search</span></a>
+                    <a href="/search_volunteers_admin.html"><i class="fa fa-search"></i> <span class="nav-label">Search</span></a>
+                </li>
+                <li>
+                    <a href="/pending_apps.php"><i class="fa fa-clipboard"></i> <span class="nav-label">Applications</span>  </a>
                 </li>
                 <li class = "active">
-                    <a href="#"><i class="fa fa-clipboard"></i> <span class="nav-label">Applications</span>  </a>
-                </li>
+                    <a href="/statistics_admin.html"><i class="fa fa-bar-chart"></i> <span class="nav-label">Statistics</span>  </a>
+                </li>				
                 <li>
-                    <a href="#"><i class="fa fa-user"></i> <span class="nav-label">My Profile</span>  </a>
+                    <a href="/admin_profile.php"><i class="fa fa-user"></i> <span class="nav-label">My Profile</span>  </a>
                 </li>
+
             </ul>
         </div>
     </nav> <!-- end of navigation --> 
@@ -67,12 +71,12 @@
         <div class="row border-bottom">
         <nav class="navbar navbar-static-top white-bg" role="navigation" style="margin-bottom: 0">
         <div class="navbar-header">
-            <a class="navbar-minimalize minimalize-styl-2 btn btn-primary " href="#"><i class="fa fa-bars"></i> </a>
+           <!-- <a class="navbar-minimalize minimalize-styl-2 btn btn-primary " href="#"><i class="fa fa-bars"></i> </a>-->
         </div>
             <ul class="nav navbar-top-links navbar-right">
              <li class="dropdown">
                     <a class="dropdown-toggle count-info" data-toggle="dropdown" href="#">
-                        <i class="fa fa-bell"></i>  <span class="label label-primary">8</span>
+                        <i class="fa fa-bell"></i>  <span class="label label-primary"></span>
                     </a>
                     <ul class="dropdown-menu dropdown-alerts">
                         <li>
@@ -114,7 +118,7 @@
                 </li>
 
                 <li>
-                    <a href="login.html">
+                    <a href="logout.php">
                         <i class="fa fa-sign-out"></i> Log out
                     </a>
                 </li>
@@ -124,87 +128,29 @@
         </div>
 
         <!-- BEGINNING OF HEADER --> 
-          <div class="col-md-12">
-          <div class = "row">
-		         <header class="archivedapps-header-background" class="image-bg-fluid-height " >
-					<br/><br/><br/><br/><br/><br/><br/>
-                    <h1> ARCHIVED APPLICATIONS </h1>
-		    	 </header>
-    	</div>
-        </div>
-     		<!--Start Table -->
-     <div class="tablepadding">
-     <select class = "selection-box-log pull-right btmSpace2">
-         <option value="all">View All</option>
-         <option value="outreach_apps">Outreach</option>
-         <option value="transport_apps">Transport</option>
-         <option value="vet_apps">Vet Team</option>
-         <option value="animal_care_apps">Animal Care</option>
-     </select>
-     </div>
-     <!-- was thinking this would sort vol type by alphabetical --> 
+         <div class = "row">
+             <div class = "col-sm-12">
+		         <header id = "pendingapps-header-background" class="image-bg-fluid-height ">
+		         <div class = "text-overlay">
+                 
+					<h1 class = "welcome-user"> STATISTICS </h1>
 
-			<div class="pendingapps_table">
-            <table class="table table-striped">
-    <thead class="pendingapps-header">
-      <tr>
-        <th class="pendingapps_header_content">Names</th>
-        <th class="pendingapps_header_content">Type</th>
-        <th class="pendingapps_header_content">Date</th>
-        <th class="pendingapps_header_content"></th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>John Smith</td>
-        <td>Transport</td>
-        <td>3/23/2017</td>
-        <td class="viewapp">View</td>
-      </tr>
-      <tr>
-         <td>John Smith</td>
-        <td>Transport</td>
-        <td>3/23/2017</td>
-        <td class="viewapp">View</td>
-      </tr>
-       <tr>
-        <td>John Smith</td>
-        <td>Transport</td>
-        <td>3/23/2017</td>
-        <td class="viewapp">View</td>
-      </tr>
-       <tr>
-         <td>John Smith</td>
-        <td>Transport</td>
-        <td>3/23/2017</td>
-        <td class="viewapp">View</td>
-      </tr>
-       <tr>
-         <td>John Smith</td>
-        <td>Transport</td>
-        <td>3/23/2017</td>
-        <td class="viewapp">View</td>
-      </tr>
-       <tr>
-         <td>John Smith</td>
-        <td>Transport</td>
-        <td>3/23/2017</td>
-        <td class="viewapp">View</td>
-      </tr>
-        <tr>
-         <td>John Smith</td>
-        <td>Transport</td>
-        <td>3/23/2017</td>
-        <td class="viewapp">View</td>
-      </tr>
-    </tbody>
-  </table>
-  </div>
-            <!--End Table -->  
-              
-              
-</div><!-- end row --> 
-</div> <!-- end row --> 
+				 </div>
+		    	 </header>
+
+                 <div>
+                     <div class="row">
+                    <div class="col-md-10 col-md-offset-1">
+                        <div class='volunteerOverviewViz' id='viz1491414235794' style='position: relative'><noscript><a href='#'><img alt='Volunteer Information ' src='https:&#47;&#47;public.tableau.com&#47;static&#47;images&#47;Vi&#47;Viz_VolunteerDash&#47;Dashboard1&#47;1_rss.png' style='border: none' /></a></noscript><object class='tableauViz'  style='display:none;'><param name='host_url' value='https%3A%2F%2Fpublic.tableau.com%2F' /> <param name='site_root' value='' /><param name='name' value='Viz_VolunteerDash&#47;Dashboard1' /><param name='tabs' value='no' /><param name='toolbar' value='yes' /><param name='static_image' value='https:&#47;&#47;public.tableau.com&#47;static&#47;images&#47;Vi&#47;Viz_VolunteerDash&#47;Dashboard1&#47;1.png' /> <param name='animate_transition' value='yes' /><param name='display_static_image' value='yes' /><param name='display_spinner' value='yes' /><param name='display_overlay' value='yes' /><param name='display_count' value='yes' /></object></div>                <script type='text/javascript'>                    var divElement = document.getElementById('viz1491414235794');                    var vizElement = divElement.getElementsByTagName('object')[0];                    vizElement.style.width='1004px';vizElement.style.height='869px';                    var scriptElement = document.createElement('script');                    scriptElement.src = 'https://public.tableau.com/javascripts/api/viz_v1.js';                    vizElement.parentNode.insertBefore(scriptElement, vizElement);                </script>
+                    </div>
+                    </div>
+                 </div>
+    		 </div>
+    	</div>
+
+
+    <div class="wrapper wrapper-content admin-wrapper">
+    
 
                
             

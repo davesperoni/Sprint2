@@ -3,327 +3,556 @@
 <?php include("Classes/Availability.php"); ?>
 
 <?php
-session_start();
+    session_start();
 
 
-/**
- * Created by PhpStorm.
- * User: David Speroni
- * Date: 3/30/17
- * Time: 11:10 AM
- */
+    /**
+     * Created by PhpStorm.
+     * User: Jenny - added validation - 4/19/2017 - need to fix so that data stays on form after submit
+     * David Speroni : switched mysql to mysqli - 3/30/2017
+     * Other contributors: Drew
+     */
 
+//Declare variables
+$PersonFirstName = "";
+$PersonMiddleInitial = "";
+$PersonLastName = "";
+$PersonPhoneNumber = "";
+$PersonStreetAddress = "";
+$PersonCity = "";
+$PersonZipCode = "";
+$PersonState = "";
+$PersonCounty = "";
+$PersonCountry = "";
+$PersonDateOfBirth = "";
+$PersonDateOfBirthDay = "";
+$PersonDateOfBirthMonth = "";
+$PersonDateOfBirthYear = "";
+$EmergencyFirstName = "";
+$EmergencyMiddleInitial = "";
+$EmergencyLastName = "";
+$EmergencyRelationship = "";
+$EmergencyPhoneNumber = "";
+$PersonAllergy = "";
+$PersonPhysicalLimitation = "";
+$PersonRabies = "";
+$PersonHavePermit = "";
+$PersonPermitType = "";
 
-if (isset($_POST['SubmitPersonProfileForm'])) {
+//Declare error messages;
+$personFirstNameErr = "";
+$personMidInitialErr = "";
+$personLastNameErr = "";
+$personDOBErr = "";
+$phoneNumberErr = "";
+$addressErr = "";
+$cityErr = "";
+$zipCodeErr = "";
+$stateErr = "";
+$countyErr = "";
+$countryErr = "";
+$ICEFirstNameErr = "";
+$ICEMidInitialErr = "";
+$ICELastNameErr = "";
+$ICERelationshipErr = "";
+$ICEPhoneNumberErr = "";
+$allergiesErr = "";
+$physicalLimitErr = "";
+$rabiesErr = "";
+$vaccineUploadErr = "";
+$havePermitErr = "";
+$permitCategoryErr = "";
+$permitUploadErr = "";
+$availabilityErr = "";
+$selectSeasonErr = "";
+$resumeErr = "";
 
-    header("Location: /PersonApplicationForm.php");
-    $server = "127.0.0.1";
-    $username = "homestead";
-    $password = "secret";
-    $database = "wildlifeDB";
-
-    $conn = new mysqli($server, $username, $password, $database);
-
-    if ($conn->connect_error) {
-        die("connection failed!\n" . $conn->connect_error);
-    }
-    else
-    {
-    }
-
-    mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
-
-    $EmergencyFirstName = $_POST['EmergencyFirstName'];
-    $EmergencyMiddleInitial = $_POST['EmergencyMiddleInitial'];
-    $EmergencyLastName = $_POST['EmergencyLastName'];
-    $EmergencyPhoneNumber= $_POST['EmergencyPhoneNumber'];
-    $EmergencyRelationship = $_POST['EmergencyRelationship'];
-
-    $newEmergencyContact = new EmergencyContact($EmergencyFirstName, $EmergencyMiddleInitial, $EmergencyLastName, $EmergencyPhoneNumber, $EmergencyRelationship);
-
-    $EmergencyFirstName = $newEmergencyContact->getEmergencyFirstName();
-    $EmergencyMiddleInitial = $newEmergencyContact->getEmergencyMiddleInitial();
-    $EmergencyLastName = $newEmergencyContact->getEmergencyLastName();
-    $EmergencyPhoneNumber = $newEmergencyContact->getEmergencyPhoneNumber();
-    $EmergencyRelationship = $newEmergencyContact->getEmergencyRelationship();
-    $EmergencyLastUpdatedBy =$newEmergencyContact->getEmergencyLastUpdatedBy();
-    $EmergencyLastUpdated =$newEmergencyContact->getEmergencyLastUpdated();
-
-    $sqlEmergencyContact = "INSERT INTO EmergencyContact (FirstName, MiddleInitial, LastName, PhoneNumber, Relationship, LastUpdatedBy, LastUpdated) VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)";
-    $stmt = mysqli_prepare($conn, $sqlEmergencyContact);
-    $stmt->bind_param("ssssss", $EmergencyFirstName, $EmergencyMiddleInitial, $EmergencyLastName, $EmergencyPhoneNumber, $EmergencyRelationship, $EmergencyLastUpdatedBy);
-
-    if($stmt) {
-
-        $stmt->execute();
-    }
-    echo "Emergency Contact added to database!";
-
-    $EmergencyContactID = $conn->insert_id;
-
-    echo "New record created successfully. Last inserted ID is: " . $EmergencyContactID;
-
-
-    $PersonFirstName = $_POST['PersonFirstName'];
-    $PersonMiddleInitial = $_POST['PersonMiddleInitial'];
-    $PersonLastName = $_POST['PersonLastName'];
-    $PersonStreetAddress = $_POST['PersonStreetAddress'];
-    $PersonCity = $_POST['PersonCity'];
-    $PersonStateAbb = $_POST['PersonState'];
-    $PersonCountryAbb = $_POST['PersonCountry'];
-    $PersonZipCode = $_POST['PersonZipCode'];
-    //$PersonEmail = $_POST['PersonEmail'];
-    $PersonPhoneNumber= $_POST['PersonPhoneNumber'];
-    $PersonDateOfBirthYear = $_POST['PersonDOBYear'];
-    $PersonDateOfBirthMonth = $_POST['PersonDOBMonth'];
-    $PersonDateOfBirthDay = $_POST['PersonDOBDay'];
-    $PersonDateOfBirth = $PersonDateOfBirthYear . '-' . $PersonDateOfBirthMonth . '-' . $PersonDateOfBirthDay;
-    $PersonAllergy = $_POST['PersonAllergy'];
-    $PersonPhysicalLimitation = $_POST['PersonPhysical'];
-    $PersonHavePermit = $_POST['PersonHavePermit'];
-    $PersonPermitType = $_POST['PersonPermitType'];
-    $PersonRabies = $_POST['PersonRabies'];
-//$PersonNotes = $_POST['PersonNotes'];
-
+if(empty($_SESSION['AccountID']))
+{
+    header("Location: /logout.php"); //logs out any active sessions and takes the user to the login screen
+}
+else {
     $PersonAccountID = $_SESSION['AccountID'];
 
-    $newPerson = new Person($EmergencyContactID, $PersonAccountID, $PersonFirstName, $PersonMiddleInitial, $PersonLastName, $PersonStreetAddress, $PersonCity, $PersonStateAbb, $PersonCountryAbb, $PersonZipCode, $PersonPhoneNumber, $PersonDateOfBirth, $PersonAllergy, $PersonPhysicalLimitation, $PersonHavePermit, $PersonPermitType, $PersonRabies);
+    if (isset($_POST['SubmitPersonProfileForm'])) {
 
-    $EmergencyContactID = $newPerson->getEmergencyContactID();
-    $PersonAccountID = $newPerson->getPersonAccountID();
-    $PersonFirstName = $newPerson->getPersonFirstName();
-    $PersonMiddleInitial = $newPerson->getPersonMiddleInitial();
-    $PersonLastName = $newPerson->getPersonLastName();
-    $PersonStreetAddress = $newPerson->getPersonStreetAddress();
-    $PersonCity = $newPerson->getPersonCity();
-    $PersonStateAbb = $newPerson->getPersonStateAbb();
-    $PersonCountryAbb = $newPerson->getPersonCountryAbb();
-    $PersonZipCode = $newPerson->getPersonZipCode();
-    $PersonPhoneNumber = $newPerson->getPersonPhoneNumber();
-    $PersonDateOfBirth = $newPerson->getPersonDateOfBirth();
-    $PersonAllergy = $newPerson->getPersonAllergy();
-    $PersonPhysicalLimitation = $newPerson->getPersonPhysicalLimitation();
-    $PersonHavePermit = $newPerson->getPersonHavePermit();
-    $PersonPermitType = $newPerson->getPersonPermitType();
-    $PersonRabies = $newPerson->getPersonRabiesVaccine();
-//$PersonNotes = $newPerson->getPersonNotes();
-    $PersonLastUpdatedBy = $newPerson->getPersonLastUpdatedBy();
-    $PersonLastUpdated = $newPerson->getPersonLastUpdated();
+        $server = "localhost";
+        $username = "root";
+        $password = "secret";
+        $database = "wildlifeDB";
+
+        $conn = new mysqli($server, $username, $password, $database);
+
+        if ($conn->connect_error) {
+            die("connection failed!\n" . $conn->connect_error);
+        } else {
+        }
+
+        mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+
+        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+
+            //VALIDATE EMERGENCY CONTACT INFO
+            if (empty($_POST['EmergencyFirstName'])) {
+                $ICEFirstNameErr = "Required";
+            } else if (!preg_match("/^[a-zA-Z]{1,20}$/", $_POST['EmergencyFirstName'])) {
+                $ICEFirstNameErr = "Must be 1-20 letters.";
+            } else {
+                $EmergencyFirstName = test_input($_POST['EmergencyFirstName']);
+            }
+
+            if (empty($_POST['EmergencyMiddleInitial'])) {
+                $ICEMidInitialErr = "Required";
+            } else if (!preg_match("/^[a-zA-Z]{1}$/", $_POST['EmergencyMiddleInitial'])) {
+                $ICEMidInitialErr = "Must be one letter.";
+            } else {
+                $EmergencyMiddleInitial = test_input($_POST['EmergencyMiddleInitial']);
+            }
+
+            if (empty($_POST['EmergencyLastName'])) {
+                $ICELastNameErr = "Required";
+            } else if (!preg_match("/^[a-zA-Z]{1,20}$/", $_POST['EmergencyLastName'])) {
+                $ICELastNameErr = "Must be 1-20 letters.";
+            } else {
+                $EmergencyLastName = test_input($_POST['EmergencyLastName']);
+            }
+
+            if (empty($_POST['EmergencyPhoneNumber'])) {
+                $ICEPhoneNumberErr = "Required";
+            } else {
+                $phone = preg_replace('/[^\d]/', '', test_input($_POST['EmergencyPhoneNumber']));
+                if (!preg_match('/^\d{10}$/', $phone)) {
+                    $ICEPhoneNumberErr = "Phone number must be 10 digits (U.S. format)";
+                } else {
+                    $EmergencyPhoneNumber = $phone;
+                }
+            }
+
+            if (empty($_POST['EmergencyRelationship'])) {
+                $ICERelationshipErr = "Required";
+            } else if (!preg_match("/^[a-zA-Z]{1,20}$/", $_POST['EmergencyRelationship'])) {
+                $ICERelationshipErr = "Must be 1-20 letters.";
+            } else {
+                $EmergencyRelationship = test_input($_POST['EmergencyRelationship']);
+            }
+
+            //VALIDATE PERSON INFO
+            if (empty($_POST['PersonFirstName'])) {
+                $personFirstNameErr = "Required";
+            } else if (!preg_match("/^[a-zA-Z]{1,20}$/", $_POST['PersonFirstName'])) {
+                $personFirstNameErr = "Must be 1-20 letters.";
+            } else {
+                $PersonFirstName = test_input($_POST['PersonFirstName']);
+            }
+
+            if (empty($_POST['PersonMiddleInitial'])) {
+                $personMidInitialErr = "Required";
+            } else if (!preg_match("/^[a-zA-Z]{1}$/", $_POST['PersonMiddleInitial'])) {
+                $personMidInitialErr = "Must be 1 letter.";
+            } else {
+                $PersonMiddleInitial = test_input($_POST['PersonMiddleInitial']);
+            }
+
+            if (empty($_POST['PersonLastName'])) {
+                $personLastNameErr = "Required";
+            } else if (!preg_match("/^[a-zA-Z]{1,20}$/", $_POST['PersonLastName'])) {
+                $personLastNameErr = "Must be 1-20 letters.";
+            } else {
+                $PersonLastName = test_input($_POST['PersonLastName']);
+            }
+
+            if (empty($_POST['PersonStreetAddress'])) {
+                $addressErr = "Required";
+            } else if (!preg_match("/^[0-9a-zA-Z- ]{1,50}$/", $_POST['PersonStreetAddress'])) {
+                $addressErr = "Must be 1-50 letters.";
+            } else {
+                $PersonStreetAddress = test_input($_POST['PersonStreetAddress']);
+            }
+
+            if (empty($_POST['PersonCity'])) {
+                $cityErr = "Required";
+            } else if (!preg_match("/^[a-zA-Z]{1,40}$/", $_POST['PersonCity'])) {
+                $cityErr = "Must be 1-40 letters.";
+            } else {
+                $PersonCity = test_input($_POST['PersonCity']);
+            }
+
+            if (empty($_POST['PersonCounty'])) {
+                $countyErr = "Required";
+            } else {
+                $PersonCounty = test_input($_POST['PersonCounty']);
+            }
+
+            if (empty($_POST['PersonState'])) {
+                $stateErr = "Required";
+            } else {
+                $PersonState = test_input($_POST['PersonState']);
+            }
+
+            if (empty($_POST['PersonCountry'])) {
+                $countryErr = "Required";
+            } else {
+                $PersonCountry = test_input($_POST['PersonCountry']);
+            }
+
+            if (empty($_POST['PersonZipCode'])) {
+                $zipCodeErr = "Required";
+            } else if (preg_match("/^([0-9]{5})(-[0-9]{4})?$/i", test_input($_POST['PersonZipCode']))) {
+                $PersonZipCode = test_input($_POST['PersonZipCode']);
+            } else {
+                $zipCodeErr = "Invalid zip code format. Please enter a US-format zip code.";
+            }
+
+            if (empty($_POST['PersonPhoneNumber'])) {
+                $phoneNumberErr = "Required";
+            } else {
+                $phone = preg_replace('/[^\d]/', '', test_input($_POST['PersonPhoneNumber']));
+                if (!preg_match('/^\d{10}$/', $phone)) {
+                    $phoneNumberErr = "Phone number must be 10 digits (U.S. format)";
+                } else {
+                    $PersonPhoneNumber = $phone;
+                }
+            }
+
+            if (empty($_POST['PersonDOBYear'])) {
+                $personDOBErr = "Required";
+            } else if (empty($_POST['PersonDOBMonth'])) {
+                $personDOBErr = "Required";
+            } else if (empty($_POST['PersonDOBDay'])) {
+                $personDOBErr = "Required";
+            } else if ($_POST['PersonDOBYear'] === " - Year - " ^ $_POST['PersonDOBMonth'] === " - Month - " ^ $_POST['PersonDOBDay'] === " - Day - ") {
+                $personDOBErr = "Required";
+            } else {
+                $PersonDateOfBirthYear = test_input($_POST['PersonDOBYear']);
+                $PersonDateOfBirthMonth = test_input($_POST['PersonDOBMonth']);
+                $PersonDateOfBirthDay = test_input($_POST['PersonDOBDay']);
+
+                if (!empty($PersonDateOfBirthYear && $PersonDateOfBirthMonth && $PersonDateOfBirthYear)) {
+                    $PersonDateOfBirth = $PersonDateOfBirthYear . '-' . $PersonDateOfBirthMonth . '-' . $PersonDateOfBirthDay;
+                }
+            }
+
+            if (empty($_POST['PersonAllergy'])) {
+                $allergiesErr = "Required";
+            } else if (!preg_match('/^[a-zA-Z0-9,. ]{0,255}$/', $_POST['PersonAllergy'])) {
+                $allergiesErr = "Maximum 255 characters.";
+            } else {
+                $PersonAllergy = test_input($_POST['PersonAllergy']);
+            }
+
+            if (empty($_POST['PersonPhysical'])) {
+                $physicalLimitErr = "Required";
+            } else if (!preg_match('/^[a-zA-Z0-9,. ]{0,255}$/', $_POST['PersonPhysical'])) {
+                $physicalLimitErr = "Maximum 255 characters.";
+            } else {
+                $PersonPhysicalLimitation = test_input($_POST['PersonPhysical']);
+            }
+
+            if (empty($_POST['PersonHavePermit'])) {
+                $havePermitErr = "Required";
+            } else {
+                $PersonHavePermit = test_input($_POST['PersonHavePermit']);
+            }
+
+            if (empty($_POST['PersonPermitType'])) {
+                $permitCategoryErr = "Required";
+            } else {
+                $PersonPermitType = test_input($_POST['PersonPermitType']);
+            }
+
+            if (empty($_POST['PersonRabies'])) {
+                $rabiesErr = "Required";
+            } else {
+                $PersonRabies = test_input($_POST['PersonRabies']);
+            }
+
+            //Check if all required fields have been assigned values
+            if (!empty($EmergencyFirstName && $EmergencyMiddleInitial && $EmergencyLastName && $EmergencyPhoneNumber && $EmergencyRelationship && $PersonFirstName && $PersonMiddleInitial && $PersonLastName && $PersonStreetAddress && $PersonCity && $PersonCounty && $PersonState && $PersonCountry && $PersonZipCode && $PersonPhoneNumber && $PersonDateOfBirth && $PersonAllergy && $PersonPhysicalLimitation && $PersonHavePermit && $PersonPermitType && $PersonRabies)) {
+                //INSERT EMERGENCY CONTACT INFO
+                $newEmergencyContact = new EmergencyContact($EmergencyFirstName, $EmergencyMiddleInitial, $EmergencyLastName, $EmergencyPhoneNumber, $EmergencyRelationship);
+
+                $EmergencyFirstName = $newEmergencyContact->getEmergencyFirstName();
+                $EmergencyMiddleInitial = $newEmergencyContact->getEmergencyMiddleInitial();
+                $EmergencyLastName = $newEmergencyContact->getEmergencyLastName();
+                $EmergencyPhoneNumber = $newEmergencyContact->getEmergencyPhoneNumber();
+                $EmergencyRelationship = $newEmergencyContact->getEmergencyRelationship();
+                $EmergencyLastUpdatedBy = $newEmergencyContact->getEmergencyLastUpdatedBy();
+                $EmergencyLastUpdated = $newEmergencyContact->getEmergencyLastUpdated();
+
+                $sqlEmergencyContact = "INSERT INTO EmergencyContact (FirstName, MiddleInitial, LastName, PhoneNumber, Relationship, LastUpdatedBy, LastUpdated) VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)";
+                $stmt = mysqli_prepare($conn, $sqlEmergencyContact);
+                $stmt->bind_param("ssssss", $EmergencyFirstName, $EmergencyMiddleInitial, $EmergencyLastName, $EmergencyPhoneNumber, $EmergencyRelationship, $EmergencyLastUpdatedBy);
+
+                if ($stmt) {
+                    $stmt->execute();
+                }
+                echo "Emergency Contact added to database!";
+
+                $EmergencyContactID = $conn->insert_id;
+                echo "New record created successfully. Last inserted ID is: " . $EmergencyContactID;
 
 
-    $sqlPerson = "INSERT INTO Person (EmergencyContactID, AccountID, FirstName, MiddleInitial, LastName, StreetAddress, City, State, Country, ZipCode, PhoneNumber, DateOfBirth, Allergy, PhysicalLimitation, HavePermit, PermitType, RabiesVaccine, LastUpdatedBy, LastUpdated) VALUES (?, ?, ?, ? , ?, ?, ? , ? , ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)";
-    $stmt = mysqli_prepare($conn, $sqlPerson);
-    $stmt->bind_param("iisssssssissssssss", $EmergencyContactID, $PersonAccountID, $PersonFirstName, $PersonMiddleInitial, $PersonLastName,
-        $PersonStreetAddress, $PersonCity, $PersonStateAbb, $PersonCountryAbb, $PersonZipCode, $PersonPhoneNumber,
-        $PersonDateOfBirth, $PersonAllergy, $PersonPhysicalLimitation, $PersonHavePermit, $PersonPermitType, $PersonRabies,
-        $PersonLastUpdatedBy);
+                //INSERT PERSON INFO
+                //$PersonAccountID = $_SESSION['AccountID'];
 
-    if($stmt) {
+                if (!empty($PersonAccountID)) {
+                    $newPerson = new Person($EmergencyContactID, $PersonAccountID, $PersonFirstName, $PersonMiddleInitial, $PersonLastName, $PersonStreetAddress, $PersonCity, $PersonCounty, $PersonState, $PersonCountry, $PersonZipCode, $PersonPhoneNumber, $PersonDateOfBirth, $PersonAllergy, $PersonPhysicalLimitation, $PersonHavePermit, $PersonPermitType, $PersonRabies);
 
-        $stmt->execute();
+                    $EmergencyContactID = $newPerson->getEmergencyContactID();
+                    $PersonAccountID = $newPerson->getPersonAccountID();
+                    $PersonFirstName = $newPerson->getPersonFirstName();
+                    $PersonMiddleInitial = $newPerson->getPersonMiddleInitial();
+                    $PersonLastName = $newPerson->getPersonLastName();
+                    $PersonStreetAddress = $newPerson->getPersonStreetAddress();
+                    $PersonCity = $newPerson->getPersonCity();
+                    $PersonCounty = $newPerson->getPersonCounty();
+                    $PersonState = $newPerson->getPersonState();
+                    $PersonCountry = $newPerson->getPersonCountry();
+                    $PersonZipCode = $newPerson->getPersonZipCode();
+                    $PersonPhoneNumber = $newPerson->getPersonPhoneNumber();
+                    $PersonDateOfBirth = $newPerson->getPersonDateOfBirth();
+                    $PersonAllergy = $newPerson->getPersonAllergy();
+                    $PersonPhysicalLimitation = $newPerson->getPersonPhysicalLimitation();
+                    $PersonHavePermit = $newPerson->getPersonHavePermit();
+                    $PersonPermitType = $newPerson->getPersonPermitType();
+                    $PersonRabies = $newPerson->getPersonRabiesVaccine();
+                    $PersonLastUpdatedBy = $newPerson->getPersonLastUpdatedBy();
+                    $PersonLastUpdated = $newPerson->getPersonLastUpdated();
 
-        $PersonID = $conn->insert_id;
+                    $sqlPerson = "INSERT INTO Person (EmergencyContactID, AccountID, FirstName, MiddleInitial, LastName, StreetAddress, City, County, State, Country, ZipCode, PhoneNumber, DateOfBirth, Allergy, PhysicalLimitation, HavePermit, PermitType, RabiesVaccine, LastUpdatedBy, LastUpdated) VALUES (?, ?, ?, ?, ? , ?, ?, ? , ? , ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)";
+                    $stmt = mysqli_prepare($conn, $sqlPerson);
+                    $stmt->bind_param("iissssssssissssssss", $EmergencyContactID, $PersonAccountID, $PersonFirstName, $PersonMiddleInitial, $PersonLastName,
+                        $PersonStreetAddress, $PersonCity, $PersonCounty, $PersonState, $PersonCountry, $PersonZipCode, $PersonPhoneNumber,
+                        $PersonDateOfBirth, $PersonAllergy, $PersonPhysicalLimitation, $PersonHavePermit, $PersonPermitType, $PersonRabies,
+                        $PersonLastUpdatedBy);
+                }
 
-        echo "Person added! Last ID added" . $PersonID;
+                if ($stmt) {
+                    $stmt->execute();
+                    $PersonID = $conn->insert_id;
+                    echo "Person added! Last ID added" . $PersonID;
+                    //var_dump($stmt);
+                } else {
+                    echo "Person not added";
+                }
 
-    }
+                if (!empty($PersonID)) {
+                    //AVAILABILITY INFO
+                    if (!empty($_POST['monday'])) {
+                        foreach ($_POST['monday'] as $monday) {
 
-    if(!empty($_POST['monday']))
-    {
-        foreach($_POST['monday'] as $monday) {
+                            $newShift = new Availability(2, $PersonID, $monday);
+                            $AvailabilityDayID = $newShift->getAvailabilityDayID();
+                            $AvailabilityPersonID = $newShift->getAvailabilityPersonID();
+                            $AvailabilityShift = $newShift->getAvailabilityShift();
+                            $AvailabilityLastUpdatedBy = $newShift->getAvailabilityLastUpdatedBy();
+                            $AvailabilityLastUpdated = $newShift->getAvailabilityLastUpdated();
+                            $sqlInsertShift = "INSERT INTO Availability (DayID, PersonID, AvailableShift, LastUpdatedBy, LastUpdated) VALUES(?, ?, ?, ?, CURRENT_TIMESTAMP)";
+                            $stmt = mysqli_prepare($conn, $sqlInsertShift);
+                            $stmt->bind_param("iiss", $AvailabilityDayID, $AvailabilityPersonID, $AvailabilityShift, $AvailabilityLastUpdatedBy);
+                            if ($stmt) {
+                                $stmt->execute();
+                            }
+                        }
+                    }
+                    if (!empty($_POST['tuesday'])) {
+                        foreach ($_POST['tuesday'] as $tuesday) {
 
-            $newShift = new Availability(2, $PersonID, $monday);
-            $AvailabilityDayID = $newShift->getAvailabilityDayID();
-            $AvailabilityPersonID = $newShift->getAvailabilityPersonID();
-            $AvailabilityShift = $newShift->getAvailabilityShift();
-            $AvailabilityLastUpdatedBy = $newShift->getAvailabilityLastUpdatedBy();
-            $AvailabilityLastUpdated = $newShift->getAvailabilityLastUpdated();
-            $sqlInsertShift = "INSERT INTO Availability (DayID, PersonID, AvailableShift, LastUpdatedBy, LastUpdated) VALUES(?, ?, ?, ?, CURRENT_TIMESTAMP)";
-            $stmt = mysqli_prepare($conn, $sqlInsertShift);
-            $stmt->bind_param("iiss", $AvailabilityDayID, $AvailabilityPersonID, $AvailabilityShift, $AvailabilityLastUpdatedBy);
-            if ($stmt) {
-                $stmt->execute();
+                            $newShift = new Availability(3, $PersonID, $tuesday);
+                            $AvailabilityDayID = $newShift->getAvailabilityDayID();
+                            $AvailabilityPersonID = $newShift->getAvailabilityPersonID();
+                            $AvailabilityShift = $newShift->getAvailabilityShift();
+                            $AvailabilityLastUpdatedBy = $newShift->getAvailabilityLastUpdatedBy();
+                            $AvailabilityLastUpdated = $newShift->getAvailabilityLastUpdated();
+                            $sqlInsertShift = "INSERT INTO Availability (DayID, PersonID, AvailableShift, LastUpdatedBy, LastUpdated) VALUES(?, ?, ?, ?, CURRENT_TIMESTAMP)";
+                            $stmt = mysqli_prepare($conn, $sqlInsertShift);
+                            $stmt->bind_param("iiss", $AvailabilityDayID, $AvailabilityPersonID, $AvailabilityShift, $AvailabilityLastUpdatedBy);
+                            if ($stmt) {
+                                $stmt->execute();
+                            }
+                        }
+                    }
+                    if (!empty($_POST['wednesday'])) {
+                        foreach ($_POST['wednesday'] as $wednesday) {
+
+                            $newShift = new Availability(4, $PersonID, $wednesday);
+                            $AvailabilityDayID = $newShift->getAvailabilityDayID();
+                            $AvailabilityPersonID = $newShift->getAvailabilityPersonID();
+                            $AvailabilityShift = $newShift->getAvailabilityShift();
+                            $AvailabilityLastUpdatedBy = $newShift->getAvailabilityLastUpdatedBy();
+                            $AvailabilityLastUpdated = $newShift->getAvailabilityLastUpdated();
+                            $sqlInsertShift = "INSERT INTO Availability (DayID, PersonID, AvailableShift, LastUpdatedBy, LastUpdated) VALUES(?, ?, ?, ?, CURRENT_TIMESTAMP)";
+                            $stmt = mysqli_prepare($conn, $sqlInsertShift);
+                            $stmt->bind_param("iiss", $AvailabilityDayID, $AvailabilityPersonID, $AvailabilityShift, $AvailabilityLastUpdatedBy);
+                            if ($stmt) {
+                                $stmt->execute();
+                            }
+                        }
+                    }
+                    if (!empty($_POST['thursday'])) {
+                        foreach ($_POST['thursday'] as $thursday) {
+
+                            $newShift = new Availability(5, $PersonID, $thursday);
+                            $AvailabilityDayID = $newShift->getAvailabilityDayID();
+                            $AvailabilityPersonID = $newShift->getAvailabilityPersonID();
+                            $AvailabilityShift = $newShift->getAvailabilityShift();
+                            $AvailabilityLastUpdatedBy = $newShift->getAvailabilityLastUpdatedBy();
+                            $AvailabilityLastUpdated = $newShift->getAvailabilityLastUpdated();
+                            $sqlInsertShift = "INSERT INTO Availability (DayID, PersonID, AvailableShift, LastUpdatedBy, LastUpdated) VALUES(?, ?, ?, ?, CURRENT_TIMESTAMP)";
+                            $stmt = mysqli_prepare($conn, $sqlInsertShift);
+                            $stmt->bind_param("iiss", $AvailabilityDayID, $AvailabilityPersonID, $AvailabilityShift, $AvailabilityLastUpdatedBy);
+                            if ($stmt) {
+                                $stmt->execute();
+                            }
+                        }
+                    }
+                    if (!empty($_POST['friday'])) {
+                        foreach ($_POST['friday'] as $friday) {
+                            $DayID = 6;
+
+                            $newShift = new Availability(6, $PersonID, $friday);
+                            $AvailabilityDayID = $newShift->getAvailabilityDayID();
+                            $AvailabilityPersonID = $newShift->getAvailabilityPersonID();
+                            $AvailabilityShift = $newShift->getAvailabilityShift();
+                            $AvailabilityLastUpdatedBy = $newShift->getAvailabilityLastUpdatedBy();
+                            $AvailabilityLastUpdated = $newShift->getAvailabilityLastUpdated();
+                            $sqlInsertShift = "INSERT INTO Availability (DayID, PersonID, AvailableShift, LastUpdatedBy, LastUpdated) VALUES(?, ?, ?, ?, CURRENT_TIMESTAMP)";
+                            $stmt = mysqli_prepare($conn, $sqlInsertShift);
+                            $stmt->bind_param("iiss", $AvailabilityDayID, $AvailabilityPersonID, $AvailabilityShift, $AvailabilityLastUpdatedBy);
+                            if ($stmt) {
+                                $stmt->execute();
+                            }
+                        }
+                    }
+                    if (!empty($_POST['saturday'])) {
+                        foreach ($_POST['saturday'] as $saturday) {
+
+                            $newShift = new Availability(7, $PersonID, $saturday);
+
+                            $AvailabilityDayID = $newShift->getAvailabilityDayID();
+                            $AvailabilityPersonID = $newShift->getAvailabilityPersonID();
+                            $AvailabilityShift = $newShift->getAvailabilityShift();
+                            $AvailabilityLastUpdatedBy = $newShift->getAvailabilityLastUpdatedBy();
+                            $AvailabilityLastUpdated = $newShift->getAvailabilityLastUpdated();
+                            $sqlInsertShift = "INSERT INTO Availability (DayID, PersonID, AvailableShift, LastUpdatedBy, LastUpdated) VALUES(?, ?, ?, ?, CURRENT_TIMESTAMP)";
+                            $stmt = mysqli_prepare($conn, $sqlInsertShift);
+                            $stmt->bind_param("iiss", $AvailabilityDayID, $AvailabilityPersonID, $AvailabilityShift, $AvailabilityLastUpdatedBy);
+                            if ($stmt) {
+                                $stmt->execute();
+                            }
+                        }
+                    }
+                    if (!empty($_POST['sunday'])) {
+                        foreach ($_POST['sunday'] as $sunday) {
+
+                            $newShift = new Availability(1, $PersonID, $sunday);
+                            $AvailabilityDayID = $newShift->getAvailabilityDayID();
+                            $AvailabilityPersonID = $newShift->getAvailabilityPersonID();
+                            $AvailabilityShift = $newShift->getAvailabilityShift();
+                            $AvailabilityLastUpdatedBy = $newShift->getAvailabilityLastUpdatedBy();
+                            $AvailabilityLastUpdated = $newShift->getAvailabilityLastUpdated();
+                            $sqlInsertShift = "INSERT INTO Availability (DayID, PersonID, AvailableShift, LastUpdatedBy, LastUpdated) VALUES(?, ?, ?, ?, CURRENT_TIMESTAMP)";
+                            $stmt = mysqli_prepare($conn, $sqlInsertShift);
+                            $stmt->bind_param("iiss", $AvailabilityDayID, $AvailabilityPersonID, $AvailabilityShift, $AvailabilityLastUpdatedBy);
+                            if ($stmt) {
+                                $stmt->execute();
+                            }
+                        }
+                    }
+
+
+                    // FOR RESUME
+                    $fileName = $_FILES['resumeUpload']['name'];
+                    $tmpName = $_FILES['resumeUpload']['tmp_name'];
+                    $fileSize = $_FILES['resumeUpload']['size'];
+                    $fileType = $_FILES['resumeUpload']['type'];
+
+                    if (!empty($fileName) && !empty($tmpName) && !empty($fileSize) && !empty($fileType)) {
+                        $fp = fopen($tmpName, 'r');
+                        $content = fread($fp, filesize($tmpName));
+                        $content = addslashes($content);
+                        fclose($fp);
+
+                        if (!empty($PersonID && $fileName && $fileSize && $fileType && $content)) {
+                            $sqlInsertResume = "INSERT INTO resumeUpload (PersonID, name, size, type, content ) " .
+                                "VALUES ('$PersonID', '$fileName', '$fileSize', '$fileType', '$content')";
+
+                            $stmt = mysqli_prepare($conn, $sqlInsertResume);
+
+                            if ($stmt) {
+
+                                $stmt->execute();
+                            }
+                        }
+                    }
+
+                    // FOR VACCINE
+                    $fileName = $_FILES['vaccineUpload']['name'];
+                    $tmpName = $_FILES['vaccineUpload']['tmp_name'];
+                    $fileSize = $_FILES['vaccineUpload']['size'];
+                    $fileType = $_FILES['vaccineUpload']['type'];
+
+                    if (!empty($fileName) && !empty($tmpName) && !empty($fileSize) && !empty($fileType)) {
+                        $fp = fopen($tmpName, 'r');
+                        $content = fread($fp, filesize($tmpName));
+                        $content = addslashes($content);
+                        fclose($fp);
+
+                        if (!empty($PersonID && $fileName && $fileSize && $fileType && $content)) {
+                            $sqlInsertVaccine = "INSERT INTO vaccineUpload (PersonID, name, size, type, content, LastUpdatedBy, LastUpdated) " .
+                                "VALUES ('$PersonID', '$fileName', '$fileSize', '$fileType', '$content', 'System', CURRENT_TIMESTAMP)";
+
+                            $stmt = mysqli_prepare($conn, $sqlInsertVaccine);
+
+                            if ($stmt) {
+
+                                $stmt->execute();
+                            }
+                        }
+                    }
+
+                    // FOR PERMIT
+                    $fileName = $_FILES['permitUpload']['name'];
+                    $tmpName = $_FILES['permitUpload']['tmp_name'];
+                    $fileSize = $_FILES['permitUpload']['size'];
+                    $fileType = $_FILES['permitUpload']['type'];
+
+                    if (!empty($fileName) && !empty($tmpName) && !empty($fileSize) && !empty($fileType)) {
+                        $fp = fopen($tmpName, 'r');
+                        $content = fread($fp, filesize($tmpName));
+                        $content = addslashes($content);
+                        fclose($fp);
+
+                        if (!empty($PersonID && $fileName && $fileSize && $fileType && $content)) {
+                            $sqlInsertPermit = "INSERT INTO permitUpload (PersonID, name, size, type, content, LastUpdatedBy, LastUpdated) " .
+                                "VALUES ('$PersonID', '$fileName', '$fileSize', '$fileType', '$content', 'System', CURRENT_TIMESTAMP)";
+
+                            $stmt = mysqli_prepare($conn, $sqlInsertPermit);
+
+                            if ($stmt) {
+
+                                $stmt->execute();
+                            }
+                        }
+                    }
+
+                    //Bring the user to the application form page once all else is complete
+                    header("Location: /PersonApplicationForm.php");
+                }
             }
         }
     }
-    if(!empty($_POST['tuesday']))
-    {
-        foreach($_POST['tuesday'] as $tuesday) {
-
-            $newShift = new Availability(3, $PersonID, $tuesday);
-            $AvailabilityDayID = $newShift->getAvailabilityDayID();
-            $AvailabilityPersonID = $newShift->getAvailabilityPersonID();
-            $AvailabilityShift = $newShift->getAvailabilityShift();
-            $AvailabilityLastUpdatedBy = $newShift->getAvailabilityLastUpdatedBy();
-            $AvailabilityLastUpdated = $newShift->getAvailabilityLastUpdated();
-            $sqlInsertShift = "INSERT INTO Availability (DayID, PersonID, AvailableShift, LastUpdatedBy, LastUpdated) VALUES(?, ?, ?, ?, CURRENT_TIMESTAMP)";
-            $stmt = mysqli_prepare($conn, $sqlInsertShift);
-            $stmt->bind_param("iiss", $AvailabilityDayID, $AvailabilityPersonID, $AvailabilityShift, $AvailabilityLastUpdatedBy);
-            if ($stmt) {
-                $stmt->execute();
-            }
-        }
-    }
-    if(!empty($_POST['wednesday']))
-    {
-        foreach($_POST['wednesday'] as $wednesday) {
-
-            $newShift = new Availability(4, $PersonID, $wednesday);
-            $AvailabilityDayID = $newShift->getAvailabilityDayID();
-            $AvailabilityPersonID = $newShift->getAvailabilityPersonID();
-            $AvailabilityShift = $newShift->getAvailabilityShift();
-            $AvailabilityLastUpdatedBy = $newShift->getAvailabilityLastUpdatedBy();
-            $AvailabilityLastUpdated = $newShift->getAvailabilityLastUpdated();
-            $sqlInsertShift = "INSERT INTO Availability (DayID, PersonID, AvailableShift, LastUpdatedBy, LastUpdated) VALUES(?, ?, ?, ?, CURRENT_TIMESTAMP)";
-            $stmt = mysqli_prepare($conn, $sqlInsertShift);
-            $stmt->bind_param("iiss", $AvailabilityDayID, $AvailabilityPersonID, $AvailabilityShift, $AvailabilityLastUpdatedBy);
-            if ($stmt) {
-                $stmt->execute();
-            }
-        }
-    }
-    if(!empty($_POST['thursday']))
-    {
-        foreach($_POST['thursday'] as $thursday) {
-
-            $newShift = new Availability(5, $PersonID, $thursday);
-            $AvailabilityDayID = $newShift->getAvailabilityDayID();
-            $AvailabilityPersonID = $newShift->getAvailabilityPersonID();
-            $AvailabilityShift = $newShift->getAvailabilityShift();
-            $AvailabilityLastUpdatedBy = $newShift->getAvailabilityLastUpdatedBy();
-            $AvailabilityLastUpdated = $newShift->getAvailabilityLastUpdated();
-            $sqlInsertShift = "INSERT INTO Availability (DayID, PersonID, AvailableShift, LastUpdatedBy, LastUpdated) VALUES(?, ?, ?, ?, CURRENT_TIMESTAMP)";
-            $stmt = mysqli_prepare($conn, $sqlInsertShift);
-            $stmt->bind_param("iiss", $AvailabilityDayID, $AvailabilityPersonID, $AvailabilityShift, $AvailabilityLastUpdatedBy);
-            if ($stmt) {
-                $stmt->execute();
-            }
-        }
-    }
-    if(!empty($_POST['friday']))
-    {
-        foreach($_POST['friday'] as $friday) {
-            $DayID = 6;
-
-            $newShift = new Availability(6, $PersonID, $friday);
-            $AvailabilityDayID = $newShift->getAvailabilityDayID();
-            $AvailabilityPersonID = $newShift->getAvailabilityPersonID();
-            $AvailabilityShift = $newShift->getAvailabilityShift();
-            $AvailabilityLastUpdatedBy = $newShift->getAvailabilityLastUpdatedBy();
-            $AvailabilityLastUpdated = $newShift->getAvailabilityLastUpdated();
-            $sqlInsertShift = "INSERT INTO Availability (DayID, PersonID, AvailableShift, LastUpdatedBy, LastUpdated) VALUES(?, ?, ?, ?, CURRENT_TIMESTAMP)";
-            $stmt = mysqli_prepare($conn, $sqlInsertShift);
-            $stmt->bind_param("iiss", $AvailabilityDayID, $AvailabilityPersonID, $AvailabilityShift, $AvailabilityLastUpdatedBy);
-            if ($stmt) {
-                $stmt->execute();
-            }
-        }
-    }
-    if(!empty($_POST['saturday']))
-    {
-        foreach($_POST['saturday'] as $saturday) {
-
-            $newShift = new Availability(7, $PersonID, $saturday);
-
-            $AvailabilityDayID = $newShift->getAvailabilityDayID();
-            $AvailabilityPersonID = $newShift->getAvailabilityPersonID();
-            $AvailabilityShift = $newShift->getAvailabilityShift();
-            $AvailabilityLastUpdatedBy = $newShift->getAvailabilityLastUpdatedBy();
-            $AvailabilityLastUpdated = $newShift->getAvailabilityLastUpdated();
-            $sqlInsertShift = "INSERT INTO Availability (DayID, PersonID, AvailableShift, LastUpdatedBy, LastUpdated) VALUES(?, ?, ?, ?, CURRENT_TIMESTAMP)";
-            $stmt = mysqli_prepare($conn, $sqlInsertShift);
-            $stmt->bind_param("iiss", $AvailabilityDayID, $AvailabilityPersonID, $AvailabilityShift, $AvailabilityLastUpdatedBy);
-            if ($stmt) {
-                $stmt->execute();
-            }
-        }
-    }
-    if(!empty($_POST['sunday']))
-    {
-        foreach($_POST['sunday'] as $sunday) {
-
-            $newShift = new Availability(1, $PersonID, $sunday);
-            $AvailabilityDayID = $newShift->getAvailabilityDayID();
-            $AvailabilityPersonID = $newShift->getAvailabilityPersonID();
-            $AvailabilityShift = $newShift->getAvailabilityShift();
-            $AvailabilityLastUpdatedBy = $newShift->getAvailabilityLastUpdatedBy();
-            $AvailabilityLastUpdated = $newShift->getAvailabilityLastUpdated();
-            $sqlInsertShift = "INSERT INTO Availability (DayID, PersonID, AvailableShift, LastUpdatedBy, LastUpdated) VALUES(?, ?, ?, ?, CURRENT_TIMESTAMP)";
-            $stmt = mysqli_prepare($conn, $sqlInsertShift);
-            $stmt->bind_param("iiss", $AvailabilityDayID, $AvailabilityPersonID, $AvailabilityShift, $AvailabilityLastUpdatedBy);
-            if ($stmt) {
-                $stmt->execute();
-            }
-        }
-    }
-
-    // FOR RESUME
-    $fileName = $_FILES['resumeUpload']['name'];
-    $tmpName  = $_FILES['resumeUpload']['tmp_name'];
-    $fileSize = $_FILES['resumeUpload']['size'];
-    $fileType = $_FILES['resumeUpload']['type'];
-
-    $fp      = fopen($tmpName, 'r');
-    $content = fread($fp, filesize($tmpName));
-    $content = addslashes($content);
-    fclose($fp);
-
-    $sqlInsertResume = "INSERT INTO resumeUpload (PersonID, name, size, type, content ) ".
-        "VALUES ('$PersonID', '$fileName', '$fileSize', '$fileType', '$content')";
-
-    $stmt = mysqli_prepare($conn, $sqlInsertResume);
-
-    if ($stmt) {
-
-        $stmt->execute();
-    }
-
-
-    // FOR VACCINE
-    $fileName = $_FILES['vaccineUpload']['name'];
-    $tmpName  = $_FILES['vaccineUpload']['tmp_name'];
-    $fileSize = $_FILES['vaccineUpload']['size'];
-    $fileType = $_FILES['vaccineUpload']['type'];
-
-    $fp      = fopen($tmpName, 'r');
-    $content = fread($fp, filesize($tmpName));
-    $content = addslashes($content);
-    fclose($fp);
-
-    $sqlInsertVaccine = "INSERT INTO vaccineUpload (PersonID, name, size, type, content, LastUpdatedBy, LastUpdated) ".
-        "VALUES ('$PersonID', '$fileName', '$fileSize', '$fileType', '$content', 'system', CURRENT_TIMESTAMP)";
-
-    $stmt = mysqli_prepare($conn, $sqlInsertVaccine);
-
-    if ($stmt) {
-
-        $stmt->execute();
-    }
-
-    // FOR PERMIT
-    $fileName = $_FILES['permitUpload']['name'];
-    $tmpName  = $_FILES['permitUpload']['tmp_name'];
-    $fileSize = $_FILES['permitUpload']['size'];
-    $fileType = $_FILES['permitUpload']['type'];
-
-    $fp      = fopen($tmpName, 'r');
-    $content = fread($fp, filesize($tmpName));
-    $content = addslashes($content);
-    fclose($fp);
-
-    $sqlInsertPermit = "INSERT INTO permitUpload (PersonID, name, size, type, content, LastUpdatedBy, LastUpdated) ".
-        "VALUES ('$PersonID', '$fileName', '$fileSize', '$fileType', '$content', 'system', CURRENT_TIMESTAMP)";
-
-    $stmt = mysqli_prepare($conn, $sqlInsertPermit);
-
-    if ($stmt) {
-
-        $stmt->execute();
-    }
-
-
 }
+?>
 
+<?php
+function test_input($data)
+{
+    $data = trim($data);
+    $data = stripslashes($data);
+    $data = htmlspecialchars($data);
+    return $data;
+}
 ?>
 
 <html>
@@ -355,14 +584,14 @@ if (isset($_POST['SubmitPersonProfileForm'])) {
                 <p>Thank you for your interest in The Wildlife Center of Virginia. Please fill out the form below to create an account.</p></div>
 
             <div class="col-sm-12">
-                <form role="form" name="PersonProfileForm" method="post" action="PersonProfileForm.php" enctype="multipart/form-data">
-                    <div class="col-md-2 col-md-offset-3"><div class="form-group"><label>First Name</label> <input type="name" name="PersonFirstName" placeholder="Enter first name" class="form-control" required></div></div>
-                    <div class="col-md-2"><div class="form-group"><label>Middle Initial</label> <input type="name" name="PersonMiddleInitial" placeholder="Enter middle initial" class="form-control" required></div></div>
-                    <div class="col-md-2"><div class="form-group"><label>Last Name</label> <input type="name" name="PersonLastName" placeholder="Enter last name" class="form-control" required></div></div>
+                <form role="form" name="PersonProfileForm" method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>" method="POST" enctype="multipart/form-data">
+                    <div class="col-md-2 col-md-offset-3"><div class="form-group"><label>First Name</label><span class="error"> * <?php echo $personFirstNameErr;?></span><input type="name" name="PersonFirstName" placeholder="Enter first name" class="form-control" required value="<?php echo $PersonFirstName;?>"></div></div>
+                    <div class="col-md-2"><div class="form-group"><label>Middle Initial</label><span class="error"> * <?php echo $personMidInitialErr;?></span>  <input type="name" name="PersonMiddleInitial" placeholder="Enter middle initial" class="form-control" required value="<?php echo $PersonMiddleInitial;?>"></div></div>
+                    <div class="col-md-2"><div class="form-group"><label>Last Name</label><span class="error"> * <?php echo $personLastNameErr;?></span>  <input type="name" name="PersonLastName" placeholder="Enter last name" class="form-control" required value="<?php echo $PersonLastName;?>"></div></div>
 
                     <div class="col-md-6 col-md-offset-3"><div class="form-group">
-                            <label>Birthday</label>
-                            <select name="PersonDOBMonth" required>
+                            <label>Birthday</label> <span class="error"> * <?php echo $personDOBErr;?></span>
+                            <select name="PersonDOBMonth" required <?php echo $PersonDateOfBirthMonth;?>>
                                 <option> - Month - </option>
                                 <option value="01">01</option>
                                 <option value="02">02</option>
@@ -378,7 +607,7 @@ if (isset($_POST['SubmitPersonProfileForm'])) {
                                 <option value="12">12</option>
                             </select>
 
-                            <select name="PersonDOBDay" required>
+                            <select name="PersonDOBDay" required <?php echo $PersonDateOfBirthDay?>>
                                 <option> - Day - </option>
                                 <option value="1">1</option>
                                 <option value="2">2</option>
@@ -413,7 +642,17 @@ if (isset($_POST['SubmitPersonProfileForm'])) {
                                 <option value="31">31</option>
                             </select>
 
-                            <select name="PersonDOBYear" required>
+                            <select name="PersonDOBYear" required <?php echo $PersonDateOfBirthYear;?>>
+                                <option> - Year - </option>
+                                <?php
+                                for($year=date("Y"); $year>(date("Y")-100); $year--) {
+                                    echo '<option value="'.$year.'">'.$year.'</option>';
+                                }
+                                ?>
+                            </select>
+
+                            <!-- OLD YEAR SELECT
+                            <select name="PersonDOBYear" required <?php //echo $PersonDateOfBirthYear;?>>
                                 <option> - Year - </option>
                                 <option value="2017">2017</option>
                                 <option value="2016">2016</option>
@@ -486,484 +725,176 @@ if (isset($_POST['SubmitPersonProfileForm'])) {
                                 <option value="1949">1949</option>
                                 <option value="1948">1948</option>
                                 <option value="1947">1947</option>
+                                <option value="1947">1946</option>
+                                <option value="1947">1945</option>
+                                <option value="1947">1944</option>
+                                <option value="1947">1943</option>
+                                <option value="1947">1942</option>
+                                <option value="1947">1941</option>
+                                <option value="1947">1940</option>
 
-                            </select>
-
-
+                            </select> -->
                         </div>
                     </div>
 
-                    <div class="col-md-6 col-md-offset-3"><div class="form-group"><label>Phone</label> <input type="phone" name="PersonPhoneNumber" placeholder="Enter phone number" class="form-control" required></div></div>
+                    <div class="col-md-6 col-md-offset-3"><div class="form-group"><label>Phone</label><span class="error"> * <?php echo $phoneNumberErr;?></span>  <input type="phone" name="PersonPhoneNumber" placeholder="Enter phone number" class="form-control" required value="<?php echo $PersonPhoneNumber;?>"></div></div>
 
-                    <div class="col-md-6 col-md-offset-3"><div class="form-group"><label>Street Address</label> <input type="address" name="PersonStreetAddress" placeholder="Enter street address" class="form-control" required></div></div>
+                    <div class="col-md-6 col-md-offset-3"><div class="form-group"><label>Street Address</label><span class="error"> * <?php echo $addressErr;?></span>  <input type="address" name="PersonStreetAddress" placeholder="Enter street address" class="form-control" required value="<?php echo $PersonStreetAddress;?>"></div></div>
 
-                    <div class="col-md-3 col-md-offset-3"><div class="form-group"><label>City</label> <input type="city" placeholder="Enter city" name="PersonCity" class="form-control" required></div></div>
+                    <div class="col-md-3 col-md-offset-3"><div class="form-group"><label>City</label><span class="error"> * <?php echo $cityErr;?></span>  <input type="city" placeholder="Enter city" name="PersonCity" class="form-control" required value="<?php echo $PersonCity;?>"></div></div>
 
-                    <div class="col-md-3"><div class="form-group"><label>Zip Code</label> <input type="zip" name="PersonZipCode" placeholder="Enter zip code" class="form-control" required></div></div>
-
+                    <div class="col-md-3"><div class="form-group"><label>Zip Code</label><span class="error"> * <?php echo $zipCodeErr;?></span>  <input type="zip" name="PersonZipCode" placeholder="Enter zip code" class="form-control" required value="<?php echo $PersonZipCode;?>"></div></div>
 
                     <div class="col-md-3 col-md-offset-3"><div class="form-group">
-                            <label>State</label><br/>
-                            <select name="PersonState" required>
-                                <option value = "VA">Virginia</option>
-                                <option value="AL">Alabama</option>
-                                <option value="AK">Alaska</option>
-                                <option value="AZ">Arizona</option>
-                                <option value="AR">Arkansas</option>
-                                <option value="CA">California</option>
-                                <option value="CO">Colorado</option>
-                                <option value="CT">Connecticut</option>
-                                <option value="DE">Delaware</option>
-                                <option value="DC">District Of Columbia</option>
-                                <option value="FL">Florida</option>
-                                <option value="GA">Georgia</option>
-                                <option value="HI">Hawaii</option>
-                                <option value="ID">Idaho</option>
-                                <option value="IL">Illinois</option>
-                                <option value="IN">Indiana</option>
-                                <option value="IA">Iowa</option>
-                                <option value="KS">Kansas</option>
-                                <option value="KY">Kentucky</option>
-                                <option value="LA">Louisiana</option>
-                                <option value="ME">Maine</option>
-                                <option value="MD">Maryland</option>
-                                <option value="MA">Massachusetts</option>
-                                <option value="MI">Michigan</option>
-                                <option value="MN">Minnesota</option>
-                                <option value="MS">Mississippi</option>
-                                <option value="MO">Missouri</option>
-                                <option value="MT">Montana</option>
-                                <option value="NE">Nebraska</option>
-                                <option value="NV">Nevada</option>
-                                <option value="NH">New Hampshire</option>
-                                <option value="NJ">New Jersey</option>
-                                <option value="NM">New Mexico</option>
-                                <option value="NY">New York</option>
-                                <option value="NC">North Carolina</option>
-                                <option value="ND">North Dakota</option>
-                                <option value="OH">Ohio</option>
-                                <option value="OK">Oklahoma</option>
-                                <option value="OR">Oregon</option>
-                                <option value="PA">Pennsylvania</option>
-                                <option value="RI">Rhode Island</option>
-                                <option value="SC">South Carolina</option>
-                                <option value="SD">South Dakota</option>
-                                <option value="TN">Tennessee</option>
-                                <option value="TX">Texas</option>
-                                <option value="UT">Utah</option>
-                                <option value="VT">Vermont</option>
-                                <option value="VA">Virginia</option>
-                                <option value="WA">Washington</option>
-                                <option value="WV">West Virginia</option>
-                                <option value="WI">Wisconsin</option>
-                                <option value="WY">Wyoming</option>
+                            <label>State</label><span class="error"> * <?php echo $stateErr;?></span><br/>
+                            <select name="PersonState" required value="<?php echo $PersonState;?>">
+                                <?php
+            
+								$mysqlserver="localhost";
+								$mysqlusername="root";
+								$mysqlpassword="secret";
+                                $mysqlDB="wildlifeDB";
+
+                                $link = mysqli_connect($mysqlserver, $mysqlusername, $mysqlpassword, $mysqlDB);
+
+                                if (!$link) {
+                                    echo "Error: Unable to connect to MySQL." . PHP_EOL;
+                                    echo "Debugging errno: " . mysqli_connect_errno() . PHP_EOL;
+                                    echo "Debugging error: " . mysqli_connect_error() . PHP_EOL;
+                                    exit;
+                                }
+
+								$cdquery="SELECT StateName FROM State ORDER BY isDefault DESC, StateName";
+								$cdresult=mysqli_query($link, $cdquery);;
+								
+								while ($cdrow=mysqli_fetch_array($cdresult)) {
+								$PersonState=$cdrow["StateName"];
+									echo "<option>
+										$PersonState
+									</option>";
+								
+								}
+									
+								?>
                             </select>
-                        </div></div>
+                        </div>
+                    </div>
 
                     <div class="col-md-3"><div class="form-group">
-                            <label>County (if Virginia)</label><br/>
-                            <select name"PersonCounty">
-                            <option value="Accomack">Accomack</option>
-                            <option value="Albemarle">Albemarle</option>
-                            <option value="Alleghany">Alleghany</option>
-                            <option value="Amelia">Amelia</option>
-                            <option value="Amherst">Amherst</option>
-                            <option value="Appomattox">Appomattox</option>
-                            <option value="Arlington">Arlington</option>
-                            <option value="Augusta">Augusta</option>
-                            <option value="Bath">Bath</option>
-                            <option value="Bedford">Bedford</option>
-                            <option value="Bland">Bland</option>
-                            <option value="Botetourt">Botetourt</option>
-                            <option value="Brunswick">Brunswick</option>
-                            <option value="Buchanan">Buchanan</option>
-                            <option value="Buckingham">Buckingham</option>
-                            <option value="Campbell">Campbell</option>
-                            <option value="Caroline">Caroline</option>
-                            <option value="Carroll">Carroll</option>
-                            <option value="Charles City">Charles City</option>
-                            <option value="Charlotte">Charlotte</option>
-                            <option value="Chesterfield">Chesterfield</option>
-                            <option value="Clarke">Clarke</option>
-                            <option value="Craig">Craig</option>
-                            <option value="Culpeper">Culpeper</option>
-                            <option value="Cumberland">Cumberland</option>
-                            <option value="Dickenson">Dickenson</option>
-                            <option value="Dinwiddie">Dinwiddie</option>
-                            <option value="Essex">Essex</option>
-                            <option value="Fairfax">Fairfax</option>
-                            <option value="Fauquier">Fauquier</option>
-                            <option value="Floyd">Floyd</option>
-                            <option value="Fluvanna">Fluvanna</option>
-                            <option value="Franklin">Franklin</option>
-                            <option value="Frederick">Frederick</option>
-                            <option value="Giles">Giles</option>
-                            <option value="Gloucester">Gloucester</option>
-                            <option value="Goochland">Goochland</option>
-                            <option value="Grayson">Grayson</option>
-                            <option value="Greene">Greene</option>
-                            <option value="Greensville">Greensville</option>
-                            <option value="Halifax">Halifax</option>
-                            <option value="Hanover">Hanover</option>
-                            <option value="Henrico">Henrico</option>
-                            <option value="Henry">Henry</option>
-                            <option value="Highland">Highland</option>
-                            <option value="Isle of Wight">Isle of Wight</option>
-                            <option value="James City">James City</option>
-                            <option value="King and Queen">King and Queen</option>
-                            <option value="King George">King George</option>
-                            <option value="King William">King William</option>
-                            <option value="Lancaster">Lancaster</option>
-                            <option value="Lee">Lee</option>
-                            <option value="Loudoun">Loudoun</option>
-                            <option value="Louisa">Louisa</option>
-                            <option value="Lunenburg">Lunenburg</option>
-                            <option value="Madison">Madison</option>
-                            <option value="Mathews">Mathews</option>
-                            <option value="Mecklenburg">Mecklenburg</option>
-                            <option value="Middlesex">Middlesex</option>
-                            <option value="Montgomery">Montgomery</option>
-                            <option value="Nelson">Nelson</option>
-                            <option value="New Kent">New Kent</option>
-                            <option value="Northampton">Northampton</option>
-                            <option value="Northumberland">Northumberland</option>
-                            <option value="Nottoway">Nottoway</option>
-                            <option value="Orange">Orange</option>
-                            <option value="Page">Page</option>
-                            <option value="Patrick">Patrick</option>
-                            <option value="Pittsylvania">Pittsylvania</option>
-                            <option value="Powhatan">Powhatan</option>
-                            <option value="Prince Edward">Prince Edward</option>
-                            <option value="Prince George">Prince George</option>
-                            <option value="Prince William">Prince William</option>
-                            <option value="Pulaski">Pulaski</option>
-                            <option value="Rappahannock">Rappahannock</option>
-                            <option value="Richmond">Richmond</option>
-                            <option value="Roanoke">Roanoke</option>
-                            <option value="Rockbridge">Rockbridge</option>
-                            <option value="Rockingham">Rockingham</option>
-                            <option value="Russell">Russell</option>
-                            <option value="Scott">Scott</option>
-                            <option value="Shenandoah">Shenandoah</option>
-                            <option value="Smyth">Smyth</option>
-                            <option value="Southampton">Southampton</option>
-                            <option value="Spotsylvania">Spotsylvania</option>
-                            <option value="Stafford">Stafford</option>
-                            <option value="Surry">Surry</option>
-                            <option value="Sussex">Sussex</option>
-                            <option value="Tazewell">Tazewell</option>
-                            <option value="Warren">Warren</option>
-                            <option value="Washington">Washington</option>
-                            <option value="Westmoreland">Westmoreland</option>
-                            <option value="Wise">Wise</option>
-                            <option value="Wythe">Wythe</option>
-                            <option value="York">York</option>
+                            <label>County (Virginia Only)</label><span class="error"> * <?php echo $countyErr;?></span><br/>
+                            <select name="PersonCounty">
+
+                            <?php
+
+                            $mysqlserver="localhost";
+                            $mysqlusername="root";
+                            $mysqlpassword="secret";
+                            $mysqlDB="wildlifeDB";
+
+                            $link = mysqli_connect($mysqlserver, $mysqlusername, $mysqlpassword, $mysqlDB);
+
+                            if (!$link) {
+                                echo "Error: Unable to connect to MySQL." . PHP_EOL;
+                                echo "Debugging errno: " . mysqli_connect_errno() . PHP_EOL;
+                                echo "Debugging error: " . mysqli_connect_error() . PHP_EOL;
+                                exit;
+                            }
+
+                            $cdquery="SELECT CountyName FROM County";
+                            $cdresult=mysqli_query($link, $cdquery);;
+
+                            while ($cdrow=mysqli_fetch_array($cdresult)) {
+                                $PersonCounty=$cdrow["CountyName"];
+                                echo "<option>
+										$PersonCounty
+									</option>";
+
+                            }
+
+                            ?>
+
                             </select>
                         </div></div>
 
 
                     <div class="col-md-6 col-md-offset-3"><div class="form-group">
-                            <label>Country</label><br/>
+                            <label>Country</label><span class="error"> * <?php echo $countryErr;?></span> <br/>
                             <select name="PersonCountry">
-                                <option value="US">United States</option>
-                                <option value="null">--------------</option>
-                                <option value="AF">Afghanistan</option>
-                                <option value="AX">Åland Islands</option>
-                                <option value="AL">Albania</option>
-                                <option value="DZ">Algeria</option>
-                                <option value="AS">American Samoa</option>
-                                <option value="AD">Andorra</option>
-                                <option value="AO">Angola</option>
-                                <option value="AI">Anguilla</option>
-                                <option value="AQ">Antarctica</option>
-                                <option value="AG">Antigua and Barbuda</option>
-                                <option value="AR">Argentina</option>
-                                <option value="AM">Armenia</option>
-                                <option value="AW">Aruba</option>
-                                <option value="AU">Australia</option>
-                                <option value="AT">Austria</option>
-                                <option value="AZ">Azerbaijan</option>
-                                <option value="BS">Bahamas</option>
-                                <option value="BH">Bahrain</option>
-                                <option value="BD">Bangladesh</option>
-                                <option value="BB">Barbados</option>
-                                <option value="BY">Belarus</option>
-                                <option value="BE">Belgium</option>
-                                <option value="BZ">Belize</option>
-                                <option value="BJ">Benin</option>
-                                <option value="BM">Bermuda</option>
-                                <option value="BT">Bhutan</option>
-                                <option value="BO">Bolivia, Plurinational State of</option>
-                                <option value="BQ">Bonaire, Sint Eustatius and Saba</option>
-                                <option value="BA">Bosnia and Herzegovina</option>
-                                <option value="BW">Botswana</option>
-                                <option value="BV">Bouvet Island</option>
-                                <option value="BR">Brazil</option>
-                                <option value="IO">British Indian Ocean Territory</option>
-                                <option value="BN">Brunei Darussalam</option>
-                                <option value="BG">Bulgaria</option>
-                                <option value="BF">Burkina Faso</option>
-                                <option value="BI">Burundi</option>
-                                <option value="KH">Cambodia</option>
-                                <option value="CM">Cameroon</option>
-                                <option value="CA">Canada</option>
-                                <option value="CV">Cape Verde</option>
-                                <option value="KY">Cayman Islands</option>
-                                <option value="CF">Central African Republic</option>
-                                <option value="TD">Chad</option>
-                                <option value="CL">Chile</option>
-                                <option value="CN">China</option>
-                                <option value="CX">Christmas Island</option>
-                                <option value="CC">Cocos (Keeling) Islands</option>
-                                <option value="CO">Colombia</option>
-                                <option value="KM">Comoros</option>
-                                <option value="CG">Congo</option>
-                                <option value="CD">Congo, the Democratic Republic of the</option>
-                                <option value="CK">Cook Islands</option>
-                                <option value="CR">Costa Rica</option>
-                                <option value="CI">Côte d'Ivoire</option>
-                                <option value="HR">Croatia</option>
-                                <option value="CU">Cuba</option>
-                                <option value="CW">Curaçao</option>
-                                <option value="CY">Cyprus</option>
-                                <option value="CZ">Czech Republic</option>
-                                <option value="DK">Denmark</option>
-                                <option value="DJ">Djibouti</option>
-                                <option value="DM">Dominica</option>
-                                <option value="DO">Dominican Republic</option>
-                                <option value="EC">Ecuador</option>
-                                <option value="EG">Egypt</option>
-                                <option value="SV">El Salvador</option>
-                                <option value="GQ">Equatorial Guinea</option>
-                                <option value="ER">Eritrea</option>
-                                <option value="EE">Estonia</option>
-                                <option value="ET">Ethiopia</option>
-                                <option value="FK">Falkland Islands (Malvinas)</option>
-                                <option value="FO">Faroe Islands</option>
-                                <option value="FJ">Fiji</option>
-                                <option value="FI">Finland</option>
-                                <option value="FR">France</option>
-                                <option value="GF">French Guiana</option>
-                                <option value="PF">French Polynesia</option>
-                                <option value="TF">French Southern Territories</option>
-                                <option value="GA">Gabon</option>
-                                <option value="GM">Gambia</option>
-                                <option value="GE">Georgia</option>
-                                <option value="DE">Germany</option>
-                                <option value="GH">Ghana</option>
-                                <option value="GI">Gibraltar</option>
-                                <option value="GR">Greece</option>
-                                <option value="GL">Greenland</option>
-                                <option value="GD">Grenada</option>
-                                <option value="GP">Guadeloupe</option>
-                                <option value="GU">Guam</option>
-                                <option value="GT">Guatemala</option>
-                                <option value="GG">Guernsey</option>
-                                <option value="GN">Guinea</option>
-                                <option value="GW">Guinea-Bissau</option>
-                                <option value="GY">Guyana</option>
-                                <option value="HT">Haiti</option>
-                                <option value="HM">Heard Island and McDonald Islands</option>
-                                <option value="VA">Holy See (Vatican City State)</option>
-                                <option value="HN">Honduras</option>
-                                <option value="HK">Hong Kong</option>
-                                <option value="HU">Hungary</option>
-                                <option value="IS">Iceland</option>
-                                <option value="IN">India</option>
-                                <option value="ID">Indonesia</option>
-                                <option value="IR">Iran, Islamic Republic of</option>
-                                <option value="IQ">Iraq</option>
-                                <option value="IE">Ireland</option>
-                                <option value="IM">Isle of Man</option>
-                                <option value="IL">Israel</option>
-                                <option value="IT">Italy</option>
-                                <option value="JM">Jamaica</option>
-                                <option value="JP">Japan</option>
-                                <option value="JE">Jersey</option>
-                                <option value="JO">Jordan</option>
-                                <option value="KZ">Kazakhstan</option>
-                                <option value="KE">Kenya</option>
-                                <option value="KI">Kiribati</option>
-                                <option value="KP">Korea, Democratic People's Republic of</option>
-                                <option value="KR">Korea, Republic of</option>
-                                <option value="KW">Kuwait</option>
-                                <option value="KG">Kyrgyzstan</option>
-                                <option value="LA">Lao People's Democratic Republic</option>
-                                <option value="LV">Latvia</option>
-                                <option value="LB">Lebanon</option>
-                                <option value="LS">Lesotho</option>
-                                <option value="LR">Liberia</option>
-                                <option value="LY">Libya</option>
-                                <option value="LI">Liechtenstein</option>
-                                <option value="LT">Lithuania</option>
-                                <option value="LU">Luxembourg</option>
-                                <option value="MO">Macao</option>
-                                <option value="MK">Macedonia, the former Yugoslav Republic of</option>
-                                <option value="MG">Madagascar</option>
-                                <option value="MW">Malawi</option>
-                                <option value="MY">Malaysia</option>
-                                <option value="MV">Maldives</option>
-                                <option value="ML">Mali</option>
-                                <option value="MT">Malta</option>
-                                <option value="MH">Marshall Islands</option>
-                                <option value="MQ">Martinique</option>
-                                <option value="MR">Mauritania</option>
-                                <option value="MU">Mauritius</option>
-                                <option value="YT">Mayotte</option>
-                                <option value="MX">Mexico</option>
-                                <option value="FM">Micronesia, Federated States of</option>
-                                <option value="MD">Moldova, Republic of</option>
-                                <option value="MC">Monaco</option>
-                                <option value="MN">Mongolia</option>
-                                <option value="ME">Montenegro</option>
-                                <option value="MS">Montserrat</option>
-                                <option value="MA">Morocco</option>
-                                <option value="MZ">Mozambique</option>
-                                <option value="MM">Myanmar</option>
-                                <option value="NA">Namibia</option>
-                                <option value="NR">Nauru</option>
-                                <option value="NP">Nepal</option>
-                                <option value="NL">Netherlands</option>
-                                <option value="NC">New Caledonia</option>
-                                <option value="NZ">New Zealand</option>
-                                <option value="NI">Nicaragua</option>
-                                <option value="NE">Niger</option>
-                                <option value="NG">Nigeria</option>
-                                <option value="NU">Niue</option>
-                                <option value="NF">Norfolk Island</option>
-                                <option value="MP">Northern Mariana Islands</option>
-                                <option value="NO">Norway</option>
-                                <option value="OM">Oman</option>
-                                <option value="PK">Pakistan</option>
-                                <option value="PW">Palau</option>
-                                <option value="PS">Palestinian Territory, Occupied</option>
-                                <option value="PA">Panama</option>
-                                <option value="PG">Papua New Guinea</option>
-                                <option value="PY">Paraguay</option>
-                                <option value="PE">Peru</option>
-                                <option value="PH">Philippines</option>
-                                <option value="PN">Pitcairn</option>
-                                <option value="PL">Poland</option>
-                                <option value="PT">Portugal</option>
-                                <option value="PR">Puerto Rico</option>
-                                <option value="QA">Qatar</option>
-                                <option value="RE">Réunion</option>
-                                <option value="RO">Romania</option>
-                                <option value="RU">Russian Federation</option>
-                                <option value="RW">Rwanda</option>
-                                <option value="BL">Saint Barthélemy</option>
-                                <option value="SH">Saint Helena, Ascension and Tristan da Cunha</option>
-                                <option value="KN">Saint Kitts and Nevis</option>
-                                <option value="LC">Saint Lucia</option>
-                                <option value="MF">Saint Martin (French part)</option>
-                                <option value="PM">Saint Pierre and Miquelon</option>
-                                <option value="VC">Saint Vincent and the Grenadines</option>
-                                <option value="WS">Samoa</option>
-                                <option value="SM">San Marino</option>
-                                <option value="ST">Sao Tome and Principe</option>
-                                <option value="SA">Saudi Arabia</option>
-                                <option value="SN">Senegal</option>
-                                <option value="RS">Serbia</option>
-                                <option value="SC">Seychelles</option>
-                                <option value="SL">Sierra Leone</option>
-                                <option value="SG">Singapore</option>
-                                <option value="SX">Sint Maarten (Dutch part)</option>
-                                <option value="SK">Slovakia</option>
-                                <option value="SI">Slovenia</option>
-                                <option value="SB">Solomon Islands</option>
-                                <option value="SO">Somalia</option>
-                                <option value="ZA">South Africa</option>
-                                <option value="GS">South Georgia and the South Sandwich Islands</option>
-                                <option value="SS">South Sudan</option>
-                                <option value="ES">Spain</option>
-                                <option value="LK">Sri Lanka</option>
-                                <option value="SD">Sudan</option>
-                                <option value="SR">Suriname</option>
-                                <option value="SJ">Svalbard and Jan Mayen</option>
-                                <option value="SZ">Swaziland</option>
-                                <option value="SE">Sweden</option>
-                                <option value="CH">Switzerland</option>
-                                <option value="SY">Syrian Arab Republic</option>
-                                <option value="TW">Taiwan, Province of China</option>
-                                <option value="TJ">Tajikistan</option>
-                                <option value="TZ">Tanzania, United Republic of</option>
-                                <option value="TH">Thailand</option>
-                                <option value="TL">Timor-Leste</option>
-                                <option value="TG">Togo</option>
-                                <option value="TK">Tokelau</option>
-                                <option value="TO">Tonga</option>
-                                <option value="TT">Trinidad and Tobago</option>
-                                <option value="TN">Tunisia</option>
-                                <option value="TR">Turkey</option>
-                                <option value="TM">Turkmenistan</option>
-                                <option value="TC">Turks and Caicos Islands</option>
-                                <option value="TV">Tuvalu</option>
-                                <option value="UG">Uganda</option>
-                                <option value="UA">Ukraine</option>
-                                <option value="AE">United Arab Emirates</option>
-                                <option value="GB">United Kingdom</option>
-                                <option value="UM">United States Minor Outlying Islands</option>
-                                <option value="UY">Uruguay</option>
-                                <option value="UZ">Uzbekistan</option>
-                                <option value="VU">Vanuatu</option>
-                                <option value="VE">Venezuela, Bolivarian Republic of</option>
-                                <option value="VN">Vietnam</option>
-                                <option value="VG">Virgin Islands, British</option>
-                                <option value="VI">Virgin Islands, U.S.</option>
-                                <option value="WF">Wallis and Futuna</option>
-                                <option value="EH">Western Sahara</option>
-                                <option value="YE">Yemen</option>
-                                <option value="ZM">Zambia</option>
-                                <option value="ZW">Zimbabwe</option>
+                                <?php
+
+                                $mysqlserver="localhost";
+                                $mysqlusername="root";
+                                $mysqlpassword="secret";
+                                $mysqlDB="wildlifeDB";
+
+                                $link = mysqli_connect($mysqlserver, $mysqlusername, $mysqlpassword, $mysqlDB);
+
+                                if (!$link) {
+                                    echo "Error: Unable to connect to MySQL." . PHP_EOL;
+                                    echo "Debugging errno: " . mysqli_connect_errno() . PHP_EOL;
+                                    echo "Debugging error: " . mysqli_connect_error() . PHP_EOL;
+                                    exit;
+                                }
+
+                                $cdquery="SELECT CountryName FROM Country ORDER BY isDefault DESC, CountryName";
+                                $cdresult=mysqli_query($link, $cdquery);;
+
+                                while ($cdrow=mysqli_fetch_array($cdresult)) {
+                                    $PersonCountry=$cdrow["CountryName"];
+                                    echo "<option>
+										$PersonCountry
+									</option>";
+                                }
+                                ?>
+
                             </select>
                         </div></div>
 
                     <div class="col-md-6 col-md-offset-3"><div class="form-group"><h4>Emergency Contact Information</h4></div></div>
 
-                    <div class="col-md-2 col-md-offset-3"><div class="form-group"><label>First Name</label> <input type="name" name="EmergencyFirstName" placeholder="Enter first name" class="form-control" required></div></div>
-                    <div class="col-md-2"><div class="form-group"><label>Middle Initial</label> <input type="name" name="EmergencyMiddleInitial" placeholder="Enter middle initial" class="form-control" required></div></div>
-                    <div class="col-md-2"><div class="form-group"><label>Last Name</label> <input type="name" name="EmergencyLastName" placeholder="Enter last name" class="form-control" required></div></div>
-                    <div class="col-md-6 col-md-offset-3"><div class="form-group"><label>Relationship to Contact</label> <input type="relationship" name="EmergencyRelationship" placeholder="Enter relationship to contact" class="form-control" required></div></div>
+                    <div class="col-md-2 col-md-offset-3"><div class="form-group"><label>First Name</label><span class="error"> * <?php echo $ICEFirstNameErr;?></span>  <input type="name" name="EmergencyFirstName" placeholder="Enter first name" class="form-control" required value="<?php echo $EmergencyFirstName;?>"></div></div>
+                    <div class="col-md-2"><div class="form-group"><label>Middle Initial</label><span class="error"> * <?php echo $ICEMidInitialErr;?></span>  <input type="name" name="EmergencyMiddleInitial" placeholder="Enter middle initial" class="form-control" required value="<?php echo $EmergencyMiddleInitial;?>"></div></div>
+                    <div class="col-md-2"><div class="form-group"><label>Last Name</label><span class="error"> * <?php echo $ICELastNameErr;?></span>  <input type="name" name="EmergencyLastName" placeholder="Enter last name" class="form-control" required value="<?php echo $EmergencyLastName;?>"></div></div>
+                    <div class="col-md-6 col-md-offset-3"><div class="form-group"><label>Relationship to Contact</label><span class="error"> * <?php echo $ICERelationshipErr;?></span> <input type="relationship" name="EmergencyRelationship" placeholder="Enter relationship to contact" class="form-control" required value="<?php echo $EmergencyRelationship;?>"></div></div>
 
-                    <div class="col-md-6 col-md-offset-3"><div class="form-group"><label>Emergency Contact Phone Number</label> <input type="phone" name="EmergencyPhoneNumber" placeholder="Enter contact's number" class="form-control" required></div></div>
-
-
-                    <div class="col-md-6 col-md-offset-3"><div class="form-group"><label>Allergies</label> <textarea rows="4" type="allergies" name="PersonAllergy" placeholder="Enter allergies" class="form-control" required></textarea></div></div>
-
-                    <div class="col-md-6 col-md-offset-3"><div class="form-group"><label>Physical Limitations</label> <textarea rows="4" type="limits" name="PersonPhysical" placeholder="Enter physical limitations" class="form-control" required></textarea></div></div>
+                    <div class="col-md-6 col-md-offset-3"><div class="form-group"><label>Emergency Contact Phone Number</label><span class="error"> * <?php echo $ICEPhoneNumberErr;?></span>  <input type="phone" name="EmergencyPhoneNumber" placeholder="Enter contact's number" class="form-control" required value="<?php echo $EmergencyPhoneNumber;?>"></div></div>
 
 
-                    <div class="form-group"><div class="col-md-6 col-md-offset-3"><label>I have my rabies vaccine: </label><form action="/action_page.php" method="get"></div>
-                        <div class="col-md-6 col-md-offset-3"><div class="form-group"><input type="radio" name="PersonRabies" value="Yes">Yes<br/>
-                                <input type="radio" name="PersonRabies" value="No">No<br>
+                    <div class="col-md-6 col-md-offset-3"><div class="form-group"><label>Allergies</label><span class="error"> * <?php echo $allergiesErr;?></span> <textarea rows="4" type="allergies" name="PersonAllergy" placeholder="Enter allergies" class="form-control" <?php echo $PersonAllergy;?> required ></textarea></div></div>
+
+                    <div class="col-md-6 col-md-offset-3"><div class="form-group"><label>Physical Limitations</label><span class="error"> * <?php echo $physicalLimitErr;?></span> <textarea rows="4" type="limits" name="PersonPhysical" placeholder="Enter physical limitations" class="form-control" <?php echo $PersonPhysicalLimitation;?>required ></textarea></div></div>
+
+                    <div class="form-group"><div class="col-md-6 col-md-offset-3"><label>I have my rabies vaccine: </label><span class="error"> * <?php echo $rabiesErr;?></span><form action="/action_page.php" method="get"></div>
+                        <div class="col-md-6 col-md-offset-3"><div class="form-group">
+                                <input type="radio" name="PersonRabies" <?php if (isset($PersonRabies) && $PersonRabies=="Yes") echo "checked";?>value="Yes">Yes<br/>
+                                <input type="radio" name="PersonRabies" <?php if (isset($PersonRabies) && $PersonRabies=="No") echo "checked";?>value="No">No<br>
                             </div></div>
 
-                        <div class="col-md-6 col-md-offset-3"><label>If yes, please upload a copy of your paperwork.</label></div>
+                        <div class="col-md-6 col-md-offset-3"><label>If yes, please upload a copy of your paperwork.</label><span class="error"> * <?php echo $vaccineUploadErr;?></span></div>
                         <div class="col-md-6 col-md-offset-3"><div class="form-group"><label class="btn btn-default btn-file"><input name="vaccineUpload" type="file" hidden>
                                 </label></div></div>
 
-                        <div class="col-md-6 col-md-offset-3"><label>Do you have a valid permit to rehabilitate wildlife in the state of Virginia?</label></div>
+                        <div class="col-md-6 col-md-offset-3"><label>Do you have a valid permit to rehabilitate wildlife in the state of Virginia?</label><span class="error"> * <?php echo $havePermitErr;?></span></div>
                         <div class="col-md-6 col-md-offset-3"><div class="form-group">
                                 <input type="radio" name="PersonHavePermit" value="Yes">Yes<br>
                                 <input type="radio" name="PersonHavePermit" value="No">No<br>
                             </div></div>
 
-                        <div class="col-md-6 col-md-offset-3"><label>If yes, please select which kind:</label></div>
+                        <div class="col-md-6 col-md-offset-3"><label>If yes, please select which kind:</label><span class="error"> * <?php echo $permitCategoryErr;?></span></div>
                         <div class="col-md-6 col-md-offset-3"><div class="form-group">
                                 <select name="PersonPermitType">
-                                    <option value="cat0"></option>
-                                    <option value="cat1">Cat 1</option>
-                                    <option value="cat2">Cat 2</option>
-                                    <option value="cat3">Cat 3</option>
-                                    <option value="cat4">Cat 4</option>
+                                    <option value="cat0"<?php if(isset($_POST['PersonPermitType']) && $_POST['PersonPermitType'] == '') echo ' selected="selected"'; ?>></option>
+                                    <option value="cat1"<?php if(isset($_POST['PersonPermitType']) && $_POST['PersonPermitType'] == 'Cat 1') echo ' selected="selected"'; ?>>Cat 1</option>
+                                    <option value="cat2"<?php if(isset($_POST['PersonPermitType']) && $_POST['PersonPermitType'] == 'Cat 2') echo ' selected="selected"'; ?>>Cat 2</option>
+                                    <option value="cat3"<?php if(isset($_POST['PersonPermitType']) && $_POST['PersonPermitType'] == 'Cat 3') echo ' selected="selected"'; ?>>Cat 3</option>
+                                    <option value="cat4"<?php if(isset($_POST['PersonPermitType']) && $_POST['PersonPermitType'] == 'Cat 4') echo ' selected="selected"'; ?>>Cat 4</option>
                                 </select>
                             </div></div>
-                        <div class="col-md-6 col-md-offset-3"><label>If yes, please upload a copy of your paperwork.</label></div>
+                        <div class="col-md-6 col-md-offset-3"><label>If yes, please upload a copy of your paperwork.</label><span class="error"> * <?php echo $permitUploadErr;?></span></div>
                         <div class="col-md-6 col-md-offset-3"><div class="form-group"><label class="btn btn-default btn-file"><input name="permitUpload" type="file" hidden>
                                 </label></div></div>
 
-
-                        <div class="col-md-6 col-md-offset-3"><label>I'm available:</label></div>
+                        <div class="col-md-6 col-md-offset-3"><label>I'm available:</label><span class="error"> * <?php echo $availabilityErr;?></span></div>
 
                         <div class="col-md-6 col-md-offset-3" name="PersonAvailability">
                             <table>
@@ -1016,15 +947,15 @@ if (isset($_POST['SubmitPersonProfileForm'])) {
 
                         <div class="col-md-6 col-md-offset-3"><div class="form-group">
                                 <br>
-                                <label>I'd like to volunteer:</label><br>
+                                <label>I'd like to volunteer:</label><span class="error"> * <?php echo $selectSeasonErr;?></span><br>
                                 <select name="season">
                                     <option value="seasonal">Seasonal</option>
                                     <option value="year">Year-Round</option>
                                 </select>
                             </div></div>
 
-                        <div class="col-md-6 col-md-offset-3"><label>Please attach your resume.</label></div>
-                        <div class="col-md-6 col-md-offset-3"><label class="btn btn-default btn-file"><input name="resumeUpload" type="file" hidden required>
+                        <div class="col-md-6 col-md-offset-3"><label>Please attach your resume.</label><span class="error"> * <?php echo $resumeErr;?></span></div>
+                        <div class="col-md-6 col-md-offset-3"><label class="btn btn-default btn-file"> <input name="resumeUpload" type="file" hidden required>
                             </label></div>
 
                 </form>
@@ -1041,4 +972,5 @@ if (isset($_POST['SubmitPersonProfileForm'])) {
 
 </body>
 </html>
+
 

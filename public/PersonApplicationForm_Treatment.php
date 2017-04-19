@@ -22,12 +22,10 @@ if (isset($_POST['SubmitPersonApplicationForm']))
 
     //Changes current account to 'applied' so that it can show 'application pending' rather than 'apply'
     $currentUser = $_SESSION['AccountID'];
-    applicantNowPending($currentUser);
-    echo 'applicant is now pending';
 
     //Database connection
-    $server = "127.0.0.1";
-    $username = "homestead";
+    $server = "localhost";
+    $username = "root";
     $password = "secret";
     $database = "wildlifeDB";
     $conn = new mysqli($server, $username, $password, $database);
@@ -45,7 +43,6 @@ if (isset($_POST['SubmitPersonApplicationForm']))
 
     mysqli_close($conn);
     ?>
-
 
 
     <?php
@@ -185,7 +182,7 @@ if (isset($_POST['SubmitPersonApplicationForm']))
     $ApplicationLastUpdated = $newTreatmentTeamApplication->getApplicantLastUpdated();
 
     //Insert statement
-    $sqlTreatmentTeamApplication = "INSERT INTO ApplicationTreatmentTeam(ApplicationID,HandleSmallMammals,HandleLargeMammals,HandleRVS,HandleEagles,HandleSmallRaptors,HandleLargeRaptors,HandleReptiles,DescribeAnimalTraining,TrainingVet,TrainingTech,DescribeMedicalTraining,PatientMedicate,PatientBandage,PatientWoundCare,PatientDiagnostics,PatientAnesthesia,DescribePatientSkills,BestWorkEnvironment,BestLearningMethod,EuthanasiaExperience,MessyRequirements,LastUpdatedBy,LastUpdated) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,CURRENT_TIMESTAMP);";
+    $sqlTreatmentTeamApplication = "INSERT INTO ApplicationTreatment(ApplicationID,HandleSmallMammals,HandleLargeMammals,HandleRVS,HandleEagles,HandleSmallRaptors,HandleLargeRaptors,HandleReptiles,DescribeAnimalTraining,TrainingVet,TrainingTech,DescribeMedicalTraining,PatientMedicate,PatientBandage,PatientWoundCare,PatientDiagnostics,PatientAnesthesia,DescribePatientSkills,BestWorkEnvironment,BestLearningMethod,EuthanasiaExperience,MessyRequirements,LastUpdatedBy,LastUpdated) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,CURRENT_TIMESTAMP);";
 
     $stmt = mysqli_prepare($conn, $sqlTreatmentTeamApplication);
     $stmt->bind_param("issssssssssssssssssssss", $ApplicationID,
@@ -198,13 +195,49 @@ if (isset($_POST['SubmitPersonApplicationForm']))
         $ApplicantBestLearningMethod, $ApplicantEuthanasiaExperience, $ApplicantMessyRequirements,
         $ApplicationLastUpdatedBy);
 
-    //Execute insert statement
+    //Get the email address associated with the user's account
+    $sql = "SELECT Email from Account WHERE AccountID = :AccountID;";
+    $stmt = $connPDO->prepare($sql);
+    $stmt->bindParam(':AccountID', $currentUser);
+    $stmt->execute();
+    $results = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if(count($results) > 0)
+    {
+        $account = $results;
+    }
+    $ApplicantEmail= $account['Email'];
+	
+	//Execute the sql statement, change the account isApplicant value, and send an email confirmation
     if($stmt)
     {
         $stmt->execute();
-    }
+		echo "Treatment Team Application added to database";
+		applicantNowPending($currentUser);
+		echo 'Applicant is now pending';
+		
+		//Send a confirmation email to the current user
+        error_reporting(-1);
+        ini_set('display_errors', 'On');
+        set_error_handler("var_dump");
 
-    echo "Treatment Team Application added to database";
+        $to = $ApplicantEmail;
+        $subject = 'Wildlife Center of Virginia - Application Confirmation';
+        $message = "Hello," . "\n\nThank you for your interest in volunteering at the Wildlife Center of Virginia. Your Veterinary/Treatment Volunteer application has been submitted successfully and is now pending review. Once your application has been reviewed, you will receive another email containing your new application status. You can also check your status by logging in at http://54.186.42.239/login.php";
+        $headers = 'From: vawildlifecenter@gmail.com';
+
+        mail($to, $subject, $message, $headers);
+		
+		/*
+		//Send a confirmation email to the team lead
+		$to = 'vawildlifecenter@gmail.com' //change to $TeamLeadEmail later
+        $subject = 'Notificaction - Application Confirmation';
+        $message = "Hello," . "\n\nSomeone has submitted a volunteer application to the Treatment department. Please log in to your profile and go to the Pending Apps tab to view the application. You can log into your account here: http://54.186.42.239/login.php";
+        $headers = 'From: vawildlifecenter@gmail.com';
+
+        mail($to, $subject, $message, $headers);
+		*/
+    }
 
 }
 ?>
@@ -235,7 +268,7 @@ if (isset($_POST['SubmitPersonApplicationForm']))
         <div class="row">
             <div class="col-md-6 col-md-offset-3">
                 <div class="smallerheader"><h1>Apply To The Treatment Team</h1>
-                    <p class="smallerheader">Thank you for your interest in The Wildlife Center of Virginia. We have four volunteer teams that work at our organization– Outreach, Animal Care, Veterinary Treatment, and Transport & Rescue. To read more about each team, please visit our <a href="http://wildlifecenter.org/support-center/volunteer-opportunities">volunteer opportunities page.</a></p></div>
+                    Thank you for your interest in The Wildlife Center of Virginia. We have four volunteer teams that work at our organization– Outreach, Animal Care, Veterinary Treatment, and Transport & Rescue. To read more about each team, please visit our <a href="http://wildlifecenter.org/support-center/volunteer-opportunities">volunteer opportunities page.</a></div>
             </div>
 
             <div class="col-sm-12">

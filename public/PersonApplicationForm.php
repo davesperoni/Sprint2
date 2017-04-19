@@ -19,8 +19,8 @@ require 'functions.php';
  * Time: 12:15PM
  */
 
-$server = "127.0.0.1";
-$username = "homestead";
+$server = "localhost";
+$username = "root";
 $password = "secret";
 $database = "wildlifeDB";
 
@@ -63,8 +63,10 @@ mysqli_close($conn);
 <div class="ibox-content-form">
     <div class="formpadding">
         <div class="row">
-            <div class="smallerheader"><h1>Apply To A Team</h1>
-                <p class="smallheader">Thank you for your interest in The Wildlife Center of Virginia. We have four volunteer teams that work at our organization– Outreach, Animal Care, Veterinary Treatment, and Transport & Rescue. To read more about each team, please visit our <a href="http://wildlifecenter.org/support-center/volunteer-opportunities">volunteer opportunities page.</a></p></div>
+            <div class="col-md-6 col-md-offset-3" >
+                <div class="smallerheader"><h1>Apply To A Team</h1>
+                    <p class="smallheader">Thank you for your interest in The Wildlife Center of Virginia. We have four volunteer teams that work at our organization– Outreach, Animal Care, Veterinary Treatment, and Transport & Rescue. To read more about each team, please visit our <a href="http://wildlifecenter.org/support-center/volunteer-opportunities">volunteer opportunities page.</a></p></div>
+            </div>
 
             <div class="col-sm-12">
                 <form role="form" name="PersonApplicationForm" method="post" action="PersonApplicationForm.php">

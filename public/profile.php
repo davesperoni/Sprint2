@@ -34,12 +34,12 @@ if(count($results) > 0){
     $personInformation = $results;
 }
 
-$VolunteerName = $personInformation['FirstName'] . " " . $personInformation['MiddleInitial'] . " " . $personInformation['LastName'];
+$VolunteerName = ucfirst($personInformation['FirstName']) . " " . ucfirst($personInformation['MiddleInitial']) . " " . ucfirst($personInformation['LastName']);
 $VolunteerPhoneNumber = $personInformation['PhoneNumber'];
 $VolunteerEmail = $user['email'];
 $PersonID = $personInformation['PersonID'];
-$VolunteerAllergy = $personInformation['Allergy'];
-$VolunteerPhysicalLimitation = $personInformation['PhysicalLimitation'];
+$VolunteerAllergy = ucfirst($personInformation['Allergy']);
+$VolunteerPhysicalLimitation = ucfirst($personInformation['PhysicalLimitation']);
 
 $records = $connPDO->prepare('select EmergencyContact.FirstName, EmergencyContact.MiddleInitial, EmergencyContact.LastName, EmergencyContact.PhoneNumber, EmergencyContact.Relationship from EmergencyContact join Person on EmergencyContact.EmergencyContactID = Person.EmergencyContactID where PersonID = :PersonID');
 $records->bindParam(':PersonID', $PersonID);
@@ -50,12 +50,12 @@ if(count($results) > 0) {
     $emergencyContact = $results;
 }
 
-$EmergencyContactName = $emergencyContact['FirstName'] . " " . $emergencyContact['MiddleInitial'] . " " . $emergencyContact['LastName'];
+$EmergencyContactName = ucfirst($emergencyContact['FirstName']) . " " . ucfirst($emergencyContact['MiddleInitial']) . " " . ucfirst($emergencyContact['LastName']);
 $EmergencyContactFirstName = $emergencyContact['FirstName'];
 $EmergencyContactMI = $emergencyContact['MiddleInitial'];
 $EmergencyContactLastName = $emergencyContact['LastName'];
 $EmergencyContactPhoneNumber = $emergencyContact['PhoneNumber'];
-$EmergencyContactRelationship = $emergencyContact['Relationship'];
+$EmergencyContactRelationship = ucfirst($emergencyContact['Relationship']);
 
 
 $records = $connPDO->prepare('select Volunteer.YTDHours, Volunteer.YTDMiles, Volunteer.Notes from Volunteer where PersonID = :PersonID');
@@ -270,8 +270,8 @@ if(isset($_POST['uploadProfilePicture']))
 
 function saveImage($name, $image)
 {
-    $server = "127.0.0.1";
-    $username = "homestead";
+    $server = "localhost";
+    $username = "root";
     $password = "secret";
     $database = "wildlifeDB";
 
@@ -287,14 +287,17 @@ function saveImage($name, $image)
     // and select as well.. Right now it currently displays all pics in DB
     $currentAccountID = $_SESSION['AccountID'];
 
+    $sqlDeleteOldPic = "DELETE FROM picUpload WHERE AccountID = '$currentAccountID'";
+    $result = mysqli_query($conn, $sqlDeleteOldPic) or die('Error, query failed');
+
     $sqlInsertPic = "INSERT INTO picUpload (AccountID, name, image) VALUES ('$currentAccountID','$name','$image')";
     $result = mysqli_query($conn, $sqlInsertPic) or die('Error, query failed');
 }
 
 function displayImage()
 {
-    $server = "127.0.0.1";
-    $username = "homestead";
+    $server = "localhost";
+    $username = "root";
     $password = "secret";
     $database = "wildlifeDB";
 
@@ -324,8 +327,8 @@ function displayImage()
 
 function displayResume()
 {
-    $server = "127.0.0.1";
-    $username = "homestead";
+    $server = "localhost";
+    $username = "root";
     $password = "secret";
     $database = "wildlifeDB";
 
@@ -339,26 +342,27 @@ function displayResume()
 
     $currentAccountID = $_SESSION['AccountID'];
 
-    $query = "SELECT resumeUploadID, name, Person.PersonID FROM resumeUpload
-              JOIN Person ON resumeUpload.PersonID = Person.PersonID
+    $query = "SELECT Upload.UploadID, name, Person.PersonID FROM Upload
+              JOIN Person ON Upload.PersonID = Person.PersonID
               JOIN Account ON Person.AccountID = Account.AccountID
-              WHERE Account.AccountID = '$currentAccountID' AND Person.PersonID = resumeUpload.PersonID";
+              WHERE Account.AccountID = '$currentAccountID' AND Person.PersonID = Upload.PersonID
+              AND Upload.Specification = 'Resume'";
     $result = mysqli_query($conn, $query) or die('Error, query failed');
 
     if(mysqli_num_rows($result)==0){
         echo "";
     }
     else{
-        while(list($resumeUploadID, $name) = mysqli_fetch_array($result)){
-            echo "<a href=\"download.php?resumeUploadID=$resumeUploadID\"><img src=\"img/resumeDoc.jpg\" class=\"img-responsive\"></a><br>";
+        while(list($UploadID, $name) = mysqli_fetch_array($result)){
+            echo "<a href=\"download.php?UploadID=$UploadID\"><img src=\"img/resumeDoc.jpg\" class=\"img-responsive\"></a><br>";
         }
     }
 }
 
 function displayVaccine()
 {
-    $server = "127.0.0.1";
-    $username = "homestead";
+    $server = "localhost";
+    $username = "root";
     $password = "secret";
     $database = "wildlifeDB";
 
@@ -372,26 +376,27 @@ function displayVaccine()
 
     $currentAccountID = $_SESSION['AccountID'];
 
-    $query = "SELECT vaccineUploadID, name, Person.PersonID FROM vaccineUpload
-              JOIN Person ON vaccineUpload.PersonID = Person.PersonID
+    $query = "SELECT UploadID, name, Person.PersonID FROM Upload
+              JOIN Person ON Upload.PersonID = Person.PersonID
               JOIN Account ON Person.AccountID = Account.AccountID
-              WHERE Account.AccountID = '$currentAccountID' AND Person.PersonID = vaccineUpload.PersonID";
+              WHERE Account.AccountID = '$currentAccountID' AND Person.PersonID = Upload.PersonID
+              AND Upload.Specification = 'Vaccine'";
     $result = mysqli_query($conn, $query) or die('Error, query failed');
 
     if(mysqli_num_rows($result)==0){
         echo "";
     }
     else{
-        while(list($vaccineUploadID, $name) = mysqli_fetch_array($result)){
-            echo "<a href=\"download.php?vaccineUploadID=$vaccineUploadID\"><img src=\"img/vaccineDoc.jpg\" class=\"img-responsive\"></a><br>";
+        while(list($UploadID, $name) = mysqli_fetch_array($result)){
+            echo "<a href=\"download.php?UploadID=$UploadID\"><img src=\"img/vaccineDoc.jpg\" class=\"img-responsive\"></a><br>";
         }
     }
 }
 
 function displayPermit()
 {
-    $server = "127.0.0.1";
-    $username = "homestead";
+    $server = "localhost";
+    $username = "root";
     $password = "secret";
     $database = "wildlifeDB";
 
@@ -405,18 +410,19 @@ function displayPermit()
 
     $currentAccountID = $_SESSION['AccountID'];
 
-    $query = "SELECT permitUploadID, name, Person.PersonID FROM permitUpload
-              JOIN Person ON permitUpload.PersonID = Person.PersonID
+    $query = "SELECT Upload.UploadID, name, Person.PersonID FROM Upload
+              JOIN Person ON Upload.PersonID = Person.PersonID
               JOIN Account ON Person.AccountID = Account.AccountID
-              WHERE Account.AccountID = '$currentAccountID' AND Person.PersonID = permitUpload.PersonID";
+              WHERE Account.AccountID = '$currentAccountID' AND Person.PersonID = Upload.PersonID
+              AND Upload.Specification = 'Permit'";
     $result = mysqli_query($conn, $query) or die('Error, query failed');
 
     if(mysqli_num_rows($result)==0){
         echo "";
     }
     else{
-        while(list($permitUploadID, $name) = mysqli_fetch_array($result)){
-            echo "<a href=\"download.php?permitUploadID=$permitUploadID\"><img src=\"img/permitDoc.jpg\" class=\"img-responsive\"></a><br>";
+        while(list($UploadID, $name) = mysqli_fetch_array($result)){
+            echo "<a href=\"download.php?UploadID=$UploadID\"><img src=\"img/permitDoc.jpg\" class=\"img-responsive\"></a><br>";
         }
     }
 }
@@ -425,6 +431,7 @@ function displayPermit()
 
  if (isset($_POST['UpdateProfile'])) {
 
+	header("Refresh:0");
 
      $updateVolunteerPhoneNumber = $_POST['updateVolunteerPhoneNumber'];
      $updateVolunteerEmail = $_POST['updateVolunteerEmail'];
@@ -673,13 +680,30 @@ function displayPermit()
                     </div>
                 </li>
 
-                <li class = "active">
-                    <a href="#"><i class="fa fa-home"></i> <span class="nav-label">Home</span></a>
+                <li>
+                    <a href="volunteer_dashboard.php"><i class="fa fa-home"></i> <span class="nav-label">Home</span></a>
                 </li>
+                <li class = "active">
+                    <a href="profile.php"><i class="fa fa-user"></i> <span class="nav-label">Profile</span></a></li>
                 <li>
-                    <a href="#"><i class="fa fa-user"></i> <span class="nav-label">Profile</span></a></li>
+                    <a href="loghoursandmiles.php"><i class="fa fa-clock-o"></i> <span class="nav-label">Hours/Miles</span></a>
+                </li>
+				<li>
+                    <a href="/Calendar"><i class="fa fa-calendar"></i> <span class="nav-label">Calendar</span></a></li>
                 <li>
-                    <a href="#"><i class="fa fa-clipboard"></i> <span class="nav-label">Applications</span></a>
+                <li>
+                    <a href="training.php"><i class="fa fa-cogs"></i> <span class="nav-label">Training</span>  </a>
+                </li>
+
+                <li>
+                    <a href="personApplicationForm.php"><i class="fa fa-user"></i> <span class="nav-label">Apply</span>  </a>
+                </li>
+
+                <li>
+                    <a href="volunteer_applicationInfo.php"><i class="fa fa-clipboard"></i> <span class="nav-label">Applications</span></a>
+                </li>
+				<li>
+                    <a href="transporter_map.html"><i class="fa fa-clipboard"></i> <span class="nav-label">Maps</span></a>
                 </li>
 
             </ul>
@@ -1137,11 +1161,27 @@ function displayPermit()
                                 <div class="feed-activity-list">
                                     <div class="col-md-8">
                                         <div class="col-md-3">
-                                            <h1>10</h1>
+                                            <?php
+												$currentAccountID = $_SESSION['AccountID'];
+
+												$sqlCountDocs = "SELECT COUNT(*) AS DocCount FROM Upload 
+												  JOIN Person ON Upload.PersonID = Person.PersonID
+												  JOIN Account ON Person.AccountID = Account.AccountID
+												  WHERE Account.AccountID = '$currentAccountID' AND Person.PersonID = Upload.PersonID";
+
+												$result = mysqli_query($conn, $sqlCountDocs);
+												while($row = mysqli_fetch_array($result)) {
+													$docCount = $row['DocCount'];
+												}
+
+												$UploadCount = $docCount;
+											?>
+                                            <h1><?php echo $UploadCount ?></h1>
                                         </div>
 
                                         <div class="col-md-6">
-                                            <h3>Certifications</h3>
+                                            <h3>Documents</h3>
+
                                         </div>
                                     </div>
 
@@ -1152,45 +1192,46 @@ function displayPermit()
                                     </div>
                                     <div id="demo2" class="collapse">
                                         <div class="col-md-12">
-                                            <h4>Outreach</h4>
+                                            <!--<h4>Outreach</h4>
                                             <p class="emergency">Raina Krasner<br/>
                                                 <em>Rkrasner@wildlifecenter.org</em></p>
 
                                             <h4>Veterinary</h4>
                                             <p class="emergency">Leigh-Ann Horne<br/>
-                                                <em>Lhorne@wildlifecenter.org</em></p>
+                                                <em>Lhorne@wildlifecenter.org</em></p> -->
+
+                                            <div class="docs">
+                                                <div class="col-md-12">
+                                                    <div class="col-md-4">
+                                                        <div class="docspadding">
+                                                            <?php
+                                                            displayResume();
+                                                            ?>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <div class="docspadding">
+                                                            <?php
+                                                            displayVaccine();
+                                                            ?>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <div class="docspadding">
+                                                            <?php
+                                                            displayPermit();
+                                                            ?>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="docs">
-                            <div class="col-md-12">
-                                <div class="col-md-4">
-                                    <div class="docspadding">
-                                        <?php
-                                            displayResume();
-                                        ?>
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="docspadding">
-                                        <?php
-                                        displayVaccine();
-                                        ?>
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="docspadding">
-                                        <?php
-                                        displayPermit();
-                                        ?>
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
                     </div>
 
                 </div>
