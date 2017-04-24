@@ -18,14 +18,12 @@ require 'functions.php';
 if (isset($_POST['SubmitPersonApplicationForm']))
 {
     //maybe replace this with code that points to a completely different page where it shows app pending
-    header("Location: /applicant_dashboard.php");
+     header("Location: /applicant_dashboard.php");
 
     //Changes current account to 'applied' so that it can show 'application pending' rather than 'apply'
     $currentUser = $_SESSION['AccountID'];
-    applicantNowPending($currentUser);
-    echo 'applicant is now pending';
-
-    //Database connection
+	
+	//Database connection
     $server = "127.0.0.1";
     $username = "homestead";
     $password = "secret";
@@ -126,11 +124,10 @@ if (isset($_POST['SubmitPersonApplicationForm']))
     $ApplicationID = $conn->insert_id;
     echo "New record created successfully. Last inserted ID is: " . $ApplicationID;
 
-
     //===Transport Team Application===
     //Assign values to variables
     $ApplicantCaptureAndRestraint = $_POST['CaptureAndRestraint'];
-    if ($ApplicantCaptureAndRestraint === "Yes, I am willing to help capture animals.")
+    if ($ApplicantCaptureAndRestraint === "Yes")
     {
         $ApplicantCaptureAndRestraint = 'Yes';
     }
@@ -154,19 +151,61 @@ if (isset($_POST['SubmitPersonApplicationForm']))
 
     $sqlTransportTeamApplication = "INSERT INTO ApplicationTransport(ApplicationID,CaptureAndRestraint,MilesWillingToTravel,SpeciesLimitations,LastUpdatedBy,LastUpdated)VALUES (?,?,?,?,?,CURRENT_TIMESTAMP);";
 
-    $stmt = mysqli_prepare($conn, $sqlTransportTeamApplication);
-    $stmt->bind_param("isiss", $ApplicationID, $ApplicantCaptureAndRestraint, $ApplicantMilesWillingToTravel,
+    $stmtTransportApp = mysqli_prepare($conn, $sqlTransportTeamApplication);
+    $stmtTransportApp->bind_param("issss", $ApplicationID, $ApplicantCaptureAndRestraint, $ApplicantMilesWillingToTravel,
         $ApplicantSpeciesLimitations, $ApplicationLastUpdatedBy);
+    //$stmtTransportApp->execute();
 
-    if($stmt)
+    //Get the email address associated with the user's account
+    $sql = "SELECT Email from Account WHERE AccountID = :AccountID;";
+    $stmt = $connPDO->prepare($sql);
+    $stmt->bindParam(':AccountID', $currentUser);
+    $stmt->execute();
+
+    $results = $stmt->fetch(PDO::FETCH_ASSOC);
+   // var_dump($results);
+    if(count($results) > 0)
     {
-        $stmt->execute();
+        $account = $results;
     }
+    $ApplicantEmail= $account['Email'];
+	
+	//Execute the sql statement, change the account isApplicant value, and send an email confirmation
+    if($stmtTransportApp)
+    {
+        $stmtTransportApp->execute();
+		echo "Transport Application added to database";
+		applicantNowPending($currentUser);
+		echo 'applicant is now pending';
+		
+		//Send a confirmation email to the current user
+        error_reporting(-1);
+        ini_set('display_errors', 'On');
+        set_error_handler("var_dump");
 
-    echo "Animal Care Application added to database";
+		if(!empty($ApplicantEmail))
+		{	
+			$to = $ApplicantEmail;
+			$subject = 'Wildlife Center of Virginia - Application Confirmation';
+			$message = "Hello," . "\n\nThank you for your interest in volunteering at the Wildlife Center of Virginia. Your Transport Volunteer application has been submitted successfully and is now pending review. Once your application has been reviewed, you will receive another email containing your new application status. You can also check your status by logging in at http://54.186.42.239/login.php";
+			$headers = 'From: vawildlifecenter@gmail.com';
+
+			mail($to, $subject, $message, $headers);
+		}
+		
+		//Send a confirmation email to the team lead
+		$to = 'vawildlifecenter.transport@gmail.com'; //change to $TeamLeadEmail later
+        $subject = 'Notification - Application Confirmation';
+        $message = "Hello," . "\n\nSomeone has submitted a volunteer application to the Transport department. Please log in to your profile and go to the Pending Apps tab to view the application. You can log into your account here: http://54.186.42.239/login.php";
+        $headers = 'From: vawildlifecenter@gmail.com';
+
+        mail($to, $subject, $message, $headers);
+		
+    }
 
 }
 ?>
+
 
 <!doctype html>
 <html>
@@ -175,7 +214,7 @@ if (isset($_POST['SubmitPersonApplicationForm']))
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Apply To The Transport Team</title>
+    <title>Apply To The Animal Care Team</title>
 
 
     <link href="css/bootstrap.min.css" rel="stylesheet">
@@ -188,42 +227,53 @@ if (isset($_POST['SubmitPersonApplicationForm']))
 
 </head>
 
-<body class="grayform">
-<div class="ibox-content-form">
-    <div class="formpadding">
-        <div class="row">
-            <div class="col-md-6 col-md-offset-3">
-                <div class="smallerheader"><h1>Apply To The Transport Team</h1>
-                    <p class="smallerheader">Thank you for your interest in The Wildlife Center of Virginia. We have four volunteer teams that work at our organization– Outreach, Animal Care, Veterinary Treatment, and Transport & Rescue. To read more about each team, please visit our <a href="http://wildlifecenter.org/support-center/volunteer-opportunities">volunteer opportunities page.</a></p></div>
-            </div>
+<body class="formback">
+<div class = "col-md-10 col-md-offset-1">
+    <div class = "grayform">
+        <div class="ibox-content-form">
+            <div class="formpadding">
+                <div class="row">
+                    <img class = "logo_form img-fluid" src = "img/habitat_logo.png" alt = "habitat logo">
 
-            <div class="col-sm-12">
-                <form role="form" name="PersonApplicationForm_Transport" method="post" action="PersonApplicationForm_Transport.php">
+                    <div class="smallerheader btmSpace"><h2>APPLY TO THE TRANSPORT TEAM</h2>
+                        Thank you for your interest in The Wildlife Center of Virginia. We have four volunteer teams that work at our organization– Outreach, Animal Care, Veterinary Treatment, and Transport & Rescue. To read more about each team, please visit our <a href="http://wildlifecenter.org/support-center/volunteer-opportunities">volunteer opportunities page.</a><br>
+                    </div>
 
-                    <div class="col-md-6 col-md-offset-3"><label>Which team are you interested in applying for?</label></div>
-                    <div class="col-md-6 col-md-offset-3"><div class="form-group">
-                            <select name="Team" onchange="location = this.options[this.selectedIndex].value;" style="text-decoration:none;">
-                                <option value="PersonApplicationForm_Transport.php">Transport</option>
-                                <option value="PersonApplicationForm_Outreach.php">Outreach</option>
-                                <option value="PersonApplicationForm_AnimalCare.php">Animal Care</option>
-                                <option value="PersonApplicationForm_Treatment.php">Treatment</option>
-                            </select>
-                        </div></div>
-                    <div class = "col-md-6 col-md-offset-3">
 
-                        <label>Please check if you have the following skills: </label>
-                    </div><!--end of label-->
-                    <div class = "col-md-6 col-md-offset-3">
-                        <fieldset>
-                            <label><input type = "checkbox" name = "skills[]" value = "Carpentry Skills">Carpentry Skills</label>
-                            <label><input type = "checkbox" name = "skills[]" value = "Administrative Assistant">Administrative Assistant</label>
-                            <label><input type = "checkbox" name = "skills[]" value = "Front Desk Trained">Front Desk Trained </label>
-                        </fieldset>
-                    </div><!-- end of skills checkboxes -->
+                    <div class="col-sm-12">
+                        <form role="form" name="PersonApplicationForm_Transport" method="post" action="PersonApplicationForm_Transport.php">
 
-                    <div class="col-md-6 col-md-offset-3"><div class="form-group"><label><br/>How far are you willing to travel for transport (i.e., 30-45 miles from your location, to a specific location, etc)?</label> <textarea name="MilesWillingToTravel" rows="4" class="form-control"></textarea></div></div>
+                            <div class="col-md-6 col-md-offset-3"><label class = "centeredText btmSpace2">Which team are you interested in applying for?</label></div>
+                            <div class="col-md-6 col-md-offset-3"><div class="form-group centeredText btmSpace2">
+                                    <select name="Team" onchange="location = this.options[this.selectedIndex].value;" style="text-decoration:none;">
+                                        <option value="PersonApplicationForm_Transport.php">Transport</option>
+                                        <option value="PersonApplicationForm_AnimalCare.php">Animal Care</option>
+                                        <option value="PersonApplicationForm_Outreach.php">Outreach</option>
+                                        <option value="PersonApplicationForm_Treatment.php">Treatment</option>
+                                    </select>
+                                </div>
+                            </div>
 
-                    <div class="col-md-6 col-md-offset-3">
+                            <div class = "col-md-8 col-md-offset-2">
+                                <label>Please check if you have the following skills: </label>
+                            </div><!--end of label-->
+
+                            <div class = "row">
+                                <div class = "col-md-8 col-md-offset-2">
+                                    <fieldset>
+                                        <label><input type = "checkbox" name = "skills[]" value = "Carpentry Skills">Carpentry Skills</label>
+                                        <label><input type = "checkbox" name = "skills[]" value = "Administrative Assistant">Administrative Assistant</label>
+                                        <label><input type = "checkbox" name = "skills[]" value = "Front Desk Trained">Front Desk Experience </label>
+
+                                    </fieldset>
+
+                                </div><!-- end of skills checkboxes -->
+                                <br>
+                            </div>
+
+                    <div class="col-md-8 col-md-offset-2"><div class="form-group"><label><br/>How far are you willing to travel for transport (i.e., 30-45 miles from your location, to a specific location, etc)?</label> <textarea name="MilesWillingToTravel" rows="4" class="form-control"></textarea></div></div>
+
+                    <div class="col-md-8 col-md-offset-2">
                         <p>Sometimes rescuers need assistance with capturing and containing a wild animal in need.  For those who are interested in capturing injured animals:
                         <ul>
                             <li>Know that we do not ask transporters to attempt risky captures of dangerous animals. Also, as a volunteer, you can always say “no” if you are uncomfortable with a situation.</li>
@@ -235,15 +285,15 @@ if (isset($_POST['SubmitPersonApplicationForm']))
                         </p>
                     </div>
 
-                    <div class="col-md-6 col-md-offset-3"><label>With that in mind, would you be willing to assist with capturing animals, if needed?</label></div>
-                    <div class="col-md-6 col-md-offset-3"><div class="form-group">
+                    <div class="col-md-8 col-md-offset-2"><label class = "btmSpace2">With that in mind, would you be willing to assist with capturing animals, if needed?</label></div>
+                    <div class="col-md-8 col-md-offset-2"><div class="form-group">
                             <select name="CaptureAndRestraint">
                                 <option value="Yes">Yes, I am willing to help capture animals.</option>
                                 <option value="No">No, I'd prefer to strictly transport.</option>
                             </select>
                         </div></div>
 
-                    <div class="col-md-6 col-md-offset-3">
+                    <div class="col-md-8 col-md-offset-2">
                         <br>
                         <button class="btn btn-sm btn-primary pull-right" name="SubmitPersonApplicationForm" type="submit"><strong>Submit</strong></button>
                     </div>

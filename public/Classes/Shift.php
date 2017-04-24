@@ -3,14 +3,15 @@
 /**
  * Created by PhpStorm.
  * User: ViviannRutan
- * Date: 4/1/17
- * Time: 12:31 PM
+ * Date: 4/11/17
+ * Time: 3:00 AM
  */
 class Shift
 {
-    public function __construct($VolunteerID, $ShiftDate, $StartTime, $EndTime, $ShiftHours)
+    public function __construct($VolunteerID, $DepartmentID, $ShiftDate, $StartTime, $EndTime, $ShiftHours)
     {
         $this->volunteerID = $VolunteerID;
+        $this->departmentID = $DepartmentID;
         $this->shiftDate = $ShiftDate;
         $this->startTime = $StartTime;
         $this->endTime = $EndTime;
@@ -22,6 +23,12 @@ class Shift
     {
 
         return $this->volunteerID;
+
+    }
+    public function getShiftDepartmentID()
+    {
+
+        return $this->departmentID;
 
     }
 

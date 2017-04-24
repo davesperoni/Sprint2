@@ -54,10 +54,6 @@ class Application
         return $this->applicationAdminAssistant;
     }
 
-    public function getApplicationIsStudent()
-    {
-        return $this->isStudent;
-    }
 
     public function getApplicationLastUpdatedBy()
     {

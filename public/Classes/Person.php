@@ -3,14 +3,14 @@
 /**
  * Test
  * Created by PhpStorm.
- * User: ViviannRutan
+ * User: Drew
  * Date: 3/22/17
  * Time: 10:05 PM
  * Test
  */
 class Person
 {
-    public function __construct($EmergencyContactID, $PersonAccountID, $PersonFirstName, $PersonMiddleInitial, $PersonLastName, $PersonStreetAddress, $PersonCity, $PersonStateAbb, $PersonCountryAbb, $PersonZipCode, $PersonPhoneNumber, $PersonDateOfBirth, $PersonAllergy, $PersonPhysicalLimitation, $PersonHavePermit, $PersonPermitType, $PersonRabies)
+    public function __construct($EmergencyContactID, $PersonAccountID, $PersonFirstName, $PersonMiddleInitial, $PersonLastName, $PersonStreetAddress, $PersonCity, $PersonCounty, $PersonState, $PersonCountry, $PersonZipCode, $PersonPhoneNumber, $PersonDateOfBirth, $PersonAllergy, $PersonPhysicalLimitation, $PersonHavePermit, $PersonPermitType, $PersonRabies)
     {
         $this->emergencyContactID = $EmergencyContactID;
         $this->accountID = $PersonAccountID;
@@ -19,8 +19,9 @@ class Person
         $this->lastName = $PersonLastName;
         $this->streetAddress = $PersonStreetAddress;
         $this->city = $PersonCity;
-        $this->stateAbb = $PersonStateAbb;
-        $this->countryAbb = $PersonCountryAbb;
+		$this->county = $PersonCounty;
+        $this->state = $PersonState;
+        $this->country = $PersonCountry;
         $this->zipCode = $PersonZipCode;
         $this->phoneNumber = $PersonPhoneNumber;
         $this->dateOfBirth = $PersonDateOfBirth;
@@ -87,18 +88,25 @@ class Person
         return $this->city;
 
     }
-
-    public function getPersonStateAbb()
+	
+	public function getPersonCounty()
     {
 
-        return $this->stateAbb;
+        return $this->county;
 
     }
 
-    public function getPersonCountryAbb()
+    public function getPersonState()
     {
 
-        return $this->countryAbb;
+        return $this->state;
+
+    }
+
+    public function getPersonCountry()
+    {
+
+        return $this->country;
 
     }
     public function getPersonZipCode()

@@ -22,8 +22,6 @@ if (isset($_POST['SubmitPersonApplicationForm']))
 
     //Changes current account to 'applied' so that it can show 'application pending' rather than 'apply'
     $currentUser = $_SESSION['AccountID'];
-    applicantNowPending($currentUser);
-    echo 'applicant is now pending';
 
     //Database connection
     $server = "127.0.0.1";
@@ -188,8 +186,8 @@ if (isset($_POST['SubmitPersonApplicationForm']))
 
     $sqlAnimalCareApplication = "INSERT INTO ApplicationAnimalCare(ApplicationID,ReptileRoom,ReptileRoomSoakDay,SnakeFeeding,ICU,ICUExpanded,Aviary,Mammals,PUE,PUEWeighDay,Fawns,Formula,Meals,RaptorFeed,ISO,PreviousExperience,DeadAnimalHandling,LivePreyOpinion,OutdoorWork,AnimalRightsGroups,Goals,PassionateIssue,LastUpdatedBy,LastUpdated) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)";
 
-    $stmt = mysqli_prepare($conn, $sqlAnimalCareApplication);
-    $stmt->bind_param("issssssssssssssssssssss", $ApplicationID,
+    $stmtAnimalCare = mysqli_prepare($conn, $sqlAnimalCareApplication);
+    $stmtAnimalCare->bind_param("issssssssssssssssssssss", $ApplicationID,
         $ApplicantReptileRoom, $ApplicantReptileRoomSoakDay,
         $ApplicantSnakeFeeding,$ApplicantICU, $ApplicantICUExpanded, $ApplicantAviary, $ApplicantMammals,
         $ApplicantPUE, $ApplicantPUEWeighDay, $ApplicantFawns,$ApplicantFormula, $ApplicantMeals,
@@ -197,13 +195,66 @@ if (isset($_POST['SubmitPersonApplicationForm']))
         $ApplicantLivePreyOpinion, $ApplicantOutdoorWork, $ApplicantAnimalRightsGroups, $ApplicantGoals,
         $ApplicantPassionateIssue, $ApplicationLastUpdatedBy);
 
-    if($stmt)
+    //Get the email address associated with the user's account
+    $sql = "SELECT Email from Account WHERE AccountID = :AccountID;";
+    $stmt = $connPDO->prepare($sql);
+    $stmt->bindParam(':AccountID', $currentUser);
+    $stmt->execute();
+    $results = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if(count($results) > 0)
     {
-        $stmt->execute();
+        $account = $results;
     }
+    $ApplicantEmail= $account['Email'];
+	
+/*
+	//Get the email address associated with the department's team lead
+    $sql = "SELECT Account.Email, Department.EmployeeID, Department.DepartmentName FROM Account JOIN ON Account.AccountID = Person.AccountID JOIN ON Person.PersonID = Employee.EmployeeID JOIN ON Employee.EmployeeID = Department.EmployeeID WHERE Department.DepartmentName = 'Animal Care';";
+    $stmt = $connPDO->prepare($sql);
+    $stmt->bindParam(':AccountID', $currentUser);
+    $stmt->execute();
+    $results = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    echo "Animal Care Application added to database";
+    if(count($results) > 0)
+    {
+        $account = $results;
+    }
+    $TeamLeadEmail= $account['Email'];
+*/
+    if($stmtAnimalCare)
+    {
+        //Execute the sql statement and change the applicant's status to 'pending'
+        $stmtAnimalCare->execute();
+        echo "Animal Care Application added to database. ";
+        applicantNowPending($currentUser);
+        echo 'Applicant is now pending. ';
 
+        //Send a confirmation email to the current user
+        error_reporting(-1);
+        ini_set('display_errors', 'On');
+        set_error_handler("var_dump");
+
+		if(!empty($ApplicantEmail))
+		{
+			$to = $ApplicantEmail;
+			$subject = 'Wildlife Center of Virginia - Application Confirmation';
+			$message = "Hello," . "\n\nThank you for your interest in volunteering at the Wildlife Center of Virginia. Your Animal Care Volunteer application has been submitted successfully and is now pending review. Once your application has been reviewed, you will receive another email containing your new application status. You can also check your status by logging in at http://54.186.42.239/login.php";
+			$headers = 'From: vawildlifecenter@gmail.com';
+
+			mail($to, $subject, $message, $headers);
+		}
+		
+		
+		//Send a confirmation email to the team lead
+		$to = 'vawildlifecenter.animalcare@gmail.com'; //change to $TeamLeadEmail later
+        $subject = 'Notification - Application Confirmation';
+        $message = "Hello," . "\n\nSomeone has submitted a volunteer application to the Animal Care department. Please log in to your profile and go to the Pending Apps tab to view the application. You can log into your account here: http://54.186.42.239/login.php";
+        $headers = 'From: vawildlifecenter@gmail.com';
+
+        mail($to, $subject, $message, $headers);
+		
+    }
 }
 ?>
 
@@ -228,20 +279,24 @@ if (isset($_POST['SubmitPersonApplicationForm']))
 
 </head>
 
-<body class="grayform">
+<body class="formback">
+<div class = "col-md-10 col-md-offset-1">
+    <div class = "grayform">
 <div class="ibox-content-form">
     <div class="formpadding">
         <div class="row">
-            <div class="col-md-6 col-md-offset-3" >
-                <div class="smallerheader"><h1>Apply To The Animal Care Team</h1>
-                    <p class="smallerheader">Thank you for your interest in The Wildlife Center of Virginia. We have four volunteer teams that work at our organization– Outreach, Animal Care, Veterinary Treatment, and Transport & Rescue. To read more about each team, please visit our <a href="http://wildlifecenter.org/support-center/volunteer-opportunities">volunteer opportunities page.</a></p></div>
-            </div>
+            <img class = "logo_form img-fluid" src = "img/habitat_logo.png" alt = "habitat logo">
+
+                <div class="smallerheader btmSpace"><h2>APPLY TO THE ANIMAL CARE TEAM</h2>
+                    Thank you for your interest in The Wildlife Center of Virginia. We have four volunteer teams that work at our organization– Outreach, Animal Care, Veterinary Treatment, and Transport & Rescue. To read more about each team, please visit our <a href="http://wildlifecenter.org/support-center/volunteer-opportunities">volunteer opportunities page.</a><br>
+                </div>
+
 
             <div class="col-sm-12">
                 <form role="form" name="PersonApplicationForm_AnimalCare" method="post" action="PersonApplicationForm_AnimalCare.php">
 
-                    <div class="col-md-6 col-md-offset-3"><label>Which team are you interested in applying for?</label></div>
-                    <div class="col-md-6 col-md-offset-3"><div class="form-group">
+                    <div class="col-md-6 col-md-offset-3"><label class = "centeredText btmSpace2">Which team are you interested in applying for?</label></div>
+                    <div class="col-md-6 col-md-offset-3"><div class="form-group centeredText btmSpace2">
                             <select name="Team" onchange="location = this.options[this.selectedIndex].value;" style="text-decoration:none;">
                                 <option value="PersonApplicationForm_AnimalCare.php">Animal Care</option>
                                 <option value="PersonApplicationForm_Outreach.php">Outreach</option>
@@ -251,16 +306,16 @@ if (isset($_POST['SubmitPersonApplicationForm']))
                         </div>
                     </div>
 
-                    <div class = "col-md-6 col-md-offset-3">
+                    <div class = "col-md-8 col-md-offset-2">
                         <label>Please check if you have the following skills: </label>
                     </div><!--end of label-->
 
                     <div class = "row">
-                        <div class = "col-md-6 col-md-offset-3">
+                        <div class = "col-md-8 col-md-offset-2">
                             <fieldset>
                                 <label><input type = "checkbox" name = "skills[]" value = "Carpentry Skills">Carpentry Skills</label>
                                 <label><input type = "checkbox" name = "skills[]" value = "Administrative Assistant">Administrative Assistant</label>
-                                <label><input type = "checkbox" name = "skills[]" value = "Front Desk Trained">Front Desk Trained </label>
+                                <label><input type = "checkbox" name = "skills[]" value = "Front Desk Trained">Front Desk Experience </label>
 
                             </fieldset>
 
@@ -268,23 +323,23 @@ if (isset($_POST['SubmitPersonApplicationForm']))
                         <br>
                     </div>
 
-                    <div class="col-md-6 col-md-offset-3"><div class="form-group"><label><br>Please briefly describe your relevant hands-on experience with animals, if any. What did you enjoy about the experience? What did you dislike?</label> <textarea name="PreviousExperience" rows="4" class="form-control"></textarea></div></div>
+                    <div class="col-md-8 col-md-offset-2"><div class="form-group"><label><br>Please briefly describe your relevant hands-on experience with animals, if any. What did you enjoy about the experience? What did you dislike?</label> <textarea name="PreviousExperience" rows="4" class="form-control"></textarea></div></div>
 
-                    <div class="col-md-6 col-md-offset-3"><div class="form-group"><label>Carnivorous patients are sometimes unable to eat food items whole due to their injuries; you may be required to cut and divide dead rodents, chicks, and fishes into smaller portions. Are you comfortable handling dead animals for this purpose?</label> <textarea name="DeadAnimalHandling" rows="4" class="form-control"></textarea></div></div>
+                    <div class="col-md-8 col-md-offset-2"><div class="form-group"><label>Carnivorous patients are sometimes unable to eat food items whole due to their injuries; you may be required to cut and divide dead rodents, chicks, and fishes into smaller portions. Are you comfortable handling dead animals for this purpose?</label> <textarea name="DeadAnimalHandling" rows="4" class="form-control"></textarea></div></div>
 
-                    <div class="col-md-6 col-md-offset-3"><div class="form-group"><label>Prior to release from the Wildlife Center, many predatory birds are presented with live mice in order to evaluate their ability to capture prey in a controlled and measurable environment. What is your opinion on using live-prey for this purpose?</label> <textarea name="LivePreyOpinion" rows="4" class="form-control"></textarea></div></div>
+                    <div class="col-md-8 col-md-offset-2"><div class="form-group"><label>Prior to release from the Wildlife Center, many predatory birds are presented with live mice in order to evaluate their ability to capture prey in a controlled and measurable environment. What is your opinion on using live-prey for this purpose?</label> <textarea name="LivePreyOpinion" rows="4" class="form-control"></textarea></div></div>
 
-                    <div class="col-md-6 col-md-offset-3"><div class="form-group"><label>Wildlife rehabilitation requires daily outdoor work -- year-round and regardless of weather conditions. Are you able to work outside during all seasons? If not, what are your limitations?</label> <textarea name="OutdoorWork" rows="4" class="form-control"></textarea></div></div>
+                    <div class="col-md-8 col-md-offset-2"><div class="form-group"><label>Wildlife rehabilitation requires daily outdoor work -- year-round and regardless of weather conditions. Are you able to work outside during all seasons? If not, what are your limitations?</label> <textarea name="OutdoorWork" rows="4" class="form-control"></textarea></div></div>
 
-                    <div class="col-md-6 col-md-offset-3"><div class="form-group"><label>Do you belong to any animal rights groups (PETA, The Humane Society, etc.)? If so, which ones?</label> <textarea name="AnimalRightsGroups" rows="4" class="form-control"></textarea></div></div>
+                    <div class="col-md-8 col-md-offset-2"><div class="form-group"><label>Do you belong to any animal rights groups (PETA, The Humane Society, etc.)? If so, which ones?</label> <textarea name="AnimalRightsGroups" rows="4" class="form-control"></textarea></div></div>
 
-                    <div class="col-md-6 col-md-offset-3"><div class="form-group"><label>What do you hope to learn or accomplish by volunteering at the Wildlife Center of Virginia?</label> <textarea name="Goals" rows="4" class="form-control"></textarea></div></div>
+                    <div class="col-md-8 col-md-offset-2"><div class="form-group"><label>What do you hope to learn or accomplish by volunteering at the Wildlife Center of Virginia?</label> <textarea name="Goals" rows="4" class="form-control"></textarea></div></div>
 
-                    <div class="col-md-6 col-md-offset-3"><div class="form-group"><label>Please describe an environmental or wildlife-based issue you feel passionately about, and why.</label> <textarea name="PassionateIssue" rows="4" class="form-control"></textarea></div></div>
+                    <div class="col-md-8 col-md-offset-2"><div class="form-group"><label>Please describe an environmental or wildlife-based issue you feel passionately about, and why.</label> <textarea name="PassionateIssue" rows="4" class="form-control"></textarea></div></div>
 
-                    <div class="col-md-6 col-md-offset-3"><div class="form-group"><label>Is there anything else that you’d like us to know about yourself or your experience? </label> <textarea name="OtherNotes" rows="4" class="form-control"></textarea></div></div>
+                    <div class="col-md-8 col-md-offset-2"><div class="form-group"><label>Is there anything else that you’d like us to know about yourself or your experience? </label> <textarea name="OtherNotes" rows="4" class="form-control"></textarea></div></div>
 
-                    <div class="col-md-6 col-md-offset-3">
+                    <div class="col-md-8 col-md-offset-2">
                         <br>
                         <button class="btn btn-sm btn-primary pull-right" name="SubmitPersonApplicationForm" type="submit"><strong>Submit</strong></button>
                     </div>
@@ -293,6 +348,8 @@ if (isset($_POST['SubmitPersonApplicationForm']))
             </div>
         </div>
     </div>
+</div>
+</div>
 </div>
 
 

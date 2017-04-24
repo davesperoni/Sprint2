@@ -59,18 +59,32 @@ mysqli_close($conn);
 
 </head>
 
-<body class="grayform">
+<body class="formback">
+<div class = "col-md-10 col-md-offset-1">
+    <div class = "grayform">
 <div class="ibox-content-form">
     <div class="formpadding">
         <div class="row">
-            <div class="smallerheader"><h1>Apply To A Team</h1>
-                <p class="smallheader">Thank you for your interest in The Wildlife Center of Virginia. We have four volunteer teams that work at our organization– Outreach, Animal Care, Veterinary Treatment, and Transport & Rescue. To read more about each team, please visit our <a href="http://wildlifecenter.org/support-center/volunteer-opportunities">volunteer opportunities page.</a></p></div>
+            <img class = "img-fluid logo_form" src = "img/habitat_logo.png" alt = "logo for habitat">
 
-            <div class="col-sm-12">
+            <div class="smallerheader">
+                <h2>APPLY TO A TEAM</h2>
+            </div>
+
+            <div class="col-sm-8 col-sm-offset-2">
+                    <p class="smallheader centeredText btmSpace">Thank you for your interest in The Wildlife Center of Virginia. We have four volunteer teams that work at our organization– Outreach, Animal Care, Veterinary Treatment, and Transport & Rescue. To read more about each team, please visit our
+                        <a href="http://wildlifecenter.org/support-center/volunteer-opportunities">volunteer opportunities page.</a></p></div>
+            </div><! -- end of paragraph -->
+
+            <div class="col-sm-10 col-sm-offset-1">
                 <form role="form" name="PersonApplicationForm" method="post" action="PersonApplicationForm.php">
                     <div class = "col-md-6 col-md-offset-3">
-                        <div class="col-md-6 col-md-offset-3 moveDown"><label>Which team are you interested in applying for?</label></div>
-                        <div class="col-md-6 col-md-offset-3"><div class="form-group">
+                        <div class = "row">
+
+                            <label class = "centeredText btmSpace2">Which team are you interested in applying for?</label>
+
+                        </div><!-- end of question -->
+                            <div class="col-md-6 col-md-offset-3"><div class="form-group centeredText">
                                 <select name="Team" onchange="location = this.options[this.selectedIndex].value;" style="text-decoration:none;">
                                     <option value="PersonApplicationForm.php"></option>
                                     <option value="PersonApplicationForm_AnimalCare.php">Animal Care</option>
@@ -83,8 +97,11 @@ mysqli_close($conn);
                     </div>
                 </form>
             </div>
-        </div>
-    </div>
+        </div><!-- end of row -->
+    </div> <! -- form padding -->
+</div> <! -- end of ibox -->
+    </div><!-- end of gray form -->
+</div><!-- end of col md -->
 </body>
 
 </html>

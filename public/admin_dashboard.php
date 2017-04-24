@@ -24,9 +24,54 @@ if(isset($_SESSION['AccountID'])) {
         }
     }
 }
+$records = $connPDO->prepare('select FirstName, MiddleInitial, LastName FROM Person where AccountID = :AccountID');
+$records->bindParam(':AccountID', $_SESSION['AccountID']);
+$records->execute();
+$results = $records->fetch(PDO::FETCH_ASSOC);
+
+if(count($results) > 0){
+    $personName = $results;
+}
+
+$AdminName = $personName['FirstName'] . " " . $personName['MiddleInitial'] . " " . $personName['LastName'];
+$AdminFirstName = $personName['FirstName'];
+
+// GET SUM OF ALL HOURS
+$recordHours = $connPDO->prepare('SELECT SUM(YTDHours) AS TotalHours FROM Volunteer');
+$recordHours->execute();
+$resultHours = $recordHours->fetch(PDO::FETCH_ASSOC);
+
+if(count($resultHours) > 0){
+    $totalHours = $resultHours;
+}
+
+$displayTotalHours = $totalHours['TotalHours'];
+
+// GET SUM OT ALL MILES
+$recordMiles = $connPDO->prepare('SELECT SUM(YTDMiles) AS TotalMiles FROM Volunteer');
+$recordMiles->execute();
+$resultMiles = $recordMiles->fetch(PDO::FETCH_ASSOC);
+
+if(count($resultMiles) > 0){
+    $totalMiles = $resultMiles;
+}
+
+$displayTotalMiles = $totalMiles['TotalMiles'];
+
+// Select departments that a volunteer is in
+$AccountID = $_SESSION['AccountID'];
+
+$sqlAdminDepartments = "select distinct Department.DepartmentName FROM Department
+JOIN Employee ON Department.EmployeeID = Employee.EmployeeID
+JOIN Person ON Employee.PersonID = Person.PersonID
+JOIN Account ON Person.AccountID = Account.AccountID
+WHERE Account.AccountID = $AccountID;";
+
+$resultsDepartments = mysqli_query($conn, $sqlAdminDepartments);
+
+?>
 
 
-?><li><a href="logout.php">Logout</a></li>
 
 
 <!DOCTYPE html>
@@ -54,40 +99,41 @@ if(isset($_SESSION['AccountID'])) {
             <ul class="nav metismenu" id="side-menu">
                 <li class="nav-header">
                     <div class="dropdown profile-element"> <span>
-                            <img alt="image" class="img-circle" src="img/raina.jpg" />
+                            <img alt="image" class="img-circle" src="img/personPicSmall.png" />
                              </span>
                         <a data-toggle="dropdown" class="dropdown-toggle" href="#">
-                            <span class="clear"> <span class="block m-t-xs"> <strong class="font-bold">Raina Krasner</strong>
-                             </span> <span class="text-muted text-xs block">Outreach Coordinator<b class="caret"></b></span> </span> </a>
-                        <ul class="dropdown-menu animated fadeInRight m-t-xs">
-                            <li><a href="profile.html">Profile</a></li>
-                            <li class="divider"></li>
-                            <li><a href="logout.php">Logout</a></li>
-                        </ul>
+                            <span class="clear"> <span class="block m-t-xs"> <strong class="font-bold"><?php echo $AdminName ?></strong>
+                             </span> <span class="text-muted text-xs block"><?php while($row = mysqli_fetch_array($resultsDepartments)) { echo $row['DepartmentName'] . " Team Lead" . "<br/>"; } ?></span> </span> </a>
+
                     </div>
                     <div class="logo-element">
 
                     </div>
                 </li>
 
-                <li class = "active">
-                    <a href="#"><i class="fa fa-home"></i> <span class="nav-label">Home</span></a>
+				<li class="active">
+                    <a href="/admin_dashboard.php"><i class="fa fa-home"></i> <span class="nav-label">Home</span></a>
                 </li>
                 <li>
-                    <a href="#"><i class="fa fa-users"></i> <span class="nav-label">Who's Here</span></a>
+                    <a href="/who's_here.php"><i class="fa fa-users"></i> <span class="nav-label">Who's Here</span></a>
                 </li>
                 <li>
-                    <a href="#"><i class="fa fa-calendar"></i> <span class="nav-label">Calendar</span></a></li>
+                    <a target="_blank" href="/Calendar/index.php"><i class="fa fa-calendar"></i> <span class="nav-label">Calendar</span></a></li>
                 <li>
                 <li>
-                    <a href="#"><i class="fa fa-search"></i> <span class="nav-label">Search</span></a>
+                    <a href="/search_volunteers_admin.php"><i class="fa fa-search"></i> <span class="nav-label">Search</span></a>
                 </li>
                 <li>
                     <a href="/pending_apps.php"><i class="fa fa-clipboard"></i> <span class="nav-label">Applications</span>  </a>
                 </li>
                 <li>
-                    <a href="#"><i class="fa fa-user"></i> <span class="nav-label">My Profile</span>  </a>
+                    <a href="/statistics_admin.php"><i class="fa fa-bar-chart"></i> <span class="nav-label">Statistics</span>  </a>
+                </li class = "active">				
+                <li>
+                    <a href="/admin_profile.php"><i class="fa fa-user"></i> <span class="nav-label">My Profile</span>  </a>
                 </li>
+
+				
             </ul>
         </div>
     </nav> <!-- end of navigation -->
@@ -98,12 +144,12 @@ if(isset($_SESSION['AccountID'])) {
         <div class="row border-bottom">
             <nav class="navbar navbar-static-top white-bg" role="navigation" style="margin-bottom: 0">
                 <div class="navbar-header">
-                    <a class="navbar-minimalize minimalize-styl-2 btn btn-primary " href="#"><i class="fa fa-bars"></i> </a>
+                    <a class="navbar-minimalize minimalize-styl-2 btn btn-primary " href="#"><i class="fa fa-bars"></i> </a> 
                 </div>
                 <ul class="nav navbar-top-links navbar-right">
                     <li class="dropdown">
                         <a class="dropdown-toggle count-info" data-toggle="dropdown" href="#">
-                            <i class="fa fa-bell"></i>  <span class="label label-primary">8</span>
+                            <i class="fa fa-bell"></i>  <span class="label label-primary"></span>
                         </a>
                         <ul class="dropdown-menu dropdown-alerts">
                             <li>
@@ -156,13 +202,13 @@ if(isset($_SESSION['AccountID'])) {
 
         <!-- BEGINNING OF HEADER -->
         <div class = "row">
-            <div class = "col-sm-12">
-                <header id = "admin-header-background" class="image-bg-fluid-height ">
+            <div class = "col-sm-12 no-padding">
+                <header style="background-image:url('img/owlpeak.jpg')!important;" id = "admin-header-background" class="image-bg-fluid-height">
                     <div class = "text-overlay">
 
 
                         <h3 class = "date"><?php echo $Date ?></h3>
-                        <h1 class = "welcome-user"> HELLO RAINA </h1>
+                        <h1 class = "welcome-user"> HELLO <?php echo $AdminFirstName?> </h1>
 
                     </div>
                 </header>
@@ -178,7 +224,7 @@ if(isset($_SESSION['AccountID'])) {
                         <div class="ibox float-e-margins">
 
                             <!-- BEGINNING OF TOP LINKS -->
-                            <a href = "#">
+                            <a href = "/who's_here.php">
                                 <div class="ibox-title">
                                     <!-- top green bar decoration -->
                                 </div>
@@ -196,7 +242,7 @@ if(isset($_SESSION['AccountID'])) {
                         <div class="ibox float-e-margins">
 
                             <!-- BEGINNING OF TOP LINKS -->
-                            <a href = "#">
+                            <a target="_blank" href = "/Calendar/index.php">
                                 <div class="ibox-title">
                                     <!-- top green bar decoration -->
                                 </div>
@@ -214,7 +260,7 @@ if(isset($_SESSION['AccountID'])) {
                         <div class="ibox float-e-margins">
 
                             <!-- BEGINNING OF TOP LINKS -->
-                            <a href = "#">
+                            <a href = "/search_volunteers_admin.php">
                                 <div class="ibox-title">
                                     <!-- top green bar decoration -->
                                 </div>
@@ -232,7 +278,7 @@ if(isset($_SESSION['AccountID'])) {
                         <div class="ibox float-e-margins">
 
                             <!-- BEGINNING OF TOP LINKS -->
-                            <a href = "#">
+                            <a href = "/admin_profile.php">
                                 <div class="ibox-title">
                                     <!-- top green bar decoration -->
                                 </div>
@@ -257,16 +303,16 @@ if(isset($_SESSION['AccountID'])) {
                 <div class = "col-sm-12">
                     <div class = "col-sm-4 col-sm-offset-2 vol-stats">
                         <h1 class = "counter">
-                            542
+                            <?php echo $displayTotalHours ?>
                         </h1>
-                        <h3 class = "counter-label">HOURS VOLUNTEERED</h3>
+                        <h3 class = "counter-label">TOTAL HOURS VOLUNTEERED (ALL VOLUNTEERS)</h3>
                     </div><!--end of hour count -->
 
                     <div class = "col-sm-4 vol-stats">
                         <h1 class = "counter">
-                            1,276
+                            <?php echo $displayTotalMiles ?>
                         </h1>
-                        <h3 class = "counter-label">MILES DRIVEN</h3>
+                        <h3 class = "counter-label">TOTAL MILES DRIVEN (ALL VOLUNTEERS)</h3>
 
                     </div><!-- end of miles count -->
                 </div>

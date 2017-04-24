@@ -34,29 +34,37 @@
             <ul class="nav metismenu" id="side-menu">
                 <li class="nav-header">
                     <div class="dropdown profile-element"> <span>
-                            <img alt="image" class="img-circle" src="img/profile_pic.jpg" />
-                             </span>
+					<img alt="image" class="img-circle" src="img/personPicSmall.png" />                             </span>
                         <a data-toggle="dropdown" class="dropdown-toggle" href="#">
-                            <span class="clear"> <span class="block m-t-xs"> <strong class="font-bold">Jane Doe</strong>
-                             </span> <span class="text-muted text-xs block">Administrator<b class="caret"></b></span> </span> </a>
-                        <ul class="dropdown-menu animated fadeInRight m-t-xs">
-                            <li><a href="profile.html">Profile</a></li>
-                            <li class="divider"></li>
-                            <li><a href="login.html">Logout</a></li>
-                        </ul>
+                            <span class="clear"> <span class="block m-t-xs"> <strong class="font-bold">Raina C Krasner</strong>
+                             </span> <span class="text-muted text-xs block">Outreach Team Lead</span> </span> </a>
+
                     </div>
                     <div class="logo-element">
 
                     </div>
                 </li>
 
-                <li class = "active">
-                    <a href="#"><i class="fa fa-home"></i> <span class="nav-label">Home</span></a>
+				<li>
+                    <a href="/admin_dashboard.php"><i class="fa fa-home"></i> <span class="nav-label">Home</span></a>
                 </li>
                 <li>
-                    <a href="#"><i class="fa fa-user"></i> <span class="nav-label">Profile</span></a></li>
+                    <a href="/who's_here.php"><i class="fa fa-users"></i> <span class="nav-label">Who's Here</span></a>
+                </li>
                 <li>
-                    <a href="#"><i class="fa fa-clipboard"></i> <span class="nav-label">Applications</span></a>
+                    <a target="_blank" href="/Calendar/index.php"><i class="fa fa-calendar"></i> <span class="nav-label">Calendar</span></a></li>
+                <li>
+                <li>
+                    <a href="/search_volunteers_admin.php"><i class="fa fa-search"></i> <span class="nav-label">Search</span></a>
+                </li>
+                <li>
+                    <a href="/pending_apps.php"><i class="fa fa-clipboard"></i> <span class="nav-label">Applications</span>  </a>
+                </li>
+                <li>
+                    <a href="/statistics_admin.php"><i class="fa fa-bar-chart"></i> <span class="nav-label">Statistics</span>  </a>
+                </li class = "active">				
+                <li class="active">
+                    <a href="/admin_profile.php"><i class="fa fa-user"></i> <span class="nav-label">My Profile</span>  </a>
                 </li>
 
             </ul>
@@ -68,14 +76,14 @@
         <div class="row border-bottom">
             <nav class="navbar navbar-static-top" role="navigation" style="margin-bottom: 0">
                 <div class="navbar-header">
-                    <a class="navbar-minimalize minimalize-styl-2 btn btn-primary " href="#"><i class="fa fa-bars"></i> </a>
+                    <!--<a class="navbar-minimalize minimalize-styl-2 btn btn-primary " href="#"><i class="fa fa-bars"></i> </a>-->
 
                 </div>
                 <ul class="nav navbar-top-links navbar-right">
 
 
                     <li>
-                        <a href="login.html">
+                        <a href="logout.php">
                             <i class="fa fa-sign-out"></i> Log out
                         </a>
                     </li>
@@ -85,7 +93,7 @@
         </div>
         <div class="row wrapper-prof border-bottom white-bg page-heading">
             <div class="col-lg-12">
-                <img src="img/profileheader.jpg" class="img-responsive">
+                <img src="img/mtn.jpg" class="img-responsive">
             </div>
 
         </div>
@@ -96,7 +104,7 @@
                         <div>
                             <div class="ibox-content">
                                 <div class="profile">
-                                    <img src="img/raina.png" class="img-responsive col-xs-8">
+                                    <img src="img/emptyprofilepic.png" class="img-responsive col-xs-8">
                                 </div>
                                 <div class="col-xs-1">
                                     <div class="edit">

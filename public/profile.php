@@ -33,13 +33,15 @@ $results = $records->fetch(PDO::FETCH_ASSOC);
 if(count($results) > 0){
     $personInformation = $results;
 }
-
-$VolunteerName = $personInformation['FirstName'] . " " . $personInformation['MiddleInitial'] . " " . $personInformation['LastName'];
+$VolunteerFirstName = $personInformation['FirstName'];
+$VolunteerMiddleInitial = $personInformation['MiddleInitial'];
+$VolunteerLastName = $personInformation['LastName'];
+$VolunteerName = ucfirst($personInformation['FirstName']) . " " . ucfirst($personInformation['MiddleInitial']) . " " . ucfirst($personInformation['LastName']);
 $VolunteerPhoneNumber = $personInformation['PhoneNumber'];
 $VolunteerEmail = $user['email'];
 $PersonID = $personInformation['PersonID'];
-$VolunteerAllergy = $personInformation['Allergy'];
-$VolunteerPhysicalLimitation = $personInformation['PhysicalLimitation'];
+$VolunteerAllergy = ucfirst($personInformation['Allergy']);
+$VolunteerPhysicalLimitation = ucfirst($personInformation['PhysicalLimitation']);
 
 $records = $connPDO->prepare('select EmergencyContact.FirstName, EmergencyContact.MiddleInitial, EmergencyContact.LastName, EmergencyContact.PhoneNumber, EmergencyContact.Relationship from EmergencyContact join Person on EmergencyContact.EmergencyContactID = Person.EmergencyContactID where PersonID = :PersonID');
 $records->bindParam(':PersonID', $PersonID);
@@ -50,12 +52,12 @@ if(count($results) > 0) {
     $emergencyContact = $results;
 }
 
-$EmergencyContactName = $emergencyContact['FirstName'] . " " . $emergencyContact['MiddleInitial'] . " " . $emergencyContact['LastName'];
+$EmergencyContactName = ucfirst($emergencyContact['FirstName']) . " " . ucfirst($emergencyContact['MiddleInitial']) . " " . ucfirst($emergencyContact['LastName']);
 $EmergencyContactFirstName = $emergencyContact['FirstName'];
 $EmergencyContactMI = $emergencyContact['MiddleInitial'];
 $EmergencyContactLastName = $emergencyContact['LastName'];
 $EmergencyContactPhoneNumber = $emergencyContact['PhoneNumber'];
-$EmergencyContactRelationship = $emergencyContact['Relationship'];
+$EmergencyContactRelationship = ucfirst($emergencyContact['Relationship']);
 
 
 $records = $connPDO->prepare('select Volunteer.YTDHours, Volunteer.YTDMiles, Volunteer.Notes from Volunteer where PersonID = :PersonID');
@@ -256,6 +258,76 @@ $resultSatMorn = mysqli_fetch_row($resultsSaturdayMorning);
 $resultSatAfternoon = mysqli_fetch_row($resultsSaturdayAfternoon);
 $resultSatNight = mysqli_fetch_row($resultsSaturdayNight);
 
+// Select departments that a volunteer is in
+$AccountID = $_SESSION['AccountID'];
+
+$sqlVolunteerDepartments = "select distinct Department.DepartmentName FROM Department
+JOIN VolunteerDepartment ON Department.DepartmentID = VolunteerDepartment.DepartmentID
+JOIN Volunteer ON VolunteerDepartment.VolunteerID = Volunteer.VolunteerID
+JOIN Person ON Volunteer.PersonID = Person.PersonID
+JOIN Account ON Person.AccountID = Account.AccountID
+WHERE Account.AccountID = $AccountID;";
+
+$resultsDepartments = mysqli_query($conn, $sqlVolunteerDepartments);
+
+$departmentNumber = 0;
+
+// Print Teams
+
+$sqlVolunteerTeams = "select distinct Department.DepartmentName FROM Department
+JOIN VolunteerDepartment ON Department.DepartmentID = VolunteerDepartment.DepartmentID
+JOIN Volunteer ON VolunteerDepartment.VolunteerID = Volunteer.VolunteerID
+JOIN Person ON Volunteer.PersonID = Person.PersonID
+JOIN Account ON Person.AccountID = Account.AccountID
+WHERE Account.AccountID = $AccountID;";
+
+$resultsTeams = mysqli_query($conn, $sqlVolunteerTeams);
+
+// Get team lead info for Animal Care dept
+
+		$sqlAnimalCareTeam = "Select Account.Email, Person.FirstName, Person.LastName FROM Account
+  JOIN Person ON Account.AccountID = Person.AccountID
+  JOIN Employee ON Person.PersonID = Employee.PersonID
+  JOIN Department ON Employee.EmployeeID = Department.EmployeeID
+  Where Department.DepartmentName = 'Animal Care';";
+  
+  $resultsAnimalCareTeam = mysqli_query($conn, $sqlAnimalCareTeam);
+  
+  // Get team lead info for Outreach dept
+  
+		$sqlOutreachTeam = "Select Account.Email, Person.FirstName, Person.LastName FROM Account
+  JOIN Person ON Account.AccountID = Person.AccountID
+  JOIN Employee ON Person.PersonID = Employee.PersonID
+  JOIN Department ON Employee.EmployeeID = Department.EmployeeID
+  Where Department.DepartmentName = 'Outreach';";
+  
+  $resultsOutreachTeam = mysqli_query($conn, $sqlOutreachTeam);
+		
+  // Get team lead info for Transport dept
+
+		$sqlTransportTeam = "Select Account.Email, Person.FirstName, Person.LastName FROM Account
+  JOIN Person ON Account.AccountID = Person.AccountID
+  JOIN Employee ON Person.PersonID = Employee.PersonID
+  JOIN Department ON Employee.EmployeeID = Department.EmployeeID
+  Where Department.DepartmentName = 'Transport';";
+  
+  $resultsTransportTeam = mysqli_query($conn, $sqlTransportTeam);
+  
+  // Get team lead info for Treatment dept
+	
+		$sqlTreatmentTeam = "Select Account.Email, Person.FirstName, Person.LastName FROM Account
+  JOIN Person ON Account.AccountID = Person.AccountID
+  JOIN Employee ON Person.PersonID = Employee.PersonID
+  JOIN Department ON Employee.EmployeeID = Department.EmployeeID
+  Where Department.DepartmentName = 'Treatment';";
+  
+  $resultsTreatmentTeam = mysqli_query($conn, $sqlTreatmentTeam);
+		
+
+		
+	
+
+
 if(isset($_POST['uploadProfilePicture']))
 {
 
@@ -286,6 +358,9 @@ function saveImage($name, $image)
     // Need to figure out how to get session variable for PersonID to insert
     // and select as well.. Right now it currently displays all pics in DB
     $currentAccountID = $_SESSION['AccountID'];
+
+    $sqlDeleteOldPic = "DELETE FROM picUpload WHERE AccountID = '$currentAccountID'";
+    $result = mysqli_query($conn, $sqlDeleteOldPic) or die('Error, query failed');
 
     $sqlInsertPic = "INSERT INTO picUpload (AccountID, name, image) VALUES ('$currentAccountID','$name','$image')";
     $result = mysqli_query($conn, $sqlInsertPic) or die('Error, query failed');
@@ -339,18 +414,19 @@ function displayResume()
 
     $currentAccountID = $_SESSION['AccountID'];
 
-    $query = "SELECT resumeUploadID, name, Person.PersonID FROM resumeUpload
-              JOIN Person ON resumeUpload.PersonID = Person.PersonID
+    $query = "SELECT Upload.UploadID, name, Person.PersonID FROM Upload
+              JOIN Person ON Upload.PersonID = Person.PersonID
               JOIN Account ON Person.AccountID = Account.AccountID
-              WHERE Account.AccountID = '$currentAccountID' AND Person.PersonID = resumeUpload.PersonID";
+              WHERE Account.AccountID = '$currentAccountID' AND Person.PersonID = Upload.PersonID
+              AND Upload.Specification = 'Resume'";
     $result = mysqli_query($conn, $query) or die('Error, query failed');
 
     if(mysqli_num_rows($result)==0){
         echo "";
     }
     else{
-        while(list($resumeUploadID, $name) = mysqli_fetch_array($result)){
-            echo "<a href=\"download.php?resumeUploadID=$resumeUploadID\"><img src=\"img/resumeDoc.jpg\" class=\"img-responsive\"></a><br>";
+        while(list($UploadID, $name) = mysqli_fetch_array($result)){
+            echo "<a href=\"download.php?UploadID=$UploadID\"><img src=\"img/resumeDoc.jpg\" class=\"img-responsive\"></a><br>";
         }
     }
 }
@@ -372,18 +448,19 @@ function displayVaccine()
 
     $currentAccountID = $_SESSION['AccountID'];
 
-    $query = "SELECT vaccineUploadID, name, Person.PersonID FROM vaccineUpload
-              JOIN Person ON vaccineUpload.PersonID = Person.PersonID
+    $query = "SELECT UploadID, name, Person.PersonID FROM Upload
+              JOIN Person ON Upload.PersonID = Person.PersonID
               JOIN Account ON Person.AccountID = Account.AccountID
-              WHERE Account.AccountID = '$currentAccountID' AND Person.PersonID = vaccineUpload.PersonID";
+              WHERE Account.AccountID = '$currentAccountID' AND Person.PersonID = Upload.PersonID
+              AND Upload.Specification = 'Vaccine'";
     $result = mysqli_query($conn, $query) or die('Error, query failed');
 
     if(mysqli_num_rows($result)==0){
         echo "";
     }
     else{
-        while(list($vaccineUploadID, $name) = mysqli_fetch_array($result)){
-            echo "<a href=\"download.php?vaccineUploadID=$vaccineUploadID\"><img src=\"img/vaccineDoc.jpg\" class=\"img-responsive\"></a><br>";
+        while(list($UploadID, $name) = mysqli_fetch_array($result)){
+            echo "<a href=\"download.php?UploadID=$UploadID\"><img src=\"img/vaccineDoc.jpg\" class=\"img-responsive\"></a><br>";
         }
     }
 }
@@ -405,18 +482,19 @@ function displayPermit()
 
     $currentAccountID = $_SESSION['AccountID'];
 
-    $query = "SELECT permitUploadID, name, Person.PersonID FROM permitUpload
-              JOIN Person ON permitUpload.PersonID = Person.PersonID
+    $query = "SELECT Upload.UploadID, name, Person.PersonID FROM Upload
+              JOIN Person ON Upload.PersonID = Person.PersonID
               JOIN Account ON Person.AccountID = Account.AccountID
-              WHERE Account.AccountID = '$currentAccountID' AND Person.PersonID = permitUpload.PersonID";
+              WHERE Account.AccountID = '$currentAccountID' AND Person.PersonID = Upload.PersonID
+              AND Upload.Specification = 'Permit'";
     $result = mysqli_query($conn, $query) or die('Error, query failed');
 
     if(mysqli_num_rows($result)==0){
         echo "";
     }
     else{
-        while(list($permitUploadID, $name) = mysqli_fetch_array($result)){
-            echo "<a href=\"download.php?permitUploadID=$permitUploadID\"><img src=\"img/permitDoc.jpg\" class=\"img-responsive\"></a><br>";
+        while(list($UploadID, $name) = mysqli_fetch_array($result)){
+            echo "<a href=\"download.php?UploadID=$UploadID\"><img src=\"img/permitDoc.jpg\" class=\"img-responsive\"></a><br>";
         }
     }
 }
@@ -425,16 +503,22 @@ function displayPermit()
 
  if (isset($_POST['UpdateProfile'])) {
 
+	header("Refresh:0");
 
      $updateVolunteerPhoneNumber = $_POST['updateVolunteerPhoneNumber'];
      $updateVolunteerEmail = $_POST['updateVolunteerEmail'];
      $updateVolunteerAllergy = $_POST['updateVolunteerAllergies'];
      $updateVolunteerPhysicalLimitation = $_POST['updateVolunteerPhysicalLimitations'];
+	 $updateVolunteerFirstName = $_POST['updateVolunteerFirstName'];
+	 $updateVolunteerMiddleInitial = $_POST['updateVolunteerMiddleInitial'];
+	 $updateVolunteerLastName = $_POST['updateVolunteerLastName'];
 
-
-     $sqlPersonInformation = "UPDATE Person p SET p.PhoneNumber = :phoneNumber, p.Allergy = :allergy, p.PhysicalLimitation = :physicalLimitation where p.PersonID = :PersonID";
+     $sqlPersonInformation = "UPDATE Person p SET p.FirstName = :firstName, p.MiddleInitial = :middleInitial, p.LastName = :lastName, p.PhoneNumber = :phoneNumber, p.Allergy = :allergy, p.PhysicalLimitation = :physicalLimitation where p.PersonID = :PersonID";
      $stmt = $connPDO->prepare($sqlPersonInformation);
-
+	 
+	 $stmt->bindParam(':firstName', $updateVolunteerFirstName);
+	 $stmt->bindParam(':middleInitial', $updateVolunteerMiddleInitial);
+	 $stmt->bindParam(':lastName', $updateVolunteerLastName);
      $stmt->bindParam(':phoneNumber', $updateVolunteerPhoneNumber);
      $stmt->bindParam(':allergy', $updateVolunteerAllergy);
      $stmt->bindParam(':physicalLimitation', $updateVolunteerPhysicalLimitation);
@@ -657,29 +741,42 @@ function displayPermit()
             <ul class="nav metismenu" id="side-menu">
                 <li class="nav-header">
                     <div class="dropdown profile-element"> <span>
-                            <img alt="image" class="img-circle" src="img/profile_pic.jpg" />
+                            <img alt="image" class="img-circle" src="img/personPicSmall.png" />
                              </span>
                         <a data-toggle="dropdown" class="dropdown-toggle" href="#">
                             <span class="clear"> <span class="block m-t-xs"> <strong class="font-bold"><?php echo $VolunteerName ?></strong>
-                             </span> <span class="text-muted text-xs block">Volunteer<b class="caret"></b></span> </span> </a>
-                        <ul class="dropdown-menu animated fadeInRight m-t-xs">
-                            <li><a href="profile.php">Profile</a></li>
-                            <li class="divider"></li>
-                            <li><a href="logout.php">Logout</a></li>
-                        </ul>
+                             </span> <span class="text-muted text-xs block"><?php while($row = mysqli_fetch_array($resultsDepartments)) { $departmentNumber++; echo $row['DepartmentName'] . " Volunteer" . "<br/>"; } ?></span> </span> </a>
+
                     </div>
                     <div class="logo-element">
 
                     </div>
                 </li>
 
-                <li class = "active">
-                    <a href="#"><i class="fa fa-home"></i> <span class="nav-label">Home</span></a>
+                <li>
+                    <a href="volunteer_dashboard.php"><i class="fa fa-home"></i> <span class="nav-label">Home</span></a>
                 </li>
+                <li class = "active">
+                    <a href="profile.php"><i class="fa fa-user"></i> <span class="nav-label">Profile</span></a></li>
                 <li>
-                    <a href="#"><i class="fa fa-user"></i> <span class="nav-label">Profile</span></a></li>
+                    <a href="loghoursandmiles.php"><i class="fa fa-clock-o"></i> <span class="nav-label">Hours/Miles</span></a>
+                </li>
+				<li>
+                    <a target="blank" href="/Calendar"><i class="fa fa-calendar"></i> <span class="nav-label">Calendar</span></a></li>
                 <li>
-                    <a href="#"><i class="fa fa-clipboard"></i> <span class="nav-label">Applications</span></a>
+                <li>
+                    <a href="training.php"><i class="fa fa-cogs"></i> <span class="nav-label">Training</span>  </a>
+                </li>
+
+                <li>
+                    <a href="personApplicationForm.php"><i class="fa fa-user"></i> <span class="nav-label">Apply</span>  </a>
+                </li>
+
+                <li>
+                    <a href="volunteer_applicationInfo.php"><i class="fa fa-clipboard"></i> <span class="nav-label">Applications</span></a>
+                </li>
+				<li>
+                    <a target="blank" href="transporter_map.html"><i class="fa fa-clipboard"></i> <span class="nav-label">Maps</span></a>
                 </li>
 
             </ul>
@@ -697,13 +794,7 @@ function displayPermit()
 
 
                 </div>
-                <?php if( !empty($user) ): ?>
-                    <br /><p>Welcome <?= $VolunteerName; ?>
-                    <!--                  <br /> you are logged in.</p>-->
-                    <!--                 <a href="logout.php">Logout</a>-->
-                <?php else: ?>
-                    <br /><p>Not logged in.</p>
-                <?php endif; ?>
+               
                 <ul class="nav navbar-top-links navbar-right">
 
                     <li>
@@ -717,7 +808,7 @@ function displayPermit()
         </div>
         <div class="row wrapper-prof border-bottom white-bg page-heading">
             <div class="col-lg-12">
-                <img src="img/profileheader.jpg" class="img-responsive">
+                <img src="img/mtn.jpg" class="img-responsive">
             </div>
 
         </div>
@@ -792,6 +883,9 @@ function displayPermit()
                                             <div class="modal-body">
                                                 <form  class = "pop-up-form" method="post">
                                                     <h2 class = "form-title"> PERSONAL INFORMATION </h2>
+													<label>First Name:</label> <input type = "text" name = "updateVolunteerFirstName" size = "12" value = <?php echo $VolunteerFirstName ?>>
+													<label>Middle Initial:</label> <input type = "text" name = "updateVolunteerMiddleInitial" size = "1" maxlength="1" value = <?php echo $VolunteerMiddleInitial ?>>
+													<label>Last Name:</label> <input type = "text" name = "updateVolunteerLastName" size = "12" value = <?php echo $VolunteerLastName ?>>
                                                     <label>Phone:</label> <input type = "text" name = "updateVolunteerPhoneNumber" size = "12" value = <?php echo $VolunteerPhoneNumber ?>><br>
                                                     <label>Email:</label> <input type = "email" name ="updateVolunteerEmail" value = <?php echo $VolunteerEmail ?>><br>
                                                     <hr class = "pop-up-form">
@@ -1104,7 +1198,7 @@ function displayPermit()
                                 <div class="feed-activity-list">
                                     <div class="col-md-8">
                                         <div class="col-md-2">
-                                            <h1>2</h1>
+                                            <h1><?php echo $departmentNumber ?></h1>
                                         </div><!-- end of col-md-2-->
 
                                         <div class="col-md-6">
@@ -1120,14 +1214,31 @@ function displayPermit()
                                     </div>
 
                                     <div id="demo" class="collapse">
+									
                                         <div class="col-md-12">
-                                            <h4>Outreach</h4>
-                                            <p class="emergency">Raina Krasner<br/>
-                                                <em>Rkrasner@wildlifecenter.org</em></p>
+                                            <?php while($rowDept = mysqli_fetch_array($resultsTeams)) {
+												
+												if($rowDept['DepartmentName'] === 'Animal Care' ){ echo "<h4>" . $rowDept['DepartmentName'] . "<br/>"; ?></h4>
+												<p class="emergency"><br/><?php while($rowTeamLeadInfo = mysqli_fetch_array($resultsAnimalCareTeam)) 
+												{echo $rowTeamLeadInfo['FirstName'] . " " . $rowTeamLeadInfo['LastName'] . "<br/>" . $rowTeamLeadInfo['Email']; }} ?> </p>
+												<?php
+												if($rowDept['DepartmentName'] === 'Outreach' ){ echo "<h4>" . $rowDept['DepartmentName'] . "<br/>"; ?></h4>
+												<p class="emergency"><br/><?php while($rowTeamLeadInfo = mysqli_fetch_array($resultsOutreachTeam)) 
+												{echo $rowTeamLeadInfo['FirstName'] . " " . $rowTeamLeadInfo['LastName'] . "<br/>" . $rowTeamLeadInfo['Email']; }}?> </p>
+												<?php
+												if($rowDept['DepartmentName'] === 'Transport' ){ echo "<h4>" . $rowDept['DepartmentName'] . "<br/>"; ?></h4>
+												<p class="emergency"><br/><?php while($rowTeamLeadInfo = mysqli_fetch_array($resultsTransportTeam)) 
+												{echo $rowTeamLeadInfo['FirstName'] . " " . $rowTeamLeadInfo['LastName'] . "<br/>" . $rowTeamLeadInfo['Email']; }}?> </p>
+												<?php
+												if($rowDept['DepartmentName'] === 'Treatment' ){ echo "<h4>" . $rowDept['DepartmentName'] . "<br/>"; ?></h4>
+												<p class="emergency"><br/><?php while($rowTeamLeadInfo = mysqli_fetch_array($resultsTreatmentTeam)) 
+												{echo $rowTeamLeadInfo['FirstName'] . " " . $rowTeamLeadInfo['LastName'] . "<br/>" . $rowTeamLeadInfo['Email']; }}?> </p>
+											
+										<?php	} ?>
+                                            
+											
+										
 
-                                            <h4>Veterinary</h4>
-                                            <p class="emergency">Leigh-Ann Horne<br/>
-                                                <em>Lhorne@wildlifecenter.org</em></p>
                                         </div>
                                     </div><!-- end of id = demo collapse -->
                                 </div>
@@ -1137,11 +1248,27 @@ function displayPermit()
                                 <div class="feed-activity-list">
                                     <div class="col-md-8">
                                         <div class="col-md-3">
-                                            <h1>10</h1>
+                                            <?php
+												$currentAccountID = $_SESSION['AccountID'];
+
+												$sqlCountDocs = "SELECT COUNT(*) AS DocCount FROM Upload 
+												  JOIN Person ON Upload.PersonID = Person.PersonID
+												  JOIN Account ON Person.AccountID = Account.AccountID
+												  WHERE Account.AccountID = '$currentAccountID' AND Person.PersonID = Upload.PersonID";
+
+												$result = mysqli_query($conn, $sqlCountDocs);
+												while($row = mysqli_fetch_array($result)) {
+													$docCount = $row['DocCount'];
+												}
+
+												$UploadCount = $docCount;
+											?>
+                                            <h1><?php echo $UploadCount ?></h1>
                                         </div>
 
                                         <div class="col-md-6">
-                                            <h3>Certifications</h3>
+                                            <h3>Documents</h3>
+
                                         </div>
                                     </div>
 
@@ -1152,45 +1279,46 @@ function displayPermit()
                                     </div>
                                     <div id="demo2" class="collapse">
                                         <div class="col-md-12">
-                                            <h4>Outreach</h4>
+                                            <!--<h4>Outreach</h4>
                                             <p class="emergency">Raina Krasner<br/>
                                                 <em>Rkrasner@wildlifecenter.org</em></p>
 
                                             <h4>Veterinary</h4>
                                             <p class="emergency">Leigh-Ann Horne<br/>
-                                                <em>Lhorne@wildlifecenter.org</em></p>
+                                                <em>Lhorne@wildlifecenter.org</em></p> -->
+
+                                            <div class="docs">
+                                                <div class="col-md-12">
+                                                    <div class="col-md-4">
+                                                        <div class="docspadding">
+                                                            <?php
+                                                            displayResume();
+                                                            ?>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <div class="docspadding">
+                                                            <?php
+                                                            displayVaccine();
+                                                            ?>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <div class="docspadding">
+                                                            <?php
+                                                            displayPermit();
+                                                            ?>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="docs">
-                            <div class="col-md-12">
-                                <div class="col-md-4">
-                                    <div class="docspadding">
-                                        <?php
-                                            displayResume();
-                                        ?>
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="docspadding">
-                                        <?php
-                                        displayVaccine();
-                                        ?>
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="docspadding">
-                                        <?php
-                                        displayPermit();
-                                        ?>
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
                     </div>
 
                 </div>

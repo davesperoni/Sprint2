@@ -1,41 +1,18 @@
 <?php
-    session_start();
-    require 'functions.php';
-    require 'database.php';
+session_start();
+require 'functions.php';
+require 'database.php';
 
-    $personID  = $_GET['id'];
+$AppID  = $_GET['id'];
 
-    /*
-    $server = '127.0.0.1';
-    $username = 'homestead';
-    $password = 'secret';
-    $database = 'wildlifeDB';
+mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
-    $conn = new mysqli($server, $username, $password, $database);
-    if ($conn->connect_error) {
-        die("connection failed!\n" . $conn->connect_error);
-    } else {
-    }
-    */
+$sqlShowApps= "SELECT Application.ApplicationID AS 'ApplicationID', Person.PersonID, Person.FirstName, Person.MiddleInitial, Person.LastName FROM Person
+JOIN Application ON Person.PersonID = Application.PersonID WHERE Application.ApplicationID = $AppID";
 
-    mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
-    /*
-     $sqlShowApps= "SELECT Person.PersonID AS 'PersonID', Person.FirstName AS 'FN', Person.MiddleInitial AS 'MI',
-                    Person.LastName AS 'LN', Department.DepartmentName AS 'Dept', Application.LastUpdated AS 'AppLastUpdated'
-                    FROM Person
-                    JOIN Application ON Person.PersonID = Application.PersonID
-                    JOIN Department ON Application.DepartmentID = Department.DepartmentID
-                    WHERE $personID = PersonID
-                    ORDER BY Person.LastName;";
-    */
-    $sqlShowApps= "SELECT Application.ApplicationID AS 'ApplicationID', Person.PersonID, Person.FirstName, Person.MiddleInitial, Person.LastName 
-                   FROM Person
-                   JOIN Application ON Person.PersonID = Application.PersonID 
-                   WHERE Application.PersonID = $personID";
-     $result = mysqli_query($conn, $sqlShowApps) or die("Error " . mysqli_error($conn));
+$result = mysqli_query($conn, $sqlShowApps) or die("Error " . mysqli_error($conn));
 
 ?>
-
 
 <!DOCTYPE html>
 <html>
@@ -67,36 +44,36 @@
                              </span>
                         <a data-toggle="dropdown" class="dropdown-toggle" href="#">
                             <span class="clear"> <span class="block m-t-xs"> <strong class="font-bold">Raina Krasner</strong>
-                             </span> <span class="text-muted text-xs block">Outreach Coordinator<b class="caret"></b></span> </span> </a>
-                        <ul class="dropdown-menu animated fadeInRight m-t-xs">
-                            <li><a href="profile.html">Profile</a></li>
-                            <li class="divider"></li>
-                            <li><a href="logout.php">Logout</a></li>
-                        </ul>
+                             </span> <span class="text-muted text-xs block">Outreach Coordinator</span> </span> </a>
+
                     </div>
                     <div class="logo-element">
                         
                     </div>
                 </li>
                
-                <li>
-                    <a href="#"><i class="fa fa-home"></i> <span class="nav-label">Home</span></a>
-                </li>
-                 <li>
-                    <a href="#"><i class="fa fa-users"></i> <span class="nav-label">Who's Here</span></a>
+			    <li>
+                    <a href="/admin_dashboard.php"><i class="fa fa-home"></i> <span class="nav-label">Home</span></a>
                 </li>
                 <li>
-                    <a href="#"><i class="fa fa-calendar"></i> <span class="nav-label">Calendar</span></a></li>
+                    <a href="/who's_here.php"><i class="fa fa-users"></i> <span class="nav-label">Who's Here</span></a>
+                </li>
+                <li>
+                    <a target="_blank" href="/Calendar/index.php"><i class="fa fa-calendar"></i> <span class="nav-label">Calendar</span></a></li>
                 <li>
                 <li>
-                    <a href="#"><i class="fa fa-search"></i> <span class="nav-label">Search</span></a>
+                    <a href="/search_volunteers_admin.php"><i class="fa fa-search"></i> <span class="nav-label">Search</span></a>
                 </li>
                 <li class = "active">
                     <a href="/pending_apps.php"><i class="fa fa-clipboard"></i> <span class="nav-label">Applications</span>  </a>
                 </li>
                 <li>
-                    <a href="#"><i class="fa fa-user"></i> <span class="nav-label">My Profile</span>  </a>
+                    <a href="/statistics_admin.php"><i class="fa fa-bar-chart"></i> <span class="nav-label">Statistics</span>  </a>
+                </li>				
+                <li>
+                    <a href="/admin_profile.php"><i class="fa fa-user"></i> <span class="nav-label">My Profile</span>  </a>
                 </li>
+			
             </ul>
         </div>
     </nav> <!-- end of navigation --> 
@@ -176,46 +153,76 @@
                 $LastName = $row['LastName'];
                 $PID = $row['PersonID'];
                 $AID = $row['ApplicationID'];
-                $ApplicantFullName = $FirstName . " " . $MiddleInitial . " " . $LastName;
+                $ApplicantFullName = ucfirst($FirstName) . " " . ucfirst($MiddleInitial) . " " . ucfirst($LastName);
                 ?>
 
 <!--                <h1>--><?php //echo 'Applicant ID: ' . $AID . ' - ' . $ApplicantFullName ?><!--</h1> -->
 
-
-                <?php }
-
-                $sqlDepartment = "SELECT Department.DepartmentName FROM Department
-                JOIN Application on Department.DepartmentID = Application.DepartmentID WHERE ApplicationID = $AID";
+                <?php  $sqlDepartment = "SELECT Department.DepartmentName FROM Department
+                JOIN Application on Department.DepartmentID = Application.DepartmentID WHERE Application.ApplicationID = $AID";
                 $departmentResults = mysqli_query($conn, $sqlDepartment) or die("Error " . mysqli_error($conn));
+
+
+
 
                 while($departmentRow = mysqli_fetch_array($departmentResults)) {
 
                 $departmentName = $departmentRow['DepartmentName'];
                 }
+                }
+
+
+
+                $sqlApp1 = "SELECT * FROM Application WHERE Application.ApplicationID = $AID";
+                $appResults = mysqli_query($conn, $sqlApp1) or die("Error " . mysqli_error($conn));
+
+
+                while($results = mysqli_fetch_array($appResults)) {
+
+                    $carpSkills = $results['CarpentrySkills'];
+                    $frontDesk = $results['FrontDeskTrained'];
+                    $adminAssist = $results['AdminAssistant'];
+
+                }
+
+                //Attributes from person
+                $sqlApp1 = "SELECT * from Person INNER JOIN Application ON Person.PersonID = Application.PersonID WHERE ApplicationID = $AID";
+                $appResults = mysqli_query($conn, $sqlApp1) or die("Error " . mysqli_error($conn));
+
+                while($results = mysqli_fetch_array($appResults)) {
+                    $phone = $results['PhoneNumber'];
+                    $dob = $results['DateOfBirth'];
+                    $allergy = $results['Allergy'];
+                    $limits = $results['PhysicalLimitation'];
+                    $permit = $results['HavePermit'];
+                    $rabies = $results['RabiesVaccine'];
+                }
+
+                $from = new DateTime($dob);
+                $to = new DateTime('today');
+                $age = $from->diff($to)->y;
+
                 ?>
 
-<!--
-                <form class = "" action="" method="POST">
-                    <br>
-                    <button type="submit" name = "accept" value = "Accept" class="btn-edit-form moveDown">Accept</button>
-                    <button type="submit" name = "reject" value = "Reject" class="btn-edit-form moveDown">Decline</button>
-                    <br>
-                </form>-->
 
 
                 <?php
                 if(isset($_POST['accept']))
                 {
-                    acceptApplicant($AID);
-
+                    $privatenotes = $_POST['privateNotes'];
+                    acceptApplicant($AID, $privatenotes);
                  ?>
                     <center><h2><?php echo $ApplicantFullName . ' is now a volunteer for the ' . $departmentName . ' department.' ?></h2></center>
                 <?php
                 }
                 if(isset($_POST['reject']))
                 {
-                    rejectApplicant($AID);
-                }
+                    $privatenotes = $_POST['privateNotes'];
+
+                    rejectApplicant($AID, $privatenotes); ?>
+                <center><h2><?php echo $ApplicantFullName . ' has been rejected from the ' . $departmentName . ' department.' ?></h2></center>
+
+                <?php }
                 ?>
 
 
@@ -229,24 +236,138 @@
 
     <strong><h2 class = "orangeColor"><?php echo 'Applicant Name: ' . $ApplicantFullName ?></h2></strong>
 
-        <h3 class = "orangeColor"><?php echo 'Department: ' . $departmentName ?></h3>
+        <h4 class = "orangeColor"><?php echo 'Department: ' . $departmentName ?></h4>
+
+        <h4 class = "orangeColor"><?php echo 'Phone Number: ' . $phone ?></h4>
+        <h4 class = "orangeColor"><?php echo 'Age: ' . $age ?></h4>
+        <h4 class = "orangeColor"><?php echo 'Allergies: ' . $allergy ?></h4>
+        <h4 class = "orangeColor"><?php echo 'Physical limitations: ' . $limits ?></h4>
+        <h4 class = "orangeColor"><?php echo 'Permit: ' . $permit ?></h4>
+        <h4 class = "orangeColor"><?php echo 'Rabies Vaccine: ' . $rabies ?></h4>
+
+        <h4 class = "orangeColor"><?php echo 'Carpentry Skills: ' . $carpSkills ?></h4>
+        <h4 class = "orangeColor"><?php echo 'Front Desk Trained: ' . $frontDesk ?></h4>
+        <h4 class = "orangeColor"><?php echo 'Admin Assistant Experience: ' . $adminAssist ?></h4>
+
+        <?php
+
+        if($departmentName === 'Animal Care'){
+
+            $sqlApp1 = "SELECT * FROM ApplicationAnimalCare WHERE ApplicationID = $AID";
+            $appResults = mysqli_query($conn, $sqlApp1) or die("Error " . mysqli_error($conn));
+
+            while($results = mysqli_fetch_array($appResults)) {
+
+                $PreviousExperience = $results['PreviousExperience'];
+                $DeadAnimalHandling = $results['DeadAnimalHandling'];
+                $LivePreyOpinion = $results['LivePreyOpinion'];
+                $OutdoorWork = $results['OutdoorWork'];
+                $AnimalRightsGroups = $results['AnimalRightsGroups'];
+                $Goals = $results['Goals'];
+                $PassionateIssue = $results['PassionateIssue'];
+
+            } ?>
+
+        <h5 class = "orangeColor"><?php echo 'Previous Experience: ' . $PreviousExperience ?></h5>
+        <h5 class = "orangeColor"><?php echo 'Dead animal handling: ' . $DeadAnimalHandling ?></h5>
+        <h5 class = "orangeColor"><?php echo 'Live prey opinion: ' . $LivePreyOpinion ?></h5>
+        <h5 class = "orangeColor"><?php echo 'Outdoor Work: ' . $OutdoorWork ?></h5>
+        <h5 class = "orangeColor"><?php echo 'Animal rights groups: ' . $AnimalRightsGroups ?></h5>
+        <h5 class = "orangeColor"><?php echo 'Goals: ' . $Goals ?></h5>
+        <h5 class = "orangeColor"><?php echo 'Passionate Issue: ' . $PassionateIssue ?></h5>
+
+       <?php }
+
+        if($departmentName === 'Outreach'){
+
+            $sqlApp1 = "SELECT * FROM ApplicationOutreach WHERE ApplicationID = $AID";
+            $appResults = mysqli_query($conn, $sqlApp1) or die("Error " . mysqli_error($conn));
+
+            while($results = mysqli_fetch_array($appResults)) {
+
+                $ExplainInterest = $results['ExplainInterest'];
+                $PassionateIssue = $results['PassionateIssue'];
+                $PublicSpeakingExperience = $results['PublicSpeakingExperience'];
+                $AnimalRightsGroups = $results['AnimalRightsGroups'];
+                $YourContribution = $results['YourContribution'];
+
+            } ?>
+            <h5><br /></h5>
+
+            <h5 class = "orangeColor"><?php echo 'Explain Interest: ' . $ExplainInterest ?></h5>
+            <h5 class = "orangeColor"><?php echo 'Passionate Issue: ' . $PassionateIssue ?></h5>
+            <h5 class = "orangeColor"><?php echo 'Public Speaking Experience: ' . $PublicSpeakingExperience ?></h5>
+            <h5 class = "orangeColor"><?php echo 'Animal Rights Groups: ' . $AnimalRightsGroups ?></h5>
+            <h5 class = "orangeColor"><?php echo 'Your Contribution: ' . $YourContribution ?></h5>
+
+        <?php }
+
+        if($departmentName === 'Transport'){
+
+            $sqlApp1 = "SELECT * FROM ApplicationTransport WHERE ApplicationID = $AID";
+            $appResults = mysqli_query($conn, $sqlApp1) or die("Error " . mysqli_error($conn));
+
+
+            while($results = mysqli_fetch_array($appResults)) {
+
+                $CaptureAndRestraint = $results['CaptureAndRestraint'];
+                $MilesWillingToTravel = $results['MilesWillingToTravel'];
+                $SpeciesLimitations = $results['SpeciesLimitations'];
+
+            }
+            ?>
+
+            <h5 class = "orangeColor"><?php echo 'Capture and Restraint: ' . $CaptureAndRestraint ?></h5>
+            <h5 class = "orangeColor"><?php echo 'Miles willing to travel: ' . $MilesWillingToTravel ?></h5>
+            <h5 class = "orangeColor"><?php echo 'Species limitations: ' . $SpeciesLimitations ?></h5>
+
+
+       <?php }
+
+        if($departmentName === 'Treatment'){
+
+        $sqlApp1 = "SELECT * FROM ApplicationTreatment WHERE ApplicationID = $AID";
+        $appResults = mysqli_query($conn, $sqlApp1) or die("Error " . mysqli_error($conn));
+
+        while($results = mysqli_fetch_array($appResults)) {
+
+            $DescribeAnimalTraining = $results['DescribeAnimalTraining'];
+            $DescribeMedicalTraining = $results['DescribeMedicalTraining'];
+            $DescribePatientSkills = $results['DescribePatientSkills'];
+            $BestWorkEnvironment = $results['BestWorkEnvironment'];
+            $BestLearningMethod= $results['BestLearningMethod'];
+            $EuthanasiaExperience = $results['EuthanasiaExperience'];
+            $MessyRequirements = $results['MessyRequirements'];
+
+        } ?>
+
+           <h5 class = "orangeColor"><?php echo 'Animal training: ' . $DescribeAnimalTraining ?>/h5>
+           <h5 class = "orangeColor"><?php echo 'Medical training: ' . $DescribeMedicalTraining ?></h5>
+               <h5 class = "orangeColor"><?php echo 'Patient skills: ' . $DescribePatientSkills ?></h5>
+               <h5 class = "orangeColor"><?php echo 'Best work environment: ' . $BestWorkEnvironment ?></h5>
+               <h5 class = "orangeColor"><?php echo 'Best learning method: ' . $BestLearningMethod ?></h5>
+               <h5 class = "orangeColor"><?php echo 'Enuthanasia experience: ' . $EuthanasiaExperience ?></h5>
+               <h5 class = "orangeColor"><?php echo 'Messy requirements: ' . $MessyRequirements ?></h5>
+
+        <?php }?>
 
         <div class = "row">
 
-        <div class = "col-sm-2 moveDown"> 
-             <button type="button" class="btn btn-default accept-reject-btn" data-dismiss="modal" > VIEW RESUME</button>
+        <div class = "col-sm-2 moveDown">
+             <!--<button type="button" class="btn btn-default accept-reject-btn" data-dismiss="modal" > VIEW RESUME</button> -->
         </div>
 
         <div class = "col-sm-3 moveDown">
-            <button type="button" class="btn btn-default accept-reject-btn">VIEW APPLICATION</button>
+            <!-- <button type="button" class="btn btn-default accept-reject-btn">VIEW APPLICATION</button> -->
          </div>
 
-    </div><!-- end of resume link --> 
-     
+    </div><!-- end of resume link -->
+
+        <form class = "" action="" method="POST">
 
     <div class = "row moveDown">
         <div class = "col-sm-10">
-             <textarea rows="10" type="allergies" name="PersonAllergy" placeholder="Enter Private Notes" id = "noPad" class="form-control"></textarea>
+             <textarea rows="7" type="allergies" name="privateNotes" placeholder="Enter Private Notes" id = "noPad" class="form-control"></textarea>
         </div>
     </div><!-- end of admin notes row --> 
 
@@ -254,7 +375,7 @@
         <div class = "col-sm-11">
             <div class = "col-sm-6 pull-right">
 
-                <form class = "" action="" method="POST">
+
 
                     <!--<button type="submit" name = "back" value = "Back" class="btn-edit-form moveDown">Back</button> -->
 

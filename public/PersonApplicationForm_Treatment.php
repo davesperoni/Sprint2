@@ -22,8 +22,6 @@ if (isset($_POST['SubmitPersonApplicationForm']))
 
     //Changes current account to 'applied' so that it can show 'application pending' rather than 'apply'
     $currentUser = $_SESSION['AccountID'];
-    applicantNowPending($currentUser);
-    echo 'applicant is now pending';
 
     //Database connection
     $server = "127.0.0.1";
@@ -45,7 +43,6 @@ if (isset($_POST['SubmitPersonApplicationForm']))
 
     mysqli_close($conn);
     ?>
-
 
 
     <?php
@@ -185,10 +182,10 @@ if (isset($_POST['SubmitPersonApplicationForm']))
     $ApplicationLastUpdated = $newTreatmentTeamApplication->getApplicantLastUpdated();
 
     //Insert statement
-    $sqlTreatmentTeamApplication = "INSERT INTO ApplicationTreatmentTeam(ApplicationID,HandleSmallMammals,HandleLargeMammals,HandleRVS,HandleEagles,HandleSmallRaptors,HandleLargeRaptors,HandleReptiles,DescribeAnimalTraining,TrainingVet,TrainingTech,DescribeMedicalTraining,PatientMedicate,PatientBandage,PatientWoundCare,PatientDiagnostics,PatientAnesthesia,DescribePatientSkills,BestWorkEnvironment,BestLearningMethod,EuthanasiaExperience,MessyRequirements,LastUpdatedBy,LastUpdated) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,CURRENT_TIMESTAMP);";
+    $sqlTreatmentTeamApplication = "INSERT INTO ApplicationTreatment(ApplicationID,HandleSmallMammals,HandleLargeMammals,HandleRVS,HandleEagles,HandleSmallRaptors,HandleLargeRaptors,HandleReptiles,DescribeAnimalTraining,TrainingVet,TrainingTech,DescribeMedicalTraining,PatientMedicate,PatientBandage,PatientWoundCare,PatientDiagnostics,PatientAnesthesia,DescribePatientSkills,BestWorkEnvironment,BestLearningMethod,EuthanasiaExperience,MessyRequirements,LastUpdatedBy,LastUpdated) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,CURRENT_TIMESTAMP);";
 
-    $stmt = mysqli_prepare($conn, $sqlTreatmentTeamApplication);
-    $stmt->bind_param("issssssssssssssssssssss", $ApplicationID,
+    $stmtTreatment = mysqli_prepare($conn, $sqlTreatmentTeamApplication);
+    $stmtTreatment->bind_param("issssssssssssssssssssss", $ApplicationID,
         $ApplicantHandleSmallMammals, $ApplicantHandleLargeMammals, $ApplicantHandleRVS,
         $ApplicantHandleEagles, $ApplicantHandleSmallRaptors, $ApplicantHandleLargeRaptors,
         $ApplicantHandleReptiles, $ApplicantDescribeAnimalTraining, $ApplicantTrainingVet,
@@ -198,13 +195,51 @@ if (isset($_POST['SubmitPersonApplicationForm']))
         $ApplicantBestLearningMethod, $ApplicantEuthanasiaExperience, $ApplicantMessyRequirements,
         $ApplicationLastUpdatedBy);
 
-    //Execute insert statement
-    if($stmt)
-    {
-        $stmt->execute();
-    }
+    //Get the email address associated with the user's account
+    $sql = "SELECT Email from Account WHERE AccountID = :AccountID;";
+    $stmt = $connPDO->prepare($sql);
+    $stmt->bindParam(':AccountID', $currentUser);
+    $stmt->execute();
+    $results = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    echo "Treatment Team Application added to database";
+    if(count($results) > 0)
+    {
+        $account = $results;
+    }
+    $ApplicantEmail= $account['Email'];
+	
+	//Execute the sql statement, change the account isApplicant value, and send an email confirmation
+    if($stmtTreatment)
+    {
+        $stmtTreatment->execute();
+		echo "Treatment Team Application added to database";
+		applicantNowPending($currentUser);
+		echo 'Applicant is now pending';
+		
+		//Send a confirmation email to the current user
+        error_reporting(-1);
+        ini_set('display_errors', 'On');
+        set_error_handler("var_dump");
+
+		if(!empty($ApplicantEmail))
+		{
+			$to = $ApplicantEmail;
+			$subject = 'Wildlife Center of Virginia - Application Confirmation';
+			$message = "Hello," . "\n\nThank you for your interest in volunteering at the Wildlife Center of Virginia. Your Veterinary/Treatment Volunteer application has been submitted successfully and is now pending review. Once your application has been reviewed, you will receive another email containing your new application status. You can also check your status by logging in at http://54.186.42.239/login.php";
+			$headers = 'From: vawildlifecenter@gmail.com';
+
+			mail($to, $subject, $message, $headers);
+		}
+		
+		//Send a confirmation email to the team lead
+		$to = 'vawildlifecenter.treatment@gmail.com'; //change to $TeamLeadEmail later
+        $subject = 'Notification - Application Confirmation';
+        $message = "Hello," . "\n\nSomeone has submitted a volunteer application to the Treatment department. Please log in to your profile and go to the Pending Apps tab to view the application. You can log into your account here: http://54.186.42.239/login.php";
+        $headers = 'From: vawildlifecenter@gmail.com';
+
+        mail($to, $subject, $message, $headers);
+		
+    }
 
 }
 ?>
@@ -216,7 +251,7 @@ if (isset($_POST['SubmitPersonApplicationForm']))
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Apply To The Treatment Team</title>
+    <title>Apply To The Animal Care Team</title>
 
 
     <link href="css/bootstrap.min.css" rel="stylesheet">
@@ -229,50 +264,61 @@ if (isset($_POST['SubmitPersonApplicationForm']))
 
 </head>
 
-<body class="grayform">
-<div class="ibox-content-form">
-    <div class="formpadding">
-        <div class="row">
-            <div class="col-md-6 col-md-offset-3">
-                <div class="smallerheader"><h1>Apply To The Treatment Team</h1>
-                    <p class="smallerheader">Thank you for your interest in The Wildlife Center of Virginia. We have four volunteer teams that work at our organization– Outreach, Animal Care, Veterinary Treatment, and Transport & Rescue. To read more about each team, please visit our <a href="http://wildlifecenter.org/support-center/volunteer-opportunities">volunteer opportunities page.</a></p></div>
-            </div>
+<body class="formback">
+<div class = "col-md-10 col-md-offset-1">
+    <div class = "grayform">
+        <div class="ibox-content-form">
+            <div class="formpadding">
+                <div class="row">
+                    <img class = "logo_form img-fluid" src = "img/habitat_logo.png" alt = "habitat logo">
 
-            <div class="col-sm-12">
-                <form role="form" name="PersonApplicationForm_Treatment" method="post" action="PersonApplicationForm_Treatment.php">
+                    <div class="smallerheader btmSpace"><h2>APPLY TO THE TREATMENT TEAM</h2>
+                        Thank you for your interest in The Wildlife Center of Virginia. We have four volunteer teams that work at our organization– Outreach, Animal Care, Veterinary Treatment, and Transport & Rescue. To read more about each team, please visit our <a href="http://wildlifecenter.org/support-center/volunteer-opportunities">volunteer opportunities page.</a><br>
+                    </div>
 
-                    <div class="col-md-6 col-md-offset-3"><label>Which team are you interested in applying for?</label></div>
 
-                    <div class="col-md-6 col-md-offset-3"><div class="form-group">
-                            <select name="Team" onchange="location = this.options[this.selectedIndex].value;" style="text-decoration:none;">
-                                <option value="PersonApplicationForm_Treatment.php">Treatment</option>
-                                <option value="PersonApplicationForm_Outreach.php">Outreach</option>
-                                <option value="PersonApplicationForm_AnimalCare.php">Animal Care</option>
-                                <option value="PersonApplicationForm_Transport.php">Transport</option>
-                            </select>
-                        </div></div>
+                    <div class="col-sm-12">
+                        <form role="form" name="PersonApplicationForm_Treatment" method="post" action="PersonApplicationForm_Treatment.php">
 
-                    <div class = "col-md-6 col-md-offset-3">
-                        <label>Please check if you have the following skills: </label>
-                    </div><!--end of label-->
+                            <div class="col-md-6 col-md-offset-3"><label class = "centeredText btmSpace2">Which team are you interested in applying for?</label></div>
+                            <div class="col-md-6 col-md-offset-3"><div class="form-group centeredText btmSpace2">
+                                    <select name="Team" onchange="location = this.options[this.selectedIndex].value;" style="text-decoration:none;">
+                                        <option value="PersonApplicationForm_Treatment.php">Treatment</option>
+										<option value="PersonApplicationForm_Outreach.php">Outreach</option>
+                                        <option value="PersonApplicationForm_AnimalCare.php">Animal Care</option>
+                                        <option value="PersonApplicationForm_Transport.php">Transport</option>
+                                       
+                                    </select>
+                                </div>
+                            </div>
 
-                    <div class = "col-md-6 col-md-offset-3">
-                        <fieldset>
-                            <label><input type = "checkbox" name = "skills[]" value = "Carpentry Skills">Carpentry Skills</label>
-                            <label><input type = "checkbox" name = "skills[]" value = "Administrative Assistant">Administrative Assistant</label>
-                            <label><input type = "checkbox" name = "skills[]" value = "Front Desk Trained">Front Desk Trained </label>
-                        </fieldset>
-                    </div><!-- end of skills checkboxes -->
+                            <div class = "col-md-8 col-md-offset-2">
+                                <label>Please check if you have the following skills: </label>
+                            </div><!--end of label-->
 
-                    <div class="col-md-6 col-md-offset-3"><div class="form-group"><label><br/>Please describe any previous medical or veterinary training you have completed.</label> <textarea name="DescribeMedicalTraining" rows="4" class="form-control"></textarea></div></div>
+                            <div class = "row">
+                                <div class = "col-md-8 col-md-offset-2">
+                                    <fieldset>
+                                        <label><input type = "checkbox" name = "skills[]" value = "Carpentry Skills">Carpentry Skills</label>
+                                        <label><input type = "checkbox" name = "skills[]" value = "Administrative Assistant">Administrative Assistant</label>
+                                        <label><input type = "checkbox" name = "skills[]" value = "Front Desk Trained">Front Desk Experience</label>
 
-                    <div class="col-md-6 col-md-offset-3"><div class="form-group"><label>The case load at the Center can be unpredictable and vary greatly depending on the time of year.  Please describe the work environment that you work best in including how you best retain information that is taught to you.</label> <textarea name="BestWorkEnvironment" rows="4" class="form-control"></textarea></div></div>
+                                    </fieldset>
 
-                    <div class="col-md-6 col-md-offset-3"><div class="form-group"><label>The Center admits many trauma cases from all over the state.  In order for a patient to be released back into the wild it must be able to successfully survive on its own in the wild free of chronic pain or debilitation.  Due to this fact, the Center does humanely euthanize patients that do not meet this standard.  Do you have personal experience with euthanasia and how does it affect you?</label> <textarea name="EuthanasiaExperience" rows="4" class="form-control"></textarea></div></div>
+                                </div><!-- end of skills checkboxes -->
+                                <br>
+                            </div>
 
-                    <div class="col-md-6 col-md-offset-3"><div class="form-group"><label>Taking care of animals is a messy job that requires all team members to clean out dirty crates, chop rats or mice for feeding to patients, and collect fecal samples for analysis for example.  Is this something that you foresee struggling with?</label> <textarea name="MessyRequirements" rows="4" class="form-control"></textarea></div></div>
 
-                    <div class="col-md-6 col-md-offset-3">
+                    <div class="col-md-8 col-md-offset-2"><div class="form-group"><label><br/>Please describe any previous medical or veterinary training you have completed.</label> <textarea name="DescribeMedicalTraining" rows="4" class="form-control"></textarea></div></div>
+
+                    <div class="col-md-8 col-md-offset-2"><div class="form-group"><label>The case load at the Center can be unpredictable and vary greatly depending on the time of year.  Please describe the work environment that you work best in including how you best retain information that is taught to you.</label> <textarea name="BestWorkEnvironment" rows="4" class="form-control"></textarea></div></div>
+
+                    <div class="col-md-8 col-md-offset-2"><div class="form-group"><label>The Center admits many trauma cases from all over the state.  In order for a patient to be released back into the wild it must be able to successfully survive on its own in the wild free of chronic pain or debilitation.  Due to this fact, the Center does humanely euthanize patients that do not meet this standard.  Do you have personal experience with euthanasia and how does it affect you?</label> <textarea name="EuthanasiaExperience" rows="4" class="form-control"></textarea></div></div>
+
+                    <div class="col-md-8 col-md-offset-2"><div class="form-group"><label>Taking care of animals is a messy job that requires all team members to clean out dirty crates, chop rats or mice for feeding to patients, and collect fecal samples for analysis for example.  Is this something that you foresee struggling with?</label> <textarea name="MessyRequirements" rows="4" class="form-control"></textarea></div></div>
+
+                    <div class="col-md-8 col-md-offset-2">
                         <br>
                         <button class="btn btn-sm btn-primary pull-right" name="SubmitPersonApplicationForm" type="submit"><strong>Submit</strong></button>              </div>
 
